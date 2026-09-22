@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{title}}</title>
+  <meta name="description" content="{{description}}">
+  <link rel="canonical" href="{{site_url}}{{path}}">
+
+  <!-- Open Graph / Twitter -->
+  <meta property="og:type" content="{{og_type}}">
+  <meta property="og:site_name" content="Strong. Brave. Courageous.">
+  <meta property="og:title" content="{{title}}">
+  <meta property="og:description" content="{{description}}">
+  <meta property="og:url" content="{{site_url}}{{path}}">
+  <meta property="og:image" content="{{site_url}}/images/sbc-logo-512.png">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="{{title}}">
+  <meta name="twitter:description" content="{{description}}">
+  <meta name="twitter:image" content="{{site_url}}/images/sbc-logo-512.png">
+
+  <!-- Favicons (provided logo package) -->
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" sizes="32x32" href="/sbc-logo-32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/sbc-logo-16.png">
+  <link rel="apple-touch-icon" href="/images/sbc-logo-256.png">
+  <meta name="theme-color" content="#F7F1E3">
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Plus+Jakarta+Sans:ital,wght@0,500;0,600;0,700;1,500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/styles.css">
+
+  <!-- Structured data -->
+  <script type="application/ld+json">{{structured_data}}</script>
+  {{head_extra}}
+  <!-- GA4: paste the gtag snippet here when analytics is set up -->
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="/" aria-label="Strong. Brave. Courageous. — Home">
+        <img src="/images/sbc-logo-full-color.svg" alt="" width="48" height="48">
+        <span class="brand-text">
+          <span class="brand-name">Strong. Brave. Courageous.</span>
+          <span class="brand-tag">one more step</span>
+        </span>
+      </a>
+      <button class="nav-toggle" aria-expanded="false" aria-controls="site-nav" aria-label="Open menu"><span></span></button>
+      <nav class="site-nav" id="site-nav" aria-label="Main">
+        <ul>
+          <li><a href="/" {{active_home}}>Home</a></li>
+          <li><a href="/stories.html" {{active_stories}}>Stories</a></li>
+          <li><a href="/about.html" {{active_about}}>About</a></li>
+          <li><a href="/fingerprints.html" {{active_fingerprints}}>Fingerprints</a></li>
+          <li><a href="/newsletter.html" {{active_newsletter}}>Newsletter</a></li>
+          <li><a href="/contact.html" {{active_contact}}>Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main">
+{{content}}
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div>
+          <a class="footer-brand brand" href="/">
+            <img src="/images/sbc-logo-white.png" alt="" width="64" height="64">
+            <span class="brand-text">
+              <span class="brand-name">Strong. Brave. Courageous.</span>
+              <span class="brand-tag">Real stories. Braver tomorrows.</span>
+            </span>
+          </a>
+          <p class="footer-scripture">
+            And having this confidence, I know that I shall abide and continue with you all for your furtherance and joy of faith;
+            <cite>Philippians 1:25</cite>
+          </p>
+        </div>
+        <div>
+          <h4>Explore</h4>
+          <ul>
+            <li><a href="/stories.html">Stories</a></li>
+            <li><a href="/about.html">About</a></li>
+            <li><a href="/fingerprints.html">Fingerprints</a></li>
+            <li><a href="/newsletter.html">Newsletter</a></li>
+            <li><a href="/contact.html">Contact</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>One more step</h4>
+          <form name="newsletter-footer" method="POST" action="/thanks.html" data-netlify="true" netlify-honeypot="bot-field" class="stack">
+            <input type="hidden" name="form-name" value="newsletter-footer">
+            <p class="hp"><label>Don’t fill this out if you’re human: <input name="bot-field"></label></p>
+            <div class="field mb-0">
+              <label for="footer-email" class="visually-hidden">Email address</label>
+              <input type="email" id="footer-email" name="email" placeholder="Your email" required autocomplete="email">
+            </div>
+            <button type="submit" class="btn btn-primary">Take One More Step</button>
+          </form>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span class="memorial">In memory of Steve, Mason, and Josh.</span>
+        <span>&copy; {{year}} Strong. Brave. Courageous. &middot; A faith-rooted community by Becky</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="/js/main.js" defer></script>
+</body>
+</html>

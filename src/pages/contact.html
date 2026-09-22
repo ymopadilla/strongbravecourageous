@@ -1,0 +1,47 @@
+---
+title: Contact — Strong. Brave. Courageous.
+description: Reach out to Becky. Companion, not a clinician — if you're in crisis, call 988.
+nav: contact
+path: /contact.html
+---
+<section>
+  <div class="container narrow">
+    <div class="text-center">
+      <p class="eyebrow">Contact</p>
+      <h1>Reach out</h1>
+      <div class="accent-row" aria-hidden="true"><i class="blue"></i><i class="sage"></i><i class="red"></i></div>
+    </div>
+
+    <div class="form-box" style="margin-top:24px;">
+      <form name="contact" method="POST" action="/thanks.html" data-netlify="true" netlify-honeypot="bot-field">
+        <input type="hidden" name="form-name" value="contact">
+        <p class="hp"><label>Don’t fill this out if you’re human: <input name="bot-field"></label></p>
+        <div class="field">
+          <label for="c-name">Name</label>
+          <input type="text" id="c-name" name="name" required autocomplete="name">
+        </div>
+        <div class="field">
+          <label for="c-email">Email</label>
+          <input type="email" id="c-email" name="email" required autocomplete="email">
+        </div>
+        <div class="field">
+          <label for="c-message">Message</label>
+          <textarea id="c-message" name="message" required></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Send</button>
+      </form>
+    </div>
+
+    <div class="stack" style="margin-top:32px;">
+      {{contact_body}}
+
+      <div class="crisis">
+        <strong>Companion, not a clinician</strong> — if you’re in crisis, call <a href="tel:988">988</a>.
+      </div>
+
+      <p><strong>Email:</strong> {{contact_email}}</p>
+
+      {{social_links}}
+    </div>
+  </div>
+</section>

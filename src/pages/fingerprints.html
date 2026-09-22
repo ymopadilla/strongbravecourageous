@@ -1,0 +1,58 @@
+---
+title: Fingerprints — Strong. Brave. Courageous.
+description: Share a moment you saw God move. Real people. Real progress. A brighter tomorrow.
+nav: fingerprints
+path: /fingerprints.html
+---
+<section>
+  <div class="container narrow text-center">
+    <p class="eyebrow gold">Fingerprints</p>
+    <h1>Share a moment you saw God move.</h1>
+    <div class="accent-row" aria-hidden="true"><i class="blue"></i><i class="sage"></i><i class="red"></i></div>
+    <p class="lead">Real people. Real progress. A brighter tomorrow.</p>
+  </div>
+</section>
+
+<section class="section-tight">
+  <div class="container narrow">
+    <div class="form-box gold">
+      <h2>Share your moment</h2>
+      <form name="fingerprint" method="POST" action="/thanks.html" data-netlify="true" netlify-honeypot="bot-field" enctype="multipart/form-data">
+        <input type="hidden" name="form-name" value="fingerprint">
+        <p class="hp"><label>Don’t fill this out if you’re human: <input name="bot-field"></label></p>
+        <div class="field">
+          <label for="fp-name">Name</label>
+          <input type="text" id="fp-name" name="name" required autocomplete="name">
+        </div>
+        <div class="field">
+          <label for="fp-email">Email</label>
+          <p class="hint">Never shown publicly.</p>
+          <input type="email" id="fp-email" name="email" required autocomplete="email">
+        </div>
+        <div class="field">
+          <label for="fp-story">Your moment</label>
+          <textarea id="fp-story" name="story" required></textarea>
+        </div>
+        <div class="field">
+          <label for="fp-photo">Photo (optional)</label>
+          <input type="file" id="fp-photo" name="photo" accept="image/*">
+        </div>
+        <p class="small muted">Becky reads every submission before it appears here.</p>
+        <button type="submit" class="btn btn-primary">Share your moment</button>
+      </form>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <div class="text-center">
+      <p class="eyebrow">Real people. Real progress.</p>
+      <h2 class="tagline-caps">Strength Through Story</h2>
+      <hr class="divider short">
+    </div>
+    <div class="grid-3" style="margin-top:28px;">
+      {{fingerprint_cards}}
+    </div>
+  </div>
+</section>

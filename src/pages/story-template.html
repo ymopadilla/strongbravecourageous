@@ -1,0 +1,72 @@
+---
+title: {{story_title}} — Strong. Brave. Courageous.
+description: {{story_excerpt}}
+nav: stories
+path: {{story_path}}
+og_type: article
+---
+<section>
+  <div class="container">
+    <div class="story-layout">
+      <article>
+        <header class="story-header">
+          <p class="eyebrow"><a href="/stories.html">&larr; All stories</a></p>
+          <h1>{{story_title}}</h1>
+          <div class="meta">
+            <time datetime="{{story_date_iso}}">{{story_date}}</time>
+            <span class="tag tag-{{story_category_slug}}">{{story_category}}</span>
+          </div>
+        </header>
+
+        <div class="story-body">
+          {{story_body}}
+        </div>
+
+        <section class="comments" id="comments">
+          <h2>Comments</h2>
+          <p class="comment-note">Comments are read by Becky before they appear.</p>
+          <ul class="comment-list">
+            {{story_comments}}
+          </ul>
+
+          <div class="form-box">
+            <h3>Leave a comment</h3>
+            <form name="comment" method="POST" action="/thanks.html" data-netlify="true" netlify-honeypot="bot-field">
+              <input type="hidden" name="form-name" value="comment">
+              <input type="hidden" name="story" value="{{story_slug}}">
+              <p class="hp"><label>Don’t fill this out if you’re human: <input name="bot-field"></label></p>
+              <div class="field">
+                <label for="cm-name">Name</label>
+                <input type="text" id="cm-name" name="name" required autocomplete="name">
+              </div>
+              <div class="field">
+                <label for="cm-email">Email</label>
+                <p class="hint">Never shown publicly.</p>
+                <input type="email" id="cm-email" name="email" required autocomplete="email">
+              </div>
+              <div class="field">
+                <label for="cm-comment">Comment</label>
+                <textarea id="cm-comment" name="comment" required></textarea>
+              </div>
+              <button type="submit" class="btn btn-primary">Post comment</button>
+            </form>
+          </div>
+        </section>
+      </article>
+
+      <aside class="sidebar">
+        <div class="side-box cta">
+          <h3>One more step</h3>
+          <p class="tagline-caps" style="font-size:15px;">Grief changes you. So does hope.</p>
+          <a class="btn btn-primary" href="/newsletter.html">Take One More Step</a>
+        </div>
+        <div class="side-box">
+          <h3>Related stories</h3>
+          <ul>
+            {{related_posts}}
+          </ul>
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>

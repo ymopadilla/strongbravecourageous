@@ -1,0 +1,91 @@
+# Decap CMS (Netlify CMS) configuration — strongbravecourageous.com
+# Becky signs in at https://strongbravecourageous.com/admin/
+
+backend:
+  name: git-gateway
+  branch: main
+  commit_messages:
+    create: "Add {{collection}}: {{slug}}"
+    update: "Update {{collection}}: {{slug}}"
+    delete: "Delete {{collection}}: {{slug}}"
+    uploadMedia: "Upload {{path}}"
+    deleteMedia: "Delete {{path}}"
+
+site_url: https://strongbravecourageous.com
+display_url: https://strongbravecourageous.com
+logo_url: /images/sbc-logo-256.png
+
+# Stories get a Draft → In review → Ready workflow before publishing.
+publish_mode: editorial_workflow
+
+media_folder: "uploads"        # where images are stored in the repo
+public_folder: "/uploads"      # how they are referenced on the site
+
+collections:
+  - name: "stories"
+    label: "Stories"
+    label_singular: "Story"
+    description: "Blog posts. New stories appear at the top of the Stories page once published."
+    folder: "content/stories"
+    create: true
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    preview_path: "stories/{{slug}}.html"
+    sort_by: ["date"]
+    fields:
+      - { label: "Title", name: "title", widget: "string" }
+      - { label: "Date published", name: "date", widget: "datetime", format: "YYYY-MM-DD", date_format: "MMMM D, YYYY", time_format: false }
+      - { label: "Category", name: "category", widget: "select", options: ["Grief", "Healing", "Faith", "Perseverance"], default: "Healing" }
+      - { label: "Excerpt", name: "excerpt", widget: "text", hint: "One or two sentences. Shows on the story card and in search results." }
+      - { label: "Story", name: "body", widget: "markdown", hint: "Use the image button to add photos. Paste a YouTube or Vimeo link on its own line to embed a video." }
+
+  - name: "fingerprints"
+    label: "Fingerprints"
+    label_singular: "Fingerprint"
+    description: "Moments people shared. Submissions arrive in Netlify → Forms → fingerprint. Add the ones you want to publish here and tick Approved."
+    folder: "content/fingerprints"
+    create: true
+    slug: "{{year}}-{{month}}-{{day}}-{{name}}"
+    fields:
+      - { label: "Name (as it should appear)", name: "name", widget: "string" }
+      - { label: "Date", name: "date", widget: "datetime", format: "YYYY-MM-DD", time_format: false }
+      - { label: "Approved — show on the site", name: "approved", widget: "boolean", default: false }
+      - { label: "Photo (optional)", name: "photo", widget: "image", required: false }
+      - { label: "Their moment", name: "body", widget: "markdown", minimal: true }
+
+  - name: "comments"
+    label: "Comments"
+    label_singular: "Comment"
+    description: "Comments arrive in Netlify → Forms → comment. Add the ones you approve here; they appear under the matching story."
+    folder: "content/comments"
+    create: true
+    slug: "{{year}}-{{month}}-{{day}}-{{story}}-{{name}}"
+    fields:
+      - { label: "Story", name: "story", widget: "relation", collection: "stories", search_fields: ["title"], value_field: "{{slug}}", display_fields: ["title"], hint: "Which story is this comment on?" }
+      - { label: "Name", name: "name", widget: "string" }
+      - { label: "Date", name: "date", widget: "datetime", format: "YYYY-MM-DD", time_format: false }
+      - { label: "Approved — show on the site", name: "approved", widget: "boolean", default: false }
+      - { label: "Comment", name: "body", widget: "text" }
+
+  - name: "pages"
+    label: "Site Pages"
+    description: "The words on the About, Newsletter, and Contact pages."
+    files:
+      - name: "about"
+        label: "About page"
+        file: "content/pages/about.md"
+        fields:
+          - { label: "Your photo", name: "photo", widget: "image", required: false }
+          - { label: "Your story", name: "body", widget: "markdown" }
+      - name: "newsletter"
+        label: "Newsletter page"
+        file: "content/pages/newsletter.md"
+        fields:
+          - { label: "About the Sunday letter", name: "body", widget: "markdown" }
+      - name: "contact"
+        label: "Contact page"
+        file: "content/pages/contact.md"
+        fields:
+          - { label: "Email address shown on the site", name: "email", widget: "string" }
+          - { label: "Instagram URL", name: "instagram", widget: "string", required: false }
+          - { label: "Facebook URL", name: "facebook", widget: "string", required: false }
+          - { label: "Note to visitors", name: "body", widget: "markdown" }

@@ -1,0 +1,16 @@
+{
+  "name": "strongbravecourageous",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Strong. Brave. Courageous. — static site for strongbravecourageous.com (Netlify + Decap CMS)",
+  "scripts": {
+    "build": "node build.js",
+    "serve": "node build.js && npx --yes serve dist"
+  },
+  "dependencies": {
+    "marked": "^12.0.0"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

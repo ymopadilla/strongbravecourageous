@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>Site Editor — Strong. Brave. Courageous.</title>
+  <link rel="icon" href="/favicon.ico">
+  <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+</head>
+<body>
+  <!-- Decap CMS (the maintained continuation of Netlify CMS) -->
+  <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
+  <script>
+    // After Becky accepts her Netlify Identity invite, send her straight to the editor.
+    if (window.netlifyIdentity) {
+      window.netlifyIdentity.on('init', function (user) {
+        if (!user) {
+          window.netlifyIdentity.on('login', function () { document.location.href = '/admin/'; });
+        }
+      });
+    }
+  </script>
+</body>
+</html>
