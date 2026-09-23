@@ -13,24 +13,28 @@
   <meta property="og:title" content="{{title}}">
   <meta property="og:description" content="{{description}}">
   <meta property="og:url" content="{{site_url}}{{path}}">
-  <meta property="og:image" content="{{site_url}}/images/sbc-logo-512.png">
-  <meta name="twitter:card" content="summary">
+  <meta property="og:image" content="{{site_url}}{{og_image}}">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Strong. Brave. Courageous. — illustrated logo of a woman looking out over mountains at sunrise beside a wooden cross">
+  <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="{{title}}">
   <meta name="twitter:description" content="{{description}}">
-  <meta name="twitter:image" content="{{site_url}}/images/sbc-logo-512.png">
+  <meta name="twitter:image" content="{{site_url}}{{og_image}}">
 
-  <!-- Favicons (provided logo package) -->
+  <!-- Favicons (generated from the supplied logo artwork) -->
   <link rel="icon" href="/favicon.ico" sizes="any">
   <link rel="icon" type="image/png" sizes="32x32" href="/sbc-logo-32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="/sbc-logo-16.png">
-  <link rel="apple-touch-icon" href="/images/sbc-logo-256.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
   <meta name="theme-color" content="#F7F1E3">
 
-  <!-- Fonts -->
+  <!-- Fonts: Lora (headings) + Plus Jakarta Sans (nav, body, buttons) per brand guide -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Plus+Jakarta+Sans:ital,wght@0,500;0,600;0,700;1,500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/css/styles.css">
+  <link rel="alternate" type="application/rss+xml" title="Strong. Brave. Courageous. — Stories" href="{{site_url}}/feed.xml">
 
   <!-- Structured data -->
   <script type="application/ld+json">{{structured_data}}</script>
@@ -43,10 +47,10 @@
   <header class="site-header">
     <div class="container header-inner">
       <a class="brand" href="/" aria-label="Strong. Brave. Courageous. — Home">
-        <img src="/images/sbc-logo-full-color.svg" alt="" width="48" height="48">
+        <img src="/images/sbc-logo-128.png" alt="Strong. Brave. Courageous. logo" width="52" height="52">
         <span class="brand-text">
           <span class="brand-name">Strong. Brave. Courageous.</span>
-          <span class="brand-tag">one more step</span>
+          <span class="brand-tag">One forward step at a time</span>
         </span>
       </a>
       <button class="nav-toggle" aria-expanded="false" aria-controls="site-nav" aria-label="Open menu"><span></span></button>
@@ -56,8 +60,11 @@
           <li><a href="/stories.html" {{active_stories}}>Stories</a></li>
           <li><a href="/about.html" {{active_about}}>About</a></li>
           <li><a href="/fingerprints.html" {{active_fingerprints}}>Fingerprints</a></li>
-          <li><a href="/newsletter.html" {{active_newsletter}}>Newsletter</a></li>
+          <li><a href="/resources.html" {{active_resources}}>Resources</a></li>
           <li><a href="/contact.html" {{active_contact}}>Contact</a></li>
+          <!-- Newsletter page is hidden from the menu until January 1, 2027. The page still exists at /newsletter.html.
+               To show it again, uncomment the line below and the matching one in the footer. -->
+          <!-- <li><a href="/newsletter.html" {{active_newsletter}}>Newsletter</a></li> -->
         </ul>
       </nav>
     </div>
@@ -72,10 +79,10 @@
       <div class="footer-grid">
         <div>
           <a class="footer-brand brand" href="/">
-            <img src="/images/sbc-logo-white.png" alt="" width="64" height="64">
+            <img src="/images/sbc-logo-256.png" alt="Strong. Brave. Courageous. logo" width="72" height="72">
             <span class="brand-text">
               <span class="brand-name">Strong. Brave. Courageous.</span>
-              <span class="brand-tag">Real stories. Braver tomorrows.</span>
+              <span class="brand-tag">One forward step at a time</span>
             </span>
           </a>
           <p class="footer-scripture">
@@ -89,12 +96,13 @@
             <li><a href="/stories.html">Stories</a></li>
             <li><a href="/about.html">About</a></li>
             <li><a href="/fingerprints.html">Fingerprints</a></li>
-            <li><a href="/newsletter.html">Newsletter</a></li>
+            <li><a href="/resources.html">Resources</a></li>
             <li><a href="/contact.html">Contact</a></li>
+            <!-- <li><a href="/newsletter.html">Newsletter</a></li> -->
           </ul>
         </div>
         <div>
-          <h4>One more step</h4>
+          <h4>One forward step</h4>
           <form name="newsletter-footer" method="POST" action="/thanks.html" data-netlify="true" netlify-honeypot="bot-field" class="stack">
             <input type="hidden" name="form-name" value="newsletter-footer">
             <p class="hp"><label>Don’t fill this out if you’re human: <input name="bot-field"></label></p>
@@ -114,5 +122,6 @@
   </footer>
 
   <script src="/js/main.js" defer></script>
+  {{body_extra}}
 </body>
 </html>

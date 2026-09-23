@@ -11,7 +11,12 @@ Everything below happens in the editor. No code, ever.
 3. Write the story in the big box. To add a photo, click the **+** (or image icon) in the toolbar. To add a video, paste a YouTube or Vimeo link on its own line.
 4. Top right: **Save**. Then change the status from *Draft* to *In review*, then *Ready*, then click **Publish**. The site updates itself in about a minute.
 
-## Fix your About, Newsletter, or Contact page
+When you publish, two things happen on their own: the story becomes searchable on the Stories page, and your email subscribers get a note with the story preview and a "Read the full story" link (sent by Mailchimp within a day).
+
+## Fill in the Resources page
+Click **Site Pages** → **Resources page**. Use a heading for each group (Books, Music, Podcasts, Professional Help) and a bulleted list under it — a link and one line about why it helped is perfect. The "not a therapist / call 988 / find a counselor" notice at the top stays put automatically.
+
+## Fix your About, Newsletter, Resources, or Contact page
 Click **Site Pages** → pick the page → edit → **Publish**. This is also where your photo, email, and social links live.
 
 ## When someone shares a Fingerprint or leaves a Comment

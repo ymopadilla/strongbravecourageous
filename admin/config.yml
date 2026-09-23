@@ -68,7 +68,7 @@ collections:
 
   - name: "pages"
     label: "Site Pages"
-    description: "The words on the About, Newsletter, and Contact pages."
+    description: "The words on the About, Newsletter, Resources, and Contact pages."
     files:
       - name: "about"
         label: "About page"
@@ -81,6 +81,11 @@ collections:
         file: "content/pages/newsletter.md"
         fields:
           - { label: "About the Sunday letter", name: "body", widget: "markdown" }
+      - name: "resources"
+        label: "Resources page"
+        file: "content/pages/resources.md"
+        fields:
+          - { label: "Resources list", name: "body", widget: "markdown", hint: "Use headings for each category (Books, Music, Podcasts, Professional Help) and a bulleted list under each. Links and short descriptions welcome." }
       - name: "contact"
         label: "Contact page"
         file: "content/pages/contact.md"

@@ -1,9 +1,17 @@
 [build]
-  command = "npm run build"
+  command = "npm run build && node scripts/algolia-index.js"
   publish = "dist"
+  functions = "netlify/functions"
 
 [build.environment]
   NODE_VERSION = "20"
+
+# Search index + feed must never be cached long
+[[headers]]
+  for = "/feed.xml"
+  [headers.values]
+    Cache-Control = "public, max-age=300"
+    Content-Type = "application/rss+xml; charset=utf-8"
 
 # Security headers
 [[headers]]
@@ -43,6 +51,18 @@
 [[redirects]]
   from = "/newsletter"
   to = "/newsletter.html"
+  status = 200
+[[redirects]]
+  from = "/resources"
+  to = "/resources.html"
+  status = 200
+[[redirects]]
+  from = "/feed"
+  to = "/feed.xml"
+  status = 200
+[[redirects]]
+  from = "/rss"
+  to = "/feed.xml"
   status = 200
 [[redirects]]
   from = "/contact"

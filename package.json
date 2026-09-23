@@ -2,10 +2,12 @@
   "name": "strongbravecourageous",
   "version": "1.0.0",
   "private": true,
-  "description": "Strong. Brave. Courageous. — static site for strongbravecourageous.com (Netlify + Decap CMS)",
+  "description": "Strong. Brave. Courageous. \u2014 static site for strongbravecourageous.com (Netlify + Decap CMS)",
   "scripts": {
     "build": "node build.js",
-    "serve": "node build.js && npx --yes serve dist"
+    "serve": "node build.js && npx --yes serve dist",
+    "index": "node scripts/algolia-index.js",
+    "build:index": "node build.js && node scripts/algolia-index.js"
   },
   "dependencies": {
     "marked": "^12.0.0"

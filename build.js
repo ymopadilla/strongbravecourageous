@@ -20,9 +20,20 @@ const { marked } = require('marked');
 const ROOT = __dirname;
 const SRC = path.join(ROOT, 'src');
 const CONTENT = path.join(ROOT, 'content');
-const DIST = path.join(ROOT, 'dist');
+const DIST = process.env.DIST_DIR ? path.resolve(process.env.DIST_DIR) : path.join(ROOT, 'dist');
 const SITE_URL = (process.env.URL || 'https://strongbravecourageous.com').replace(/\/$/, '');
 const CATEGORIES = ['Grief', 'Healing', 'Faith', 'Perseverance'];
+
+/* Algolia search (Stories page). The Search API key is public by design (search-only).
+   The Write API key is NEVER stored here — it lives in Netlify → Environment variables as ALGOLIA_WRITE_KEY
+   and is used only by scripts/algolia-index.js after each build. */
+const ALGOLIA = {
+  appId: process.env.ALGOLIA_APP_ID || 'GJ31SC1NW3',
+  searchKey: process.env.ALGOLIA_SEARCH_KEY || 'e64adedb439574d6facf60bf1712dc75',
+  index: process.env.ALGOLIA_INDEX || 'stories',
+};
+const SITE_NAME = 'Strong. Brave. Courageous.';
+const OG_IMAGE = '/images/og-image.jpg';
 
 marked.setOptions({ gfm: true, breaks: false });
 
@@ -93,25 +104,55 @@ function fill(template, vars) {
 /* ---------- layout ---------- */
 const layout = read(path.join(SRC, 'templates', 'layout.html'));
 
-function renderPage({ title, description, nav, pathname, content, og_type = 'website', head_extra = '', structured_data }) {
+const ORGANIZATION = {
+  '@type': 'Organization',
+  '@id': `${SITE_URL}/#organization`,
+  name: SITE_NAME,
+  url: SITE_URL,
+  logo: { '@type': 'ImageObject', url: `${SITE_URL}/images/sbc-logo-512.png`, width: 512, height: 512 },
+  founder: { '@type': 'Person', name: 'Becky' },
+  description: "I'm Becky. I share stories of loss, love, and faith to help others see God's movement in their pain. One forward step at a time.",
+};
+
+function renderPage({ title, description, nav, pathname, content, og_type = 'website', og_image = OG_IMAGE, head_extra = '', body_extra = '', structured_data }) {
   const active = {};
-  ['home', 'stories', 'about', 'fingerprints', 'newsletter', 'contact'].forEach((n) => {
+  ['home', 'stories', 'about', 'fingerprints', 'resources', 'newsletter', 'contact'].forEach((n) => {
     active[`active_${n}`] = nav === n ? 'aria-current="page"' : '';
   });
-  const sd = structured_data || {
-    '@context': 'https://schema.org',
-    '@type': 'WebSite',
-    name: 'Strong. Brave. Courageous.',
-    url: SITE_URL,
-    description: 'A faith-rooted community by Becky. Real stories. Braver tomorrows.',
-  };
+  const sd = structured_data || (nav === 'home'
+    ? {
+        '@context': 'https://schema.org',
+        '@graph': [
+          ORGANIZATION,
+          {
+            '@type': 'WebSite',
+            '@id': `${SITE_URL}/#website`,
+            name: SITE_NAME,
+            url: SITE_URL,
+            description,
+            publisher: { '@id': `${SITE_URL}/#organization` },
+            potentialAction: { '@type': 'SearchAction', target: { '@type': 'EntryPoint', urlTemplate: `${SITE_URL}/stories.html?q={search_term_string}` }, 'query-input': 'required name=search_term_string' },
+          },
+        ],
+      }
+    : {
+        '@context': 'https://schema.org',
+        '@type': 'WebPage',
+        name: title,
+        url: `${SITE_URL}${pathname}`,
+        description,
+        isPartOf: { '@id': `${SITE_URL}/#website` },
+        publisher: { '@id': `${SITE_URL}/#organization` },
+      });
   return fill(layout, {
     title: escapeHtml(title),
     description: escapeHtml(description),
     site_url: SITE_URL,
     path: pathname,
     og_type,
+    og_image,
     head_extra,
+    body_extra,
     structured_data: JSON.stringify(sd),
     content,
     year: String(new Date().getFullYear()),
@@ -138,7 +179,7 @@ const comments = loadCollection('comments')
   .sort((a, b) => new Date(a.data.date) - new Date(b.data.date));
 
 const pageContent = {};
-['about', 'newsletter', 'contact'].forEach((n) => {
+['about', 'newsletter', 'contact', 'resources'].forEach((n) => {
   const p = path.join(CONTENT, 'pages', `${n}.md`);
   pageContent[n] = exists(p) ? parseFrontMatter(read(p)) : { data: {}, body: '' };
 });
@@ -177,11 +218,19 @@ function storyCard(s) {
 }
 
 /* ---------- static pages ---------- */
+const GLOBAL_VARS = {
+  algolia_app_id: ALGOLIA.appId,
+  algolia_search_key: ALGOLIA.searchKey,
+  algolia_index: ALGOLIA.index,
+  site_url: SITE_URL,
+};
+
 function buildSimple(name, vars = {}) {
   const { data, body } = loadPageTemplate(name);
+  const all = { ...GLOBAL_VARS, ...vars };
   const html = renderPage({
     title: data.title, description: data.description, nav: data.nav, pathname: data.path,
-    head_extra: data.head_extra || '', content: fill(body, vars),
+    head_extra: fill(data.head_extra || '', all), body_extra: fill(data.body_extra || '', all), content: fill(body, all),
   });
   write(name === 'index' ? 'index.html' : `${name}.html`, html);
 }
@@ -205,8 +254,26 @@ buildSimple('stories', {
   });
 }
 
-// Newsletter
+// Newsletter (hidden from nav until Jan 1, 2027 — page still builds)
 buildSimple('newsletter', { newsletter_body: renderBody(pageContent.newsletter.body) });
+
+// Resources
+{
+  const body = (pageContent.resources.body || '').trim();
+  const placeholderCats = [
+    ['Books', 'Titles that met Becky where she was.'],
+    ['Music', 'Songs for the hard days and the hopeful ones.'],
+    ['Podcasts & Articles', 'Voices worth listening to.'],
+    ['Professional Help', 'Counselors, therapists, and support lines.'],
+  ];
+  const resources_body = isPlaceholder(body) || !body
+    ? `<div class="ph" style="max-width:760px;margin:0 auto;">${escapeHtml(body || '[RESOURCES — Becky to provide curated list.]')}</div>
+    <div class="resource-cats">
+      ${placeholderCats.map(([t, n]) => `<div class="resource-cat"><h2>${t}</h2><p class="cat-note">${n}</p><ul><li><a href="#">Resource title</a><small>One-line description of why it helped.</small></li><li><a href="#">Resource title</a><small>One-line description.</small></li></ul></div>`).join('\n')}
+    </div>`
+    : `<div class="resources-content narrow" style="margin:0 auto;">${renderBody(body)}</div>`;
+  buildSimple('resources', { resources_body });
+}
 
 // Contact
 {
@@ -279,12 +346,19 @@ buildSimple('fingerprints', {
       structured_data: {
         '@context': 'https://schema.org',
         '@type': 'BlogPosting',
+        '@id': `${SITE_URL}${vars.story_path}`,
         headline: s.data.title,
         datePublished: isoDate(s.data.date),
-        author: { '@type': 'Person', name: 'Becky' },
+        dateModified: isoDate(s.data.date),
+        author: { '@type': 'Person', name: 'Becky', url: `${SITE_URL}/about.html` },
+        publisher: { '@id': `${SITE_URL}/#organization` },
         description: s.data.excerpt || '',
+        image: `${SITE_URL}${OG_IMAGE}`,
+        mainEntityOfPage: { '@type': 'WebPage', '@id': `${SITE_URL}${vars.story_path}` },
         url: `${SITE_URL}${vars.story_path}`,
         articleSection: cat,
+        keywords: [cat, 'grief', 'faith', 'healing', 'hope'].join(', '),
+        isPartOf: { '@id': `${SITE_URL}/#website` },
       },
     });
     write(`stories/${s.slug}.html`, html);
@@ -293,10 +367,71 @@ buildSimple('fingerprints', {
 
 /* ---------- sitemap + robots ---------- */
 {
-  const urls = ['/', '/stories.html', '/about.html', '/fingerprints.html', '/newsletter.html', '/contact.html',
-    ...stories.map((s) => `/stories/${s.slug}.html`)];
-  write('sitemap.xml', `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.map((u) => `  <url><loc>${SITE_URL}${u}</loc></url>`).join('\n')}\n</urlset>\n`);
-  write('robots.txt', `User-agent: *\nAllow: /\nDisallow: /admin/\nSitemap: ${SITE_URL}/sitemap.xml\n`);
+  const today = new Date().toISOString().slice(0, 10);
+  const pages = [
+    ['/', 'weekly', '1.0', today], ['/stories.html', 'weekly', '0.9', stories[0] ? isoDate(stories[0].data.date) : today],
+    ['/about.html', 'monthly', '0.7', today], ['/fingerprints.html', 'weekly', '0.6', today],
+    ['/resources.html', 'monthly', '0.6', today], ['/contact.html', 'yearly', '0.4', today],
+    ...stories.map((s) => [`/stories/${s.slug}.html`, 'yearly', '0.8', isoDate(s.data.date)]),
+  ];
+  // /newsletter.html is intentionally left out until it returns to the menu (Jan 1, 2027).
+  write('sitemap.xml', `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${pages.map(([u, f, p, d]) => `  <url><loc>${SITE_URL}${u}</loc><lastmod>${d}</lastmod><changefreq>${f}</changefreq><priority>${p}</priority></url>`).join('\n')}\n</urlset>\n`);
+  write('robots.txt', `User-agent: *\nAllow: /\nDisallow: /admin/\nDisallow: /thanks.html\nSitemap: ${SITE_URL}/sitemap.xml\n`);
+}
+
+/* ---------- RSS feed (Mailchimp "RSS to email" reads this) ---------- */
+{
+  const cdata = (s) => `<![CDATA[${String(s || '').replace(/]]>/g, ']]]]><![CDATA[>')}]]>`;
+  const rfc822 = (d) => new Date(String(d).length === 10 ? `${d}T12:00:00Z` : d).toUTCString();
+  const items = stories.filter((s) => !isPlaceholder(s.body) && !String(s.data.title || '').startsWith('[')).slice(0, 20).map((s) => {
+    const url = `${SITE_URL}/stories/${s.slug}.html`;
+    const cat = CATEGORIES.includes(s.data.category) ? s.data.category : 'Healing';
+    return `    <item>
+      <title>${cdata(s.data.title)}</title>
+      <link>${url}</link>
+      <guid isPermaLink="true">${url}</guid>
+      <pubDate>${rfc822(s.data.date)}</pubDate>
+      <category>${cdata(cat)}</category>
+      <dc:creator>Becky</dc:creator>
+      <description>${cdata(s.data.excerpt || '')}</description>
+      <content:encoded>${cdata(renderBody(s.body))}</content:encoded>
+    </item>`;
+  });
+  write('feed.xml', `<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:dc="http://purl.org/dc/elements/1.1/">
+  <channel>
+    <title>${SITE_NAME} — Stories</title>
+    <link>${SITE_URL}/stories.html</link>
+    <atom:link href="${SITE_URL}/feed.xml" rel="self" type="application/rss+xml"/>
+    <description>Stories of loss, love, and faith by Becky. One forward step at a time.</description>
+    <language>en-us</language>
+    <image><url>${SITE_URL}/images/sbc-logo-512.png</url><title>${SITE_NAME}</title><link>${SITE_URL}</link></image>
+    <lastBuildDate>${new Date().toUTCString()}</lastBuildDate>
+${items.join('\n')}
+  </channel>
+</rss>
+`);
+}
+
+/* ---------- search index (pushed to Algolia by scripts/algolia-index.js) ---------- */
+{
+  const plain = (md) => marked.parse(md || '').replace(/<[^>]+>/g, ' ')
+    .replace(/&#39;/g, '\u2019').replace(/&quot;/g, '"').replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&nbsp;/g, ' ')
+    .replace(/&[a-z#0-9]+;/g, ' ').replace(/\s+/g, ' ').trim();
+  const records = stories.map((s) => {
+    const cat = CATEGORIES.includes(s.data.category) ? s.data.category : 'Healing';
+    return {
+      objectID: s.slug,
+      title: s.data.title,
+      excerpt: s.data.excerpt || '',
+      body: plain(s.body).slice(0, 9000),
+      category: cat,
+      date: isoDate(s.data.date),
+      date_ts: Math.floor(new Date(`${isoDate(s.data.date)}T12:00:00Z`).getTime() / 1000),
+      url: `/stories/${s.slug}.html`,
+    };
+  });
+  write('search-index.json', JSON.stringify(records));
 }
 
 console.log(`Built ${stories.length} stor${stories.length === 1 ? 'y' : 'ies'}, ${fingerprints.length} fingerprint(s), ${comments.length} approved comment(s) → dist/`);

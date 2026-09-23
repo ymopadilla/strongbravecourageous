@@ -7,8 +7,11 @@ Static site for Becky, built by Digital Navigation Solutions. Hosted on Netlify.
 | Path | What it is |
 |---|---|
 | `src/templates/layout.html` | Site shell: head/meta, header + nav, footer (memorial line, Philippians 1:25, footer signup) |
-| `src/pages/*.html` | Page bodies: `index`, `stories`, `story-template`, `about`, `fingerprints`, `newsletter`, `contact`, `thanks`, `404` |
-| `src/css/styles.css` | All styling — brand palette, Plus Jakarta Sans / Inter, mobile-first |
+| `src/pages/*.html` | Page bodies: `index`, `stories`, `story-template`, `about`, `fingerprints`, `resources`, `newsletter` (hidden from nav until Jan 1, 2027), `contact`, `thanks`, `404` |
+| `src/css/styles.css` | All styling — Sept 2026 brand palette (brown / rose / blue on cream), Lora + Plus Jakarta Sans, mobile-first |
+| `src/js/search.js` + `src/js/vendor/` | Algolia InstantSearch on the Stories page (self-hosted libraries, no CDN) |
+| `scripts/algolia-index.js` | Pushes stories to the Algolia index after every Netlify build |
+| `netlify/functions/submission-created.js` | Adds newsletter signups (Netlify Forms) to the Mailchimp audience |
 | `src/js/main.js` | Mobile menu + story category filters (no libraries) |
 | `src/images/` + `src/*.png|ico` | Approved logo files exactly as provided (favicons included) |
 | `content/` | Everything Becky edits: stories, fingerprints, comments, page text |
@@ -53,11 +56,34 @@ Netlify Forms is the inbox; Decap CMS is the publisher. Nothing appears on the s
 - **Comments** — same pattern: form → Netlify Forms → Becky adds it under CMS → Comments, picks the story, ticks **Approved**, publishes. Approved comments show under the story in Inter with a soft background box; the story itself is in Plus Jakarta Sans.
 - **Spam** — every form has a honeypot field. Netlify also filters with Akismet.
 
-## Newsletter service
+## Environment variables (Netlify → Site configuration → Environment variables)
 
-Both signup forms (Newsletter page and footer) currently land in Netlify Forms. When Mailchimp is chosen:
-- **Option A (simplest):** in `src/pages/newsletter.html` and the footer form in `layout.html`, replace `action="/thanks.html"` and the Netlify attributes with the Mailchimp embedded-form `action` URL and field name (`EMAIL`).
-- **Option B (keep Netlify Forms):** connect Netlify Forms → Mailchimp with Zapier or Make so each submission becomes a subscriber.
+| Name | Used by | Notes |
+|---|---|---|
+| `ALGOLIA_WRITE_KEY` | `scripts/algolia-index.js` (build) | Algolia **Write** API key. Never commit it. Without it the build still succeeds; the index just isn't refreshed. |
+| `MAILCHIMP_API_KEY` | `netlify/functions/submission-created.js` | Mailchimp API key (ends in `-us18`). |
+| `MAILCHIMP_AUDIENCE_ID` | same | ID of the "Story Subscribers" audience (Mailchimp → Audience → Settings → *Audience name and defaults*). |
+| `MAILCHIMP_DOUBLE_OPT_IN` | same, optional | `true` sends a confirmation email first. Default: subscribe immediately. |
+
+The Algolia Application ID and **Search-only** key are in `build.js` on purpose — the search key is public by design.
+
+## Search (Algolia)
+
+Flow: Becky publishes in Decap CMS → commit → Netlify runs `npm run build && node scripts/algolia-index.js` → `dist/search-index.json` is pushed to the `stories` index (settings + a clear-and-replace batch, so unpublished stories disappear too). The Stories page (`src/js/search.js`) searches title, excerpt, body, and category; filters by category; and filters by date range (`date_ts`). If Algolia is unreachable, the page still shows every story with the plain category buttons.
+
+## Newsletter (Mailchimp)
+
+- **Signup:** both forms (Newsletter page + footer) still post to Netlify Forms. The `submission-created` function fires on every submission and, for `newsletter` / `newsletter-footer`, upserts the email into the Mailchimp audience (tagged "Website footer" or "Newsletter page"). Other forms are ignored.
+- **Auto-email on publish:** `dist/feed.xml` is a standard RSS 2.0 feed of published stories (placeholder posts are skipped). In Mailchimp, create an **RSS campaign** (Create → Email → Automations / "Share blog updates") pointing at `https://strongbravecourageous.com/feed.xml`, sent daily; Mailchimp emails subscribers only when a new item appears. The branded email template is in `mailchimp/rss-email-template.html`.
+- **Newsletter page:** hidden from the menu until **January 1, 2027** (uncomment the two lines in `src/templates/layout.html`). `/newsletter.html` still works when shared and is `noindex` until then.
+
+## Resources page
+
+`content/pages/resources.md` (Site Pages → Resources page in the CMS). Until Becky fills it in, the page shows the placeholder plus four example category cards. The disclaimer / "Find a Counselor" / liability notice is fixed just under the site header and scrolls with the visitor.
+
+## Brand (Sept 2026 identity guide)
+
+Warm earth brown `#6B4733` (headings, buttons, dividers), story rose `#C85F69` (accents, links, tags), mountain blue `#648FA8` (quiet panels), cream `#F7F1E3`, charcoal `#1F2937`. Lora for headings, Plus Jakarta Sans for nav/body/buttons. Logo = the supplied circular illustration (PNG master `src/images/sbc-logo-1200.png`; sizes 16–512 + favicon + `og-image.jpg` generated from it). The brand guide asks for a simplified icon for favicons and a vector master — both still to come from Becky.
 
 ## Copy rules honored in this build
 
