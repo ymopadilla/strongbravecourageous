@@ -33,13 +33,13 @@ const CATEGORIES = ['Grief', 'Healing', 'Faith', 'Perseverance', 'Humor'];
 /* Bible translation for every BibleGateway link (chips, story text, /scripture.html). Change in lib/scripture.js. */
 const BIBLE_VERSION = scripture.BIBLE_VERSION;
 
-/* Resource types → tab id, tab label, secondary-line label, and empty-state wording. Order = tab order. */
+/* Resource types → tab id, tab label, secondary-line label, and empty-state wording. Order = tab order.
+   Professional help (Find a Counselor + 988) is a fixed block under the tabs, not a type. */
 const RESOURCE_TYPES = [
   { type: 'Book', id: 'books', label: 'Books', by: 'Author', empty: 'books that are helping' },
   { type: 'Music', id: 'music', label: 'Music', by: 'Artist', empty: 'music that is helping' },
   { type: 'Podcast', id: 'podcasts', label: 'Podcasts', by: 'Show', empty: 'podcasts that are helping' },
   { type: 'Publication', id: 'publications', label: 'Publications', by: 'Publication', empty: 'publications that are helping' },
-  { type: 'Professional Help', id: 'professional-help', label: 'Professional Help', by: 'Organization', empty: 'counselors and support so no one has to carry this alone' },
 ];
 const ARCHIVE_YEARS = 10; // Podcasts + Publications older than this collapse into "Older"
 
@@ -442,7 +442,6 @@ buildSimple('newsletter', { newsletter_body: renderBody(pageContent.newsletter.b
       switch (t.id) {
         case 'books':
         case 'music':
-        case 'professional-help':
           body = list([...items].sort(byTitle), (r) => escapeHtml(r.by));
           break;
         case 'podcasts': {
@@ -458,17 +457,8 @@ buildSimple('newsletter', { newsletter_body: renderBody(pageContent.newsletter.b
       }
     }
     const empty = `<div class="ph res-empty">Becky is gathering ${t.empty}. Check back soon.</div>`;
-    const help = t.id === 'professional-help' ? `
-        <div class="help-row">
-          <a class="btn btn-primary" href="https://www.psychologytoday.com/us/therapists" target="_blank" rel="noopener">Find a Counselor or Psychologist</a>
-        </div>
-        <div class="quiet-panel help-988">
-          <p class="eyebrow blue">Need someone to talk to?</p>
-          <p>If today feels heavy, you don&rsquo;t have to carry it alone. The <strong>988 Suicide &amp; Crisis Lifeline</strong> is free, confidential, and open 24/7 &mdash; call or text <a href="tel:988"><strong>988</strong></a>, or visit <a href="https://988lifeline.org/" target="_blank" rel="noopener">988lifeline.org</a>. For ongoing support, a licensed counselor can walk with you.</p>
-        </div>` : '';
     return `
     <section class="res-panel" id="${t.id}" role="tabpanel" aria-labelledby="tab-${t.id}"${t.id === 'books' ? '' : ' hidden'}>
-      ${help}
       ${items.length ? `<div class="res-filter"><label for="filter-${t.id}" class="visually-hidden">Filter ${t.label}</label><input type="search" id="filter-${t.id}" placeholder="Filter this list…" autocomplete="off"></div>` : ''}
       <div class="res-body">${body}</div>
       ${items.length ? '<p class="res-nomatch muted small" hidden>Nothing here matches. Try another word.</p>' : empty}

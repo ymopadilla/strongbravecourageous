@@ -93,7 +93,7 @@ Output: verse chips on cards and under story titles (`.verse-chip`, brown outlin
 
 ## Resources
 
-A CMS collection, `content/resources/*.md`, one file per item (Decap: **Resources** → New Resource; slug `{{type}}-{{slug}}`). Fields: `type` (Book · Music · Podcast · Publication · Professional Help), `title`, `by` (author / artist / show / publication / organization), `date` (optional; drives podcast + publication ordering and the archive), `link`, `note`, `show` (boolean, default true — hide without deleting).
+A CMS collection, `content/resources/*.md`, one file per item (Decap: **Resources** → New Resource; slug `{{type}}-{{slug}}`). Fields: `type` (Book · Music · Podcast · Publication), `title`, `by` (author / artist / show / publication / organization), `date` (optional; drives podcast + publication ordering and the archive), `link`, `note`, `show` (boolean, default true — hide without deleting).
 
 `build.js` does all ordering (`RESOURCE_TYPES`, `ARCHIVE_YEARS`); Becky never orders by hand:
 
@@ -103,9 +103,8 @@ A CMS collection, `content/resources/*.md`, one file per item (Decap: **Resource
 | Music | none | song title A–Z; artist on the secondary line |
 | Podcasts | by show, shows A–Z | episodes newest first within a show; date shown |
 | Publications | by publication, A–Z | titles A–Z within a publication; date shown |
-| Professional Help | none | title A–Z (plus the fixed Psychology Today button and 988 panel) |
 
-Podcasts and Publications dated more than `ARCHIVE_YEARS` (10) years before the build date fold into a collapsed "Older" group at the bottom of that tab; Books and Music never archive. Tabs are buttons with the active tab in the URL hash (`#podcasts`); each tab has a client-side filter box (`main.js`) matching title, by-line, and note. Empty tabs show a rose placeholder. Disclaimer + liability text sit at the bottom at `#disclaimers` (the footer "Disclaimers" link points there); the old sticky red notice is gone. The old `content/pages/resources.md` markdown page was removed.
+Podcasts and Publications dated more than `ARCHIVE_YEARS` (10) years before the build date fold into a collapsed "Older" group at the bottom of that tab; Books and Music never archive. The Psychology Today "Find a Counselor" button and the 988 panel are a fixed block under the tabs (`#professional-help`), not a resource type. Tabs are buttons with the active tab in the URL hash (`#podcasts`); each tab has a client-side filter box (`main.js`) matching title, by-line, and note. Empty tabs show a rose placeholder. Disclaimer + liability text sit at the bottom at `#disclaimers` (the footer "Disclaimers" link points there); the old sticky red notice is gone. The old `content/pages/resources.md` markdown page was removed.
 
 ## Brand (Sept 2026 identity guide)
 

@@ -33,7 +33,7 @@ The Stories page groups older stories by year. This year is open; earlier years 
 ## Add a resource
 Click **Resources** → **New Resource**. One entry per item. The site sorts everything for you (books and songs A–Z, podcast episodes newest first under their show, articles A–Z under their publication) — you never order anything by hand.
 
-1. **Type** — Book, Music, Podcast, Publication, or Professional Help (this picks the tab).
+1. **Type** — Book, Music, Podcast, or Publication (this picks the tab). The "Find a Counselor" button and the 988 line sit under the tabs on their own and never change.
 2. **Title** — the book, song, episode, article, or service name.
 3. **Author / Artist / Show / Publication** — who it's by. For podcasts and publications, this is also the group it's listed under.
 4. **Date** — release date. Needed for podcasts and publications (anything older than ten years folds into "Older" at the bottom of that tab).

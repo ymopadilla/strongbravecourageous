@@ -41,16 +41,16 @@ collections:
   - name: "resources"
     label: "Resources"
     label_singular: "Resource"
-    description: "One entry per item — a book, a song, a podcast episode, an article, or a place to find help. The site sorts and groups everything for you; nothing is ordered by hand."
+    description: "One entry per item — a book, a song, a podcast episode, or an article. The site sorts and groups everything for you; nothing is ordered by hand."
     folder: "content/resources"
     create: true
     slug: "{{type}}-{{slug}}"
     summary: "{{type}} · {{title}}"
     sort_by: ["type", "title"]
     fields:
-      - { label: "Type", name: "type", widget: "select", required: true, options: ["Book", "Music", "Podcast", "Publication", "Professional Help"], hint: "Which tab it belongs on." }
+      - { label: "Type", name: "type", widget: "select", required: true, options: ["Book", "Music", "Podcast", "Publication"], hint: "Which tab it belongs on." }
       - { label: "Title", name: "title", widget: "string", required: true, hint: "Book title, song title, podcast episode title, article title, or service name." }
-      - { label: "Author / Artist / Show / Publication", name: "by", widget: "string", required: false, hint: "Author (Book) · artist (Music) · show name (Podcast) · publication name (Publication) · organization (Professional Help). Podcasts and publications are grouped under this name." }
+      - { label: "Author / Artist / Show / Publication", name: "by", widget: "string", required: false, hint: "Author (Book) · artist (Music) · show name (Podcast) · publication name (Publication). Podcasts and publications are grouped under this name." }
       - { label: "Date", name: "date", widget: "datetime", required: false, format: "YYYY-MM-DD", date_format: "MMMM D, YYYY", time_format: false, hint: "Release or publication date. Needed for Podcast and Publication entries (episodes sort newest first; items older than 10 years fold into “Older”). Optional otherwise." }
       - { label: "Link", name: "link", widget: "string", required: false, hint: "Web address (URL). If given, the title becomes a link." }
       - { label: "Note", name: "note", widget: "text", required: false, hint: "One line on why it helps." }
