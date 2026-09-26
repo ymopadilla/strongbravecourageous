@@ -14,13 +14,13 @@ Everything below happens in the editor. No code, ever.
 When you publish, two things happen on their own: the story becomes searchable on the Stories page, and your email subscribers get a note with the story preview and a "Read the full story" link (sent by Mailchimp within a day).
 
 ### Categories are labels, not folders
-A story lives once in the feed, in date order, and can carry more than one label. Pick every one that's true — usually one to three.
+A story lives once in the feed, in date order, and can carry more than one label. Pick every one true of the story — usually one to three.
 
-- **Grief** — the loss itself, the ache, the days that are heavy.
+- **Grief** — the loss itself, the ache, the heavy days.
 - **Healing** — what is mending, slowly, right now.
 - **Faith** — where God shows up, what Scripture is carrying you.
 - **Perseverance** — the keep-going stories, one foot in front of the other.
-- **Humor** — the moments that made you laugh anyway.
+- **Humor** — the moments you laughed anyway.
 
 Readers can tap any label (or several) on the Stories page and see every story with that label.
 

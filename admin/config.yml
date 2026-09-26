@@ -25,7 +25,7 @@ collections:
   - name: "stories"
     label: "Stories"
     label_singular: "Story"
-    description: "Blog posts. New stories appear at the top of the Stories page once published. Categories are labels, not folders — pick every one that fits. Bible references you type (like Joshua 1:9) are found and linked automatically."
+    description: "Blog posts. New stories appear at the top of the Stories page once published. Categories are labels, not folders — pick every one fitting the story. Bible references you type (like Joshua 1:9) are found and linked automatically."
     folder: "content/stories"
     create: true
     slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
@@ -34,7 +34,7 @@ collections:
     fields:
       - { label: "Title", name: "title", widget: "string" }
       - { label: "Date published", name: "date", widget: "datetime", format: "YYYY-MM-DD", date_format: "MMMM D, YYYY", time_format: false }
-      - { label: "Categories", name: "categories", widget: "select", multiple: true, required: true, options: ["Grief", "Healing", "Faith", "Perseverance", "Humor"], default: ["Healing"], hint: "Pick every one that's true, usually one to three." }
+      - { label: "Categories", name: "categories", widget: "select", multiple: true, required: true, options: ["Grief", "Healing", "Faith", "Perseverance", "Humor"], default: ["Healing"], hint: "Pick every one true of the story, usually one to three." }
       - { label: "Excerpt", name: "excerpt", widget: "text", hint: "One or two sentences in your own words. Shows on the story card and in search." }
       - { label: "Story", name: "body", widget: "markdown", hint: "Use the image button to add photos. Paste a YouTube or Vimeo link on its own line to embed a video. Write Bible references naturally (Joshua 1:9, Ps 23, 1 Corinthians 13:4-7) — the site finds and links them." }
 
@@ -105,4 +105,4 @@ collections:
         fields:
           - { label: "Instagram URL", name: "instagram", widget: "string", required: false }
           - { label: "Facebook URL", name: "facebook", widget: "string", required: false }
-          - { label: "Note to visitors", name: "body", widget: "markdown", hint: "What people can expect when they reach out, and that resource suggestions are welcome. The contact form is the only channel — no email address is shown." }
+          - { label: "Note to visitors", name: "body", widget: "markdown", hint: "What people can expect when they reach out, and resource suggestions are welcome. The contact form is the only channel — no email address is shown." }

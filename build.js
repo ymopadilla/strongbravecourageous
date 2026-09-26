@@ -36,10 +36,10 @@ const BIBLE_VERSION = scripture.BIBLE_VERSION;
 /* Resource types → tab id, tab label, secondary-line label, and empty-state wording. Order = tab order.
    Professional help (Find a Counselor + 988) is a fixed block under the tabs, not a type. */
 const RESOURCE_TYPES = [
-  { type: 'Book', id: 'books', label: 'Books', by: 'Author', empty: 'books that are helping' },
-  { type: 'Music', id: 'music', label: 'Music', by: 'Artist', empty: 'music that is helping' },
-  { type: 'Podcast', id: 'podcasts', label: 'Podcasts', by: 'Show', empty: 'podcasts that are helping' },
-  { type: 'Publication', id: 'publications', label: 'Publications', by: 'Publication', empty: 'publications that are helping' },
+  { type: 'Book', id: 'books', label: 'Books', by: 'Author', empty: 'books helping me along the way' },
+  { type: 'Music', id: 'music', label: 'Music', by: 'Artist', empty: 'music helping me along the way' },
+  { type: 'Podcast', id: 'podcasts', label: 'Podcasts', by: 'Show', empty: 'podcasts helping me along the way' },
+  { type: 'Publication', id: 'publications', label: 'Publications', by: 'Publication', empty: 'publications helping me along the way' },
 ];
 const ARCHIVE_YEARS = 10; // Podcasts + Publications older than this collapse into "Older"
 
@@ -456,7 +456,7 @@ buildSimple('newsletter', { newsletter_body: renderBody(pageContent.newsletter.b
         }
       }
     }
-    const empty = `<div class="ph res-empty">Becky is gathering ${t.empty}. Check back soon.</div>`;
+    const empty = `<div class="ph res-empty">I'm gathering ${t.empty}. Check back soon.</div>`;
     return `
     <section class="res-panel" id="${t.id}" role="tabpanel" aria-labelledby="tab-${t.id}"${t.id === 'books' ? '' : ' hidden'}>
       ${items.length ? `<div class="res-filter"><label for="filter-${t.id}" class="visually-hidden">Filter ${t.label}</label><input type="search" id="filter-${t.id}" placeholder="Filter this list…" autocomplete="off"></div>` : ''}
