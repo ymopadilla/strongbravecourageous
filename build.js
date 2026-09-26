@@ -142,7 +142,16 @@ function fill(template, vars) {
 }
 
 /* ---------- layout ---------- */
-const layout = read(path.join(SRC, 'templates', 'layout.html'));
+/* Cache-busting: netlify.toml caches /css and /js for a year, so every build stamps a short
+   content hash onto the stylesheet and script URLs. Returning visitors always get the current files. */
+const ASSET_V = require('crypto').createHash('md5')
+  .update(['css/styles.css', 'js/main.js', 'js/search.js'].map((f) => (exists(path.join(SRC, f)) ? read(path.join(SRC, f)) : '')).join('\n'))
+  .digest('hex').slice(0, 8);
+const stampAssets = (html) => html
+  .replace(/(\/css\/styles\.css)(?=["'])/g, `$1?v=${ASSET_V}`)
+  .replace(/(\/js\/(?:main|search)\.js)(?=["'])/g, `$1?v=${ASSET_V}`);
+
+const layout = stampAssets(read(path.join(SRC, 'templates', 'layout.html')));
 
 const ORGANIZATION = {
   '@type': 'Organization',
@@ -201,7 +210,7 @@ function renderPage({ title, description, nav, pathname, content, og_type = 'web
 }
 
 function loadPageTemplate(name) {
-  const { data, body } = parseFrontMatter(read(path.join(SRC, 'pages', `${name}.html`)));
+  const { data, body } = parseFrontMatter(stampAssets(read(path.join(SRC, 'pages', `${name}.html`))));
   return { data, body };
 }
 
