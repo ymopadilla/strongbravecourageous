@@ -9,6 +9,7 @@ path: /fingerprints.html
     <p class="eyebrow">Fingerprints</p>
     <h1>Share a moment you saw God move.</h1>
     <div class="accent-row" aria-hidden="true"><i class="blue"></i><i class="rose"></i><i class="brown"></i></div>
+    <div class="ph" style="text-align:left;max-width:640px;margin:0 auto 16px;">[FINGERPRINTS &mdash; Becky to write 2&ndash;3 sentences: what a fingerprint is (a moment you saw God move), and that every submission comes to Becky first.]</div>
     <p class="lead">Real people. Real progress. A brighter tomorrow.</p>
   </div>
 </section>
@@ -16,6 +17,7 @@ path: /fingerprints.html
 <section class="section-tight">
   <div class="container narrow">
     <div class="form-box blue">
+      <p class="form-first"><strong>Becky reads every submission before it appears here.</strong></p>
       <h2>Share your moment</h2>
       <form name="fingerprint" method="POST" action="/thanks.html" data-netlify="true" netlify-honeypot="bot-field" enctype="multipart/form-data">
         <input type="hidden" name="form-name" value="fingerprint">
@@ -37,7 +39,11 @@ path: /fingerprints.html
           <label for="fp-photo">Photo (optional)</label>
           <input type="file" id="fp-photo" name="photo" accept="image/*">
         </div>
-        <p class="small muted">Becky reads every submission before it appears here.</p>
+        <fieldset class="field choice">
+          <legend>Who is this for?</legend>
+          <label class="radio"><input type="radio" name="audience" value="everyone" required> Share it with everyone (Becky reads it first)</label>
+          <label class="radio"><input type="radio" name="audience" value="becky" required> Just for Becky</label>
+        </fieldset>
         <button type="submit" class="btn btn-primary">Share your moment</button>
       </form>
     </div>
@@ -48,7 +54,7 @@ path: /fingerprints.html
   <div class="container">
     <div class="text-center">
       <p class="eyebrow">Real people. Real progress.</p>
-      <h2>Strength Through Story</h2>
+      <h2>Fingerprints from readers</h2>
       <hr class="divider short">
     </div>
     <div class="grid-3" style="margin-top:28px;">

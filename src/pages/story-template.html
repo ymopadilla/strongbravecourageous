@@ -14,8 +14,9 @@ og_type: article
           <h1>{{story_title}}</h1>
           <div class="meta">
             <time datetime="{{story_date_iso}}">{{story_date}}</time>
-            <span class="tag tag-{{story_category_slug}}">{{story_category}}</span>
+            {{story_tags}}
           </div>
+          {{story_verses}}
         </header>
 
         <div class="story-body">
@@ -56,9 +57,9 @@ og_type: article
 
       <aside class="sidebar">
         <div class="side-box cta">
-          <h3>One more step</h3>
+          <h3>One foot in front of the other</h3>
           <p class="tagline-caps" style="font-size:15px;">Grief changes you. So does hope.</p>
-          <a class="btn btn-primary" href="#footer-email">Take One More Step</a>
+          <a class="btn btn-primary" href="#footer-email">Sign up</a>
         </div>
         <div class="side-box">
           <h3>Related stories</h3>

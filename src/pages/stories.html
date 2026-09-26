@@ -1,6 +1,6 @@
 ---
 title: Real Stories of Grief, Faith & Healing | Strong. Brave. Courageous.
-description: Read stories of loss, love, and faith. Browse by topic: Grief, Healing, Faith, Perseverance.
+description: Read my stories of loss, love, and faith. Browse by topic: Grief, Healing, Faith, Perseverance, Humor — or by the Scripture they carry.
 nav: stories
 path: /stories.html
 head_extra: <link rel="preconnect" href="https://{{algolia_app_id}}-dsn.algolia.net" crossorigin>
@@ -11,24 +11,24 @@ body_extra: <script src="/js/vendor/algoliasearch-lite-4.24.0.umd.js"></script><
     <div class="text-center">
       <p class="eyebrow">Stories</p>
       <h1>Strength Through Story</h1>
-      <p class="lead" style="max-width:560px;margin:0 auto;">Real people. Real pain. Real hope. A braver tomorrow.</p>
+      <p class="lead" style="max-width:560px;margin:0 auto;">Real people. Real pain. Real hope. A brighter tomorrow.</p>
     </div>
 
-    <div class="search-panel" id="search-app" data-app-id="{{algolia_app_id}}" data-search-key="{{algolia_search_key}}" data-index="{{algolia_index}}">
+    <div class="search-panel" id="search-app" data-app-id="{{algolia_app_id}}" data-search-key="{{algolia_search_key}}" data-index="{{algolia_index}}" data-bible="{{bible_version}}">
       <form class="search-box" role="search" onsubmit="return false;">
         <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
         <label for="search-input" class="visually-hidden">Search stories</label>
-        <input type="search" id="search-input" placeholder="Search stories by keyword or topic…" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+        <input type="search" id="search-input" placeholder="Search stories by keyword, topic, or verse…" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
         <button type="button" class="search-clear" id="search-clear" aria-label="Clear search" hidden>&times;</button>
       </form>
 
+      <!-- Categories are labels, not folders. Pills are multi-select (OR); "All" clears. -->
       <div class="search-filters filters" id="category-filters" role="group" aria-label="Filter stories by category">
         <button class="filter-btn" data-filter="all" aria-pressed="true">All</button>
-        <button class="filter-btn" data-filter="grief" aria-pressed="false">Grief</button>
-        <button class="filter-btn" data-filter="healing" aria-pressed="false">Healing</button>
-        <button class="filter-btn" data-filter="faith" aria-pressed="false">Faith</button>
-        <button class="filter-btn" data-filter="perseverance" aria-pressed="false">Perseverance</button>
+        {{category_pills}}
       </div>
+
+      {{scripture_pills}}
 
       <div class="search-dates" id="date-filters" hidden>
         <label for="date-from">From <input type="date" id="date-from"></label>
@@ -39,10 +39,13 @@ body_extra: <script src="/js/vendor/algoliasearch-lite-4.24.0.umd.js"></script><
       <p class="search-stats" id="search-stats" aria-live="polite"></p>
     </div>
 
-    <div class="grid-3" id="story-grid">
-      {{story_cards}}
+    <!-- Unfiltered view: stories grouped by year (current year open, earlier years collapsed). -->
+    <div id="story-years" class="story-years">
+      {{story_years}}
     </div>
-    <p class="empty-note" id="empty-note">No stories in this category yet.</p>
+    <!-- Filtered / searched view: one flat list across all years, newest first. -->
+    <div class="grid-3" id="story-grid" hidden></div>
+    <p class="empty-note" id="empty-note">No stories match these filters yet.</p>
     <div class="search-more" id="search-more" hidden><button type="button" class="btn btn-outline" id="search-more-btn">Show more stories</button></div>
     <p class="search-note" id="search-note" hidden>Search by <a href="https://www.algolia.com/" target="_blank" rel="noopener">Algolia</a></p>
   </div>
@@ -51,10 +54,10 @@ body_extra: <script src="/js/vendor/algoliasearch-lite-4.24.0.umd.js"></script><
 <section class="section-tight">
   <div class="container narrow">
     <div class="mission-box">
-      <p class="eyebrow">One forward step</p>
+      <p class="eyebrow">One foot in front of the other</p>
       <h2>Grief Changes You. So Does Hope.</h2>
       <p>Looking for books, music, or someone to talk to? Visit the <a href="/resources.html">Resources page</a>.</p>
-      <p><a class="btn btn-primary" href="#footer-email">Take One More Step</a></p>
+      <p><a class="btn btn-primary" href="#footer-email">Sign up</a></p>
     </div>
   </div>
 </section>

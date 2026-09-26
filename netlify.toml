@@ -41,6 +41,10 @@
   to = "/stories.html"
   status = 200
 [[redirects]]
+  from = "/scripture"
+  to = "/scripture.html"
+  status = 200
+[[redirects]]
   from = "/about"
   to = "/about.html"
   status = 200

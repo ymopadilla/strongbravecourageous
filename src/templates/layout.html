@@ -44,13 +44,16 @@
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
 
+  <!-- Site-wide celebration line: the very top of every page -->
+  <div class="celebration"><div class="container">In celebration of Steve, Mason, and Josh.</div></div>
+
   <header class="site-header">
     <div class="container header-inner">
       <a class="brand" href="/" aria-label="Strong. Brave. Courageous. — Home">
-        <img src="/images/sbc-logo-128.png" alt="Strong. Brave. Courageous. logo" width="52" height="52">
+        <!-- Logo is raster art (1254px master, no vector). srcset keeps it sharp on Retina; never show it larger than 300px. -->
+        <img src="/images/sbc-logo-256.png" srcset="/images/sbc-logo-128.png 128w, /images/sbc-logo-256.png 256w" sizes="52px" alt="Strong. Brave. Courageous. logo" width="52" height="52">
         <span class="brand-text">
           <span class="brand-name">Strong. Brave. Courageous.</span>
-          <span class="brand-tag">One forward step at a time</span>
         </span>
       </a>
       <button class="nav-toggle" aria-expanded="false" aria-controls="site-nav" aria-label="Open menu"><span></span></button>
@@ -58,6 +61,7 @@
         <ul>
           <li><a href="/" {{active_home}}>Home</a></li>
           <li><a href="/stories.html" {{active_stories}}>Stories</a></li>
+          <li><a href="/scripture.html" {{active_scripture}}>Scripture</a></li>
           <li><a href="/about.html" {{active_about}}>About</a></li>
           <li><a href="/fingerprints.html" {{active_fingerprints}}>Fingerprints</a></li>
           <li><a href="/resources.html" {{active_resources}}>Resources</a></li>
@@ -79,21 +83,17 @@
       <div class="footer-grid">
         <div>
           <a class="footer-brand brand" href="/">
-            <img src="/images/sbc-logo-256.png" alt="Strong. Brave. Courageous. logo" width="72" height="72">
+            <img src="/images/sbc-logo-256.png" srcset="/images/sbc-logo-128.png 128w, /images/sbc-logo-256.png 256w" sizes="72px" alt="Strong. Brave. Courageous. logo" width="72" height="72">
             <span class="brand-text">
               <span class="brand-name">Strong. Brave. Courageous.</span>
-              <span class="brand-tag">One forward step at a time</span>
             </span>
           </a>
-          <p class="footer-scripture">
-            And having this confidence, I know that I shall abide and continue with you all for your furtherance and joy of faith;
-            <cite>Philippians 1:25</cite>
-          </p>
         </div>
         <div>
           <h4>Explore</h4>
           <ul>
             <li><a href="/stories.html">Stories</a></li>
+            <li><a href="/scripture.html">Scripture</a></li>
             <li><a href="/about.html">About</a></li>
             <li><a href="/fingerprints.html">Fingerprints</a></li>
             <li><a href="/resources.html">Resources</a></li>
@@ -102,7 +102,7 @@
           </ul>
         </div>
         <div>
-          <h4>One forward step</h4>
+          <h4>One foot in front of the other</h4>
           <form name="newsletter-footer" method="POST" action="/thanks.html" data-netlify="true" netlify-honeypot="bot-field" class="stack">
             <input type="hidden" name="form-name" value="newsletter-footer">
             <p class="hp"><label>Don’t fill this out if you’re human: <input name="bot-field"></label></p>
@@ -110,13 +110,13 @@
               <label for="footer-email" class="visually-hidden">Email address</label>
               <input type="email" id="footer-email" name="email" placeholder="Your email" required autocomplete="email">
             </div>
-            <button type="submit" class="btn btn-primary">Take One More Step</button>
+            <button type="submit" class="btn btn-primary">Sign up</button>
           </form>
         </div>
       </div>
       <div class="footer-bottom">
-        <span class="memorial">In memory of Steve, Mason, and Josh.</span>
         <span>&copy; {{year}} Strong. Brave. Courageous. &middot; A faith-rooted community by Becky</span>
+        <a class="footer-disclaimers" href="/resources.html#disclaimers">Disclaimers</a>
       </div>
     </div>
   </footer>

@@ -25,7 +25,7 @@ collections:
   - name: "stories"
     label: "Stories"
     label_singular: "Story"
-    description: "Blog posts. New stories appear at the top of the Stories page once published."
+    description: "Blog posts. New stories appear at the top of the Stories page once published. Categories are labels, not folders — pick every one that fits. Bible references you type (like Joshua 1:9) are found and linked automatically."
     folder: "content/stories"
     create: true
     slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
@@ -34,21 +34,39 @@ collections:
     fields:
       - { label: "Title", name: "title", widget: "string" }
       - { label: "Date published", name: "date", widget: "datetime", format: "YYYY-MM-DD", date_format: "MMMM D, YYYY", time_format: false }
-      - { label: "Category", name: "category", widget: "select", options: ["Grief", "Healing", "Faith", "Perseverance"], default: "Healing" }
-      - { label: "Excerpt", name: "excerpt", widget: "text", hint: "One or two sentences. Shows on the story card and in search results." }
-      - { label: "Story", name: "body", widget: "markdown", hint: "Use the image button to add photos. Paste a YouTube or Vimeo link on its own line to embed a video." }
+      - { label: "Categories", name: "categories", widget: "select", multiple: true, required: true, options: ["Grief", "Healing", "Faith", "Perseverance", "Humor"], default: ["Healing"], hint: "Pick every one that's true, usually one to three." }
+      - { label: "Excerpt", name: "excerpt", widget: "text", hint: "One or two sentences in your own words. Shows on the story card and in search." }
+      - { label: "Story", name: "body", widget: "markdown", hint: "Use the image button to add photos. Paste a YouTube or Vimeo link on its own line to embed a video. Write Bible references naturally (Joshua 1:9, Ps 23, 1 Corinthians 13:4-7) — the site finds and links them." }
+
+  - name: "resources"
+    label: "Resources"
+    label_singular: "Resource"
+    description: "One entry per item — a book, a song, a podcast episode, an article, or a place to find help. The site sorts and groups everything for you; nothing is ordered by hand."
+    folder: "content/resources"
+    create: true
+    slug: "{{type}}-{{slug}}"
+    summary: "{{type}} · {{title}}"
+    sort_by: ["type", "title"]
+    fields:
+      - { label: "Type", name: "type", widget: "select", required: true, options: ["Book", "Music", "Podcast", "Publication", "Professional Help"], hint: "Which tab it belongs on." }
+      - { label: "Title", name: "title", widget: "string", required: true, hint: "Book title, song title, podcast episode title, article title, or service name." }
+      - { label: "Author / Artist / Show / Publication", name: "by", widget: "string", required: false, hint: "Author (Book) · artist (Music) · show name (Podcast) · publication name (Publication) · organization (Professional Help). Podcasts and publications are grouped under this name." }
+      - { label: "Date", name: "date", widget: "datetime", required: false, format: "YYYY-MM-DD", date_format: "MMMM D, YYYY", time_format: false, hint: "Release or publication date. Needed for Podcast and Publication entries (episodes sort newest first; items older than 10 years fold into “Older”). Optional otherwise." }
+      - { label: "Link", name: "link", widget: "string", required: false, hint: "Web address (URL). If given, the title becomes a link." }
+      - { label: "Note", name: "note", widget: "text", required: false, hint: "One line on why it helps." }
+      - { label: "Show on site", name: "show", widget: "boolean", default: true, hint: "Turn off to hide an item without deleting it." }
 
   - name: "fingerprints"
     label: "Fingerprints"
     label_singular: "Fingerprint"
-    description: "Moments people shared. Submissions arrive in Netlify → Forms → fingerprint. Add the ones you want to publish here and tick Approved."
+    description: "Moments people shared. Submissions arrive in Netlify → Forms → fingerprint, each marked “everyone” or “becky” under Who is this for. Add the ones you want to publish here and tick Approved."
     folder: "content/fingerprints"
     create: true
     slug: "{{year}}-{{month}}-{{day}}-{{name}}"
     fields:
       - { label: "Name (as it should appear)", name: "name", widget: "string" }
       - { label: "Date", name: "date", widget: "datetime", format: "YYYY-MM-DD", time_format: false }
-      - { label: "Approved — show on the site", name: "approved", widget: "boolean", default: false }
+      - { label: "Approved — show on the site", name: "approved", widget: "boolean", default: false, hint: "Only approve moments the writer marked 'Share it with everyone'." }
       - { label: "Photo (optional)", name: "photo", widget: "image", required: false }
       - { label: "Their moment", name: "body", widget: "markdown", minimal: true }
 
@@ -68,29 +86,23 @@ collections:
 
   - name: "pages"
     label: "Site Pages"
-    description: "The words on the About, Newsletter, Resources, and Contact pages."
+    description: "The words on the About, Newsletter, and Contact pages. (Resources has its own section above.)"
     files:
       - name: "about"
         label: "About page"
         file: "content/pages/about.md"
         fields:
-          - { label: "Your photo", name: "photo", widget: "image", required: false }
+          - { label: "Your photo", name: "photo", widget: "image", required: false, hint: "Your new headshot goes here." }
           - { label: "Your story", name: "body", widget: "markdown" }
       - name: "newsletter"
         label: "Newsletter page"
         file: "content/pages/newsletter.md"
         fields:
           - { label: "About the Sunday letter", name: "body", widget: "markdown" }
-      - name: "resources"
-        label: "Resources page"
-        file: "content/pages/resources.md"
-        fields:
-          - { label: "Resources list", name: "body", widget: "markdown", hint: "Use headings for each category (Books, Music, Podcasts, Professional Help) and a bulleted list under each. Links and short descriptions welcome." }
       - name: "contact"
         label: "Contact page"
         file: "content/pages/contact.md"
         fields:
-          - { label: "Email address shown on the site", name: "email", widget: "string" }
           - { label: "Instagram URL", name: "instagram", widget: "string", required: false }
           - { label: "Facebook URL", name: "facebook", widget: "string", required: false }
-          - { label: "Note to visitors", name: "body", widget: "markdown" }
+          - { label: "Note to visitors", name: "body", widget: "markdown", hint: "What people can expect when they reach out, and that resource suggestions are welcome. The contact form is the only channel — no email address is shown." }

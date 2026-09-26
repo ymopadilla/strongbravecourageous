@@ -4,53 +4,35 @@ description: Curated books, music, articles, and counselor resources for those n
 nav: resources
 path: /resources.html
 ---
-<!-- Fixed notice: stays visible while the resource list scrolls beneath it. main.js pins it just under the site header. -->
-<div class="resources-notice" id="resources-notice" role="region" aria-label="Important notice">
-  <div class="container inner">
-    <div class="notice-row">
-      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-      <div class="grow">
-        <span class="notice-title">Disclaimer</span>
-        <p>I&rsquo;m not a licensed therapist. This is a personal space for sharing stories of faith and healing. If you&rsquo;re in crisis, call or text <a href="tel:988"><strong>988</strong></a>.</p>
-      </div>
-      <a class="find-help" href="https://www.psychologytoday.com/us/therapists" target="_blank" rel="noopener">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-        Find a Counselor or Psychologist
-      </a>
-    </div>
-    <details class="liability">
-      <summary>Liability disclaimer</summary>
-      <p>By using the resources on this page, you acknowledge that they are shared for general informational and encouragement purposes only and are not a substitute for professional medical, mental health, legal, or financial advice. Every situation is different; please consult a qualified professional about your own circumstances. Links lead to third-party websites and services I do not own or control. I am not responsible for third-party services or content, and listing a resource here is not an endorsement or a guarantee of its accuracy, safety, or suitability for you.</p>
-    </details>
-  </div>
-</div>
-
 <section>
   <div class="container narrow">
     <div class="text-center">
       <p class="eyebrow">Resources</p>
-      <h1>Things that helped along the way</h1>
+      <h1>Things that are helping along the way</h1>
       <div class="accent-row" aria-hidden="true"><i class="blue"></i><i class="rose"></i><i class="brown"></i></div>
-      <p class="lead">Books, music, podcasts, and people who can help &mdash; gathered one forward step at a time.</p>
+      <p class="lead">Books, music, podcasts, and people who can help &mdash; gathered one foot in front of the other.</p>
+      <p class="small muted crisis-line"><strong>Companion, not a clinician.</strong> If you&rsquo;re in crisis, call or text <a href="tel:988">988</a>.</p>
     </div>
   </div>
 </section>
 
 <section class="section-tight">
-  <div class="container">
-    {{resources_body}}
+  <div class="container narrow">
+    <!-- Tabs: state lives in the URL hash (#podcasts) so each tab is linkable. main.js wires them. -->
+    <div class="res-tabs" role="tablist" aria-label="Resource types" id="res-tabs">
+      {{resource_tabs}}
+    </div>
+    {{resource_panels}}
+    <p class="res-suggest muted">Have something to add? Send it through the <a href="/contact.html">Contact form</a> and I&rsquo;ll take a look.</p>
   </div>
 </section>
 
 <section class="section-tight">
   <div class="container narrow">
-    <div class="quiet-panel text-center">
-      <p class="eyebrow blue">Need someone to talk to?</p>
-      <p style="max-width:560px;margin:0 auto 16px;">If today feels heavy, you don&rsquo;t have to carry it alone. The <strong>988 Suicide &amp; Crisis Lifeline</strong> is free, confidential, and open 24/7 &mdash; call or text <a href="tel:988"><strong>988</strong></a>. For ongoing support, a licensed counselor can walk with you.</p>
-      <div class="btn-row">
-        <a class="btn btn-primary" href="https://www.psychologytoday.com/us/therapists" target="_blank" rel="noopener">Find a Counselor</a>
-        <a class="btn btn-outline" href="https://988lifeline.org/" target="_blank" rel="noopener">988lifeline.org</a>
-      </div>
+    <div class="disclaimers" id="disclaimers">
+      <h2>Disclaimers</h2>
+      <p>I&rsquo;m not a licensed therapist. This is a personal space for sharing stories of faith and healing. If you&rsquo;re in crisis, call or text <a href="tel:988"><strong>988</strong></a>.</p>
+      <p>By using the resources on this page, you acknowledge that they are shared for general informational and encouragement purposes only and are not a substitute for professional medical, mental health, legal, or financial advice. Every situation is different; please consult a qualified professional about your own circumstances. Links lead to third-party websites and services I do not own or control. I am not responsible for third-party services or content, and listing a resource here is not an endorsement or a guarantee of its accuracy, safety, or suitability for you.</p>
     </div>
   </div>
 </section>

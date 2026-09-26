@@ -33,8 +33,8 @@ const file = path.join(process.env.DIST_DIR ? path.resolve(process.env.DIST_DIR)
 
   // 1) Index settings (idempotent)
   await call(`${base}/settings`, 'PUT', {
-    searchableAttributes: ['title', 'excerpt', 'body', 'category'],
-    attributesForFaceting: ['category'],
+    searchableAttributes: ['title', 'excerpt', 'scriptures', 'scripture_books', 'categories', 'body'],
+    attributesForFaceting: ['categories', 'scripture_books'],
     numericAttributesForFiltering: ['date_ts'],
     attributesToSnippet: ['body:30'],
     attributesToHighlight: ['title', 'excerpt'],

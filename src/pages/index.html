@@ -1,32 +1,34 @@
 ---
 title: Strong. Brave. Courageous. — Stories of Faith, Loss & Healing
-description: I'm Becky. I share stories of loss, love, and faith to help others see God's movement in their pain. One forward step at a time.
+description: I'm Becky. I share stories of loss, love, and faith to help others see God's movement in their pain. One foot in front of the other.
 nav: home
 path: /
 head_extra: <script src="https://identity.netlify.com/v1/netlify-identity-widget.js" defer></script><script>window.addEventListener('DOMContentLoaded',function(){if(window.netlifyIdentity){window.netlifyIdentity.on('init',function(u){if(!u){window.netlifyIdentity.on('login',function(){document.location.href='/admin/';});}});}});</script>
 ---
 <section class="hero">
   <div class="container">
-    <img class="hero-logo" src="/images/sbc-logo-512.png" alt="Strong. Brave. Courageous. Blog — a woman sits on a rock looking out over mountains and a winding river at sunrise, beside a wooden cross and wildflowers" width="280" height="280">
+    <!-- Logo is raster art (1254px master). srcset keeps it sharp on Retina; never display it larger than 300px. -->
+    <img class="hero-logo" src="/images/sbc-logo-512.png" srcset="/images/sbc-logo-512.png 512w, /images/sbc-logo-1200.png 1200w" sizes="(max-width: 600px) 64vw, 280px" alt="Strong. Brave. Courageous. Blog — a woman sits on a rock looking out over mountains and a winding river at sunrise, beside a wooden cross and wildflowers" width="280" height="280">
     <p class="eyebrow">Strong. Brave. Courageous.</p>
+    <p class="sub">One foot in front of the other.</p>
+    <p class="hero-cta"><a class="btn btn-primary btn-lg" href="/stories.html">Read the Stories</a></p>
+
+    <blockquote class="scripture-block">
+      <p>Have I not commanded you? Be strong and courageous. Do not be afraid; do not be discouraged, for the L<span class="sc">ord</span> your God will be with you wherever you go.</p>
+      <cite><a href="{{joshua_url}}" target="_blank" rel="noopener">Joshua 1:9 ({{bible_version}})</a></cite>
+    </blockquote>
+
     <h1 class="intro">I&rsquo;m Becky. I share my stories of loss, love, and faith to help others see God&rsquo;s movement in their pain.</h1>
-    <p class="sub">One forward step at a time.</p>
-    <hr class="divider short">
-    <p class="welcome">Stories of faith, healing, and hope&mdash;whatever your faith journey. Stories have power for all of us.</p>
-    <div class="btn-row">
-      <a class="btn btn-primary" href="/stories.html">Read Becky&rsquo;s Stories</a>
-      <a class="btn btn-outline" href="/about.html">Meet Becky</a>
-    </div>
   </div>
 </section>
 
 <section class="section-tight">
   <div class="container narrow">
     <div class="mission-box">
-      <p class="eyebrow">Our why</p>
+      <p class="eyebrow">My why</p>
       <h2>A Faith-Rooted Community by Becky</h2>
       <div class="accent-row" aria-hidden="true"><i class="blue"></i><i class="rose"></i><i class="brown"></i></div>
-      <p class="why">Strong. Brave. Courageous. exists to bring hope through real stories — honoring pain, celebrating healing, and reminding people that a braver tomorrow is possible.</p>
+      <p class="why">Strong. Brave. Courageous. exists to bring hope through real stories — honoring pain, celebrating healing, and reminding people that a brighter tomorrow is possible.</p>
       <div class="word-strip" aria-label="People, Stories, Hope"><span>People</span><span>Stories</span><span>Hope</span></div>
     </div>
   </div>
@@ -36,9 +38,9 @@ head_extra: <script src="https://identity.netlify.com/v1/netlify-identity-widget
   <div class="container narrow hope-block">
     <div class="line-set" aria-hidden="true"><i class="blue"></i><i class="sage"></i><i class="red"></i><i class="gold"></i></div>
     <h2>Grief Changes You. So Does Hope.</h2>
-    <p class="pullquote" style="text-align:left; display:inline-block;">Stories have power. People have purpose. Braver tomorrows are possible.</p>
+    <p class="pullquote" style="text-align:left; display:inline-block;">Stories have power. People have purpose. Brighter tomorrows are possible.</p>
     <p class="eyebrow brown">Strength through story</p>
     <p class="lead">Real people. Real progress. A brighter tomorrow.</p>
-    <p><a class="btn btn-primary" href="/stories.html">Read Becky&rsquo;s Stories</a></p>
+    <p><a class="btn btn-primary" href="/stories.html">Read the Stories</a></p>
   </div>
 </section>

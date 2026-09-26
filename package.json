@@ -7,7 +7,8 @@
     "build": "node build.js",
     "serve": "node build.js && npx --yes serve dist",
     "index": "node scripts/algolia-index.js",
-    "build:index": "node build.js && node scripts/algolia-index.js"
+    "build:index": "node build.js && node scripts/algolia-index.js",
+    "build:qa": "QA_FIXTURES=1 node build.js"
   },
   "dependencies": {
     "marked": "^12.0.0"

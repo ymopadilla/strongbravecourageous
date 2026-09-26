@@ -3,26 +3,45 @@
   Strong. Brave. Courageous. — site builder
   -------------------------------------------------
   Plain Node script (no framework). Reads:
-    src/templates/layout.html   – site shell (header, nav, footer)
+    src/templates/layout.html   – site shell (celebration line, header, nav, footer)
     src/pages/*.html            – page bodies with a small front-matter block
     content/stories/*.md        – blog posts written in Decap CMS
+    content/resources/*.md      – one file per resource (book, song, podcast episode, article, service)
     content/fingerprints/*.md   – approved Fingerprints submissions
     content/comments/*.md       – approved story comments
     content/pages/*.md          – About / Newsletter / Contact text
   Writes everything to dist/ (the folder Netlify publishes).
 
   Run:  npm run build      (Netlify runs this automatically on every publish)
+        QA_FIXTURES=1 npm run build   also includes qa/fixtures/** (test stories + resources)
 */
 const fs = require('fs');
 const path = require('path');
 const { marked } = require('marked');
+const scripture = require('./lib/scripture');
 
 const ROOT = __dirname;
 const SRC = path.join(ROOT, 'src');
 const CONTENT = path.join(ROOT, 'content');
+const FIXTURES = process.env.QA_FIXTURES ? path.join(ROOT, 'qa', 'fixtures') : null;
 const DIST = process.env.DIST_DIR ? path.resolve(process.env.DIST_DIR) : path.join(ROOT, 'dist');
 const SITE_URL = (process.env.URL || 'https://strongbravecourageous.com').replace(/\/$/, '');
-const CATEGORIES = ['Grief', 'Healing', 'Faith', 'Perseverance'];
+
+/* Story categories are labels, not folders: a story can carry several. Order here = order of pills/tags. */
+const CATEGORIES = ['Grief', 'Healing', 'Faith', 'Perseverance', 'Humor'];
+
+/* Bible translation for every BibleGateway link (chips, story text, /scripture.html). Change in lib/scripture.js. */
+const BIBLE_VERSION = scripture.BIBLE_VERSION;
+
+/* Resource types → tab id, tab label, secondary-line label, and empty-state wording. Order = tab order. */
+const RESOURCE_TYPES = [
+  { type: 'Book', id: 'books', label: 'Books', by: 'Author', empty: 'books that are helping' },
+  { type: 'Music', id: 'music', label: 'Music', by: 'Artist', empty: 'music that is helping' },
+  { type: 'Podcast', id: 'podcasts', label: 'Podcasts', by: 'Show', empty: 'podcasts that are helping' },
+  { type: 'Publication', id: 'publications', label: 'Publications', by: 'Publication', empty: 'publications that are helping' },
+  { type: 'Professional Help', id: 'professional-help', label: 'Professional Help', by: 'Organization', empty: 'professional help that is helping' },
+];
+const ARCHIVE_YEARS = 10; // Podcasts + Publications older than this collapse into "Older"
 
 /* Algolia search (Stories page). The Search API key is public by design (search-only).
    The Write API key is NEVER stored here — it lives in Netlify → Environment variables as ALGOLIA_WRITE_KEY
@@ -33,7 +52,10 @@ const ALGOLIA = {
   index: process.env.ALGOLIA_INDEX || 'stories',
 };
 const SITE_NAME = 'Strong. Brave. Courageous.';
+const TAGLINE = 'One foot in front of the other.';
 const OG_IMAGE = '/images/og-image.jpg';
+const BUILD_DATE = new Date();
+const CURRENT_YEAR = BUILD_DATE.getFullYear();
 
 marked.setOptions({ gfm: true, breaks: false });
 
@@ -44,19 +66,31 @@ const ensureDir = (p) => fs.mkdirSync(p, { recursive: true });
 const write = (rel, html) => { const out = path.join(DIST, rel); ensureDir(path.dirname(out)); fs.writeFileSync(out, html); };
 const escapeHtml = (s = '') => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 const slugify = (s) => String(s).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+const unquote = (v) => ((v.startsWith('"') && v.endsWith('"')) || (v.startsWith("'") && v.endsWith("'"))) ? v.slice(1, -1) : v;
+const coerce = (v) => (v === 'true' ? true : v === 'false' ? false : v);
 
+/* Minimal YAML front matter: scalars, `key: [a, b]`, and block lists (`key:` + indented `- item` lines) —
+   the shapes Decap CMS writes for string, boolean, datetime, and select widgets (single or multiple). */
 function parseFrontMatter(text) {
   const m = text.match(/^---\r?\n([\s\S]*?)\r?\n?---\r?\n?([\s\S]*)$/);
   if (!m) return { data: {}, body: text };
   const data = {};
-  m[1].split(/\r?\n/).forEach((line) => {
-    const kv = line.match(/^([A-Za-z0-9_-]+):\s*(.*)$/);
-    if (!kv) return;
+  const lines = m[1].split(/\r?\n/);
+  for (let i = 0; i < lines.length; i++) {
+    const kv = lines[i].match(/^([A-Za-z0-9_-]+):\s*(.*)$/);
+    if (!kv) continue;
+    const key = kv[1];
     let v = kv[2].trim();
-    if ((v.startsWith('"') && v.endsWith('"')) || (v.startsWith("'") && v.endsWith("'"))) v = v.slice(1, -1);
-    if (v === 'true') v = true; else if (v === 'false') v = false;
-    data[kv[1]] = v;
-  });
+    if (v === '' && lines[i + 1] && /^\s+-\s/.test(lines[i + 1])) {
+      const list = [];
+      while (lines[i + 1] && /^\s+-\s/.test(lines[i + 1])) { list.push(coerce(unquote(lines[++i].replace(/^\s+-\s*/, '').trim()))); }
+      data[key] = list;
+    } else if (v.startsWith('[') && v.endsWith(']')) {
+      data[key] = v.slice(1, -1).split(',').map((s) => coerce(unquote(s.trim()))).filter((s) => s !== '');
+    } else {
+      data[key] = coerce(unquote(v));
+    }
+  }
   return { data, body: m[2] };
 }
 
@@ -66,7 +100,7 @@ function isPlaceholder(body) {
 }
 
 /* Markdown → HTML. Bare YouTube/Vimeo links on their own line become responsive embeds.
-   Placeholder text in [BRACKETS] renders as a gold dashed instruction box. */
+   Placeholder text in [BRACKETS] renders as a rose dashed instruction box. */
 function renderBody(md) {
   if (isPlaceholder(md)) return `<div class="ph">${escapeHtml(md.trim())}</div>`;
   const withEmbeds = md.replace(
@@ -84,17 +118,23 @@ function formatDate(d) {
   return dt.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
 }
 const isoDate = (d) => new Date(String(d).length === 10 ? `${d}T12:00:00` : d).toISOString().slice(0, 10);
+const yearOf = (d) => parseInt(isoDate(d).slice(0, 4), 10);
+const plainText = (md) => marked.parse(md || '').replace(/<[^>]+>/g, ' ')
+  .replace(/&#39;/g, '’').replace(/&quot;/g, '"').replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&nbsp;/g, ' ')
+  .replace(/&[a-z#0-9]+;/g, ' ').replace(/\s+/g, ' ').trim();
 
 function loadCollection(dir) {
-  const full = path.join(CONTENT, dir);
-  if (!exists(full)) return [];
-  return fs.readdirSync(full)
-    .filter((f) => f.endsWith('.md'))
-    .map((f) => {
+  const dirs = [path.join(CONTENT, dir)];
+  if (FIXTURES) dirs.push(path.join(FIXTURES, dir));
+  const out = [];
+  dirs.filter(exists).forEach((full) => {
+    fs.readdirSync(full).filter((f) => f.endsWith('.md')).forEach((f) => {
       const { data, body } = parseFrontMatter(read(path.join(full, f)));
       const slug = data.slug || slugify(f.replace(/\.md$/, '').replace(/^\d{4}-\d{2}-\d{2}-/, ''));
-      return { file: f, slug, data, body };
+      out.push({ file: f, slug, data, body });
     });
+  });
+  return out;
 }
 
 function fill(template, vars) {
@@ -111,12 +151,12 @@ const ORGANIZATION = {
   url: SITE_URL,
   logo: { '@type': 'ImageObject', url: `${SITE_URL}/images/sbc-logo-512.png`, width: 512, height: 512 },
   founder: { '@type': 'Person', name: 'Becky' },
-  description: "I'm Becky. I share stories of loss, love, and faith to help others see God's movement in their pain. One forward step at a time.",
+  description: `I'm Becky. I share my stories of loss, love, and faith to help others see God's movement in their pain. ${TAGLINE}`,
 };
 
 function renderPage({ title, description, nav, pathname, content, og_type = 'website', og_image = OG_IMAGE, head_extra = '', body_extra = '', structured_data }) {
   const active = {};
-  ['home', 'stories', 'about', 'fingerprints', 'resources', 'newsletter', 'contact'].forEach((n) => {
+  ['home', 'stories', 'scripture', 'about', 'fingerprints', 'resources', 'newsletter', 'contact'].forEach((n) => {
     active[`active_${n}`] = nav === n ? 'aria-current="page"' : '';
   });
   const sd = structured_data || (nav === 'home'
@@ -155,7 +195,7 @@ function renderPage({ title, description, nav, pathname, content, og_type = 'web
     body_extra,
     structured_data: JSON.stringify(sd),
     content,
-    year: String(new Date().getFullYear()),
+    year: String(CURRENT_YEAR),
     ...active,
   });
 }
@@ -166,9 +206,24 @@ function loadPageTemplate(name) {
 }
 
 /* ---------- content ---------- */
+/* Categories: accept the new `categories` list and the old single `category` string. */
+function storyCategories(s) {
+  let list = s.data.categories;
+  if (!Array.isArray(list)) list = list ? [list] : (s.data.category ? [s.data.category] : []);
+  const valid = CATEGORIES.filter((c) => list.some((x) => String(x).trim().toLowerCase() === c.toLowerCase()));
+  return valid.length ? valid : ['Healing'];
+}
+
 const stories = loadCollection('stories')
   .filter((s) => s.data.draft !== true)
-  .sort((a, b) => new Date(b.data.date) - new Date(a.data.date));
+  .sort((a, b) => new Date(b.data.date) - new Date(a.data.date))
+  .map((s) => {
+    const cats = storyCategories(s);
+    const bodyHtml = renderBody(s.body);
+    const refs = isPlaceholder(s.body) ? [] : scripture.canonicalRefs(`${s.data.title || ''}\n${s.data.excerpt || ''}\n${plainText(s.body)}`);
+    const books = scripture.sortRefs(refs).map(scripture.bookOf).filter((b, i, a) => a.indexOf(b) === i);
+    return { ...s, cats, catSlugs: cats.map(slugify), refs, books, bookSlugs: books.map(slugify), bodyHtml: scripture.linkReferences(bodyHtml), year: yearOf(s.data.date) };
+  });
 
 const fingerprints = loadCollection('fingerprints')
   .filter((f) => f.data.approved === true)
@@ -178,11 +233,27 @@ const comments = loadCollection('comments')
   .filter((c) => c.data.approved === true)
   .sort((a, b) => new Date(a.data.date) - new Date(b.data.date));
 
+const resources = loadCollection('resources')
+  .filter((r) => r.data.show !== false && r.data.title)
+  .map((r) => ({
+    ...r,
+    type: RESOURCE_TYPES.find((t) => t.type.toLowerCase() === String(r.data.type || '').trim().toLowerCase()) || null,
+    title: String(r.data.title).trim(),
+    by: String(r.data.by || '').trim(),
+    link: String(r.data.link || '').trim(),
+    note: String(r.data.note || r.body || '').trim(),
+    date: r.data.date ? isoDate(r.data.date) : '',
+  }))
+  .filter((r) => r.type);
+
 const pageContent = {};
-['about', 'newsletter', 'contact', 'resources'].forEach((n) => {
+['about', 'newsletter', 'contact'].forEach((n) => {
   const p = path.join(CONTENT, 'pages', `${n}.md`);
   pageContent[n] = exists(p) ? parseFrontMatter(read(p)) : { data: {}, body: '' };
 });
+
+/* All scripture books that appear anywhere, in Bible order (drives the Scripture pill row + facet). */
+const allBooks = scripture.BOOKS.map((b) => b.name).filter((name) => stories.some((s) => s.books.includes(name)));
 
 /* ---------- reset dist ---------- */
 fs.rmSync(DIST, { recursive: true, force: true });
@@ -201,20 +272,40 @@ fs.readdirSync(SRC).filter((f) => /\.(ico|png|txt|xml)$/.test(f)).forEach((f) =>
 copyDir(path.join(ROOT, 'admin'), path.join(DIST, 'admin'));
 if (exists(path.join(ROOT, 'uploads'))) copyDir(path.join(ROOT, 'uploads'), path.join(DIST, 'uploads'));
 
-/* ---------- story cards ---------- */
+/* ---------- shared fragments ---------- */
+const BOOK_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>';
+const verseChip = (ref) => `<a class="verse-chip" href="${scripture.gatewayUrl(ref)}" target="_blank" rel="noopener" title="${escapeHtml(ref)} (${BIBLE_VERSION}) on BibleGateway">${BOOK_ICON}${escapeHtml(ref)}</a>`;
+const categoryTags = (s) => s.cats.map((c) => `<span class="tag tag-${slugify(c)}">${c}</span>`).join('');
+
 function storyCard(s) {
-  const cat = CATEGORIES.includes(s.data.category) ? s.data.category : 'Healing';
-  const catSlug = slugify(cat);
   return `
-      <article class="card" data-category="${catSlug}">
+      <article class="card" data-categories="${s.catSlugs.join(' ')}" data-books="${s.bookSlugs.join(' ')}" data-year="${s.year}">
         <div class="meta">
           <time datetime="${isoDate(s.data.date)}">${formatDate(s.data.date)}</time>
-          <span class="tag tag-${catSlug}">${cat}</span>
+          ${categoryTags(s)}
         </div>
         <h3><a href="/stories/${s.slug}.html">${escapeHtml(s.data.title)}</a></h3>
         <p class="excerpt">${escapeHtml(s.data.excerpt || '')}</p>
+        ${s.refs.length ? `<div class="verse-chips">${s.refs.map(verseChip).join('')}</div>` : ''}
         <a class="more" href="/stories/${s.slug}.html">Read the story &rarr;</a>
       </article>`;
+}
+
+/* Year view: newest year first; the current year (from today's date at build time) is open, earlier years collapse.
+   Nothing is hidden from search — this is only how the unfiltered feed is presented. */
+function storyYearView() {
+  if (!stories.length) return '<p class="muted text-center">No stories published yet.</p>';
+  const years = [...new Set(stories.map((s) => s.year))].sort((a, b) => b - a);
+  const openYear = years.includes(CURRENT_YEAR) ? CURRENT_YEAR : years[0];
+  return years.map((y) => {
+    const list = stories.filter((s) => s.year === y);
+    const n = list.length;
+    return `
+    <details class="year-group"${y === openYear ? ' open' : ''} data-year="${y}">
+      <summary><span class="year">${y}</span><span class="count">${n} stor${n === 1 ? 'y' : 'ies'}</span></summary>
+      <div class="grid-3 year-grid">${list.map(storyCard).join('\n')}</div>
+    </details>`;
+  }).join('\n');
 }
 
 /* ---------- static pages ---------- */
@@ -223,6 +314,8 @@ const GLOBAL_VARS = {
   algolia_search_key: ALGOLIA.searchKey,
   algolia_index: ALGOLIA.index,
   site_url: SITE_URL,
+  bible_version: BIBLE_VERSION,
+  joshua_url: scripture.gatewayUrl('Joshua 1:9'),
 };
 
 function buildSimple(name, vars = {}) {
@@ -239,9 +332,50 @@ buildSimple('index');
 buildSimple('thanks');
 buildSimple('404');
 
+// Stories
 buildSimple('stories', {
-  story_cards: stories.length ? stories.map(storyCard).join('\n') : '<p class="muted text-center">No stories published yet.</p>',
+  story_years: storyYearView(),
+  category_pills: CATEGORIES.map((c) => `<button class="filter-btn" data-filter="${slugify(c)}" aria-pressed="false">${c}</button>`).join('\n        '),
+  scripture_pills: allBooks.length
+    ? `<div class="search-filters filters scripture-filters" id="scripture-filters" role="group" aria-label="Filter stories by Bible book">
+        <span class="filters-label">${BOOK_ICON} Scripture</span>
+        ${allBooks.map((b) => `<button class="filter-btn filter-book" data-book="${slugify(b)}" data-name="${escapeHtml(b)}" aria-pressed="false">${escapeHtml(b)}</button>`).join('\n        ')}
+      </div>`
+    : '<div class="search-filters filters scripture-filters" id="scripture-filters" role="group" aria-label="Filter stories by Bible book" hidden></div>',
 });
+
+// Scripture index (/scripture.html)
+{
+  const byBook = allBooks.map((book) => {
+    const refs = scripture.sortRefs([...new Set(stories.flatMap((s) => s.refs.filter((r) => scripture.bookOf(r) === book)))]);
+    return { book, refs };
+  });
+  const scripture_body = byBook.length
+    ? byBook.map(({ book, refs }) => `
+      <section class="scripture-book" id="${slugify(book)}">
+        <h2>${escapeHtml(book)}</h2>
+        <ul class="passage-list">
+          ${refs.map((ref) => {
+            const inStories = stories.filter((s) => s.refs.includes(ref));
+            return `<li class="passage">
+            ${verseChip(ref)}
+            <ul class="passage-stories">
+              ${inStories.map((s) => `<li><a href="/stories/${s.slug}.html">${escapeHtml(s.data.title)}</a><small>${formatDate(s.data.date)}</small></li>`).join('\n              ')}
+            </ul>
+          </li>`;
+          }).join('\n          ')}
+        </ul>
+      </section>`).join('\n')
+    : '<div class="ph text-center" style="max-width:640px;margin:0 auto;">Passages from Becky&rsquo;s stories will appear here as she writes.</div>';
+  const passageCount = byBook.reduce((n, b) => n + b.refs.length, 0);
+  buildSimple('scripture', {
+    scripture_body,
+    scripture_summary: byBook.length
+      ? `<p class="muted small text-center">${passageCount} passage${passageCount === 1 ? '' : 's'} across ${byBook.length} book${byBook.length === 1 ? '' : 's'} &middot; links open the ${BIBLE_VERSION} on BibleGateway</p>`
+      : '',
+    book_nav: byBook.length > 1 ? `<nav class="book-nav" aria-label="Jump to a book">${byBook.map(({ book }) => `<a href="#${slugify(book)}">${escapeHtml(book)}</a>`).join('')}</nav>` : '',
+  });
+}
 
 // About
 {
@@ -250,35 +384,97 @@ buildSimple('stories', {
     about_body: renderBody(body),
     about_photo: data.photo
       ? `<img src="${escapeHtml(data.photo)}" alt="Becky" style="border-radius:12px;box-shadow:0 6px 24px rgba(31,41,55,.12);">`
-      : '<div class="ph"><strong>[PHOTO]</strong> Upload a recent photo of yourself in the Site Pages → About screen.</div>',
+      : '<div class="ph">[PHOTO &mdash; new headshot coming from Becky. Upload it in Site Pages &rarr; About.]</div>',
   });
 }
 
 // Newsletter (hidden from nav until Jan 1, 2027 — page still builds)
 buildSimple('newsletter', { newsletter_body: renderBody(pageContent.newsletter.body) });
 
-// Resources
+// Resources — one CMS entry per item; build.js does all the sorting (see README → Resources)
 {
-  const body = (pageContent.resources.body || '').trim();
-  const placeholderCats = [
-    ['Books', 'Titles that met Becky where she was.'],
-    ['Music', 'Songs for the hard days and the hopeful ones.'],
-    ['Podcasts & Articles', 'Voices worth listening to.'],
-    ['Professional Help', 'Counselors, therapists, and support lines.'],
-  ];
-  const resources_body = isPlaceholder(body) || !body
-    ? `<div class="ph" style="max-width:760px;margin:0 auto;">${escapeHtml(body || '[RESOURCES — Becky to provide curated list.]')}</div>
-    <div class="resource-cats">
-      ${placeholderCats.map(([t, n]) => `<div class="resource-cat"><h2>${t}</h2><p class="cat-note">${n}</p><ul><li><a href="#">Resource title</a><small>One-line description of why it helped.</small></li><li><a href="#">Resource title</a><small>One-line description.</small></li></ul></div>`).join('\n')}
-    </div>`
-    : `<div class="resources-content narrow" style="margin:0 auto;">${renderBody(body)}</div>`;
-  buildSimple('resources', { resources_body });
+  const stripArticle = (t) => String(t).replace(/^(a|an|the)\s+/i, '').trim();
+  const byTitle = (a, b) => stripArticle(a.title).localeCompare(stripArticle(b.title), 'en', { sensitivity: 'base' }) || a.title.localeCompare(b.title);
+  const byName = (a, b) => a.localeCompare(b, 'en', { sensitivity: 'base' });
+  const newestFirst = (a, b) => (b.date || '').localeCompare(a.date || '') || byTitle(a, b);
+  const cutoff = new Date(BUILD_DATE); cutoff.setFullYear(cutoff.getFullYear() - ARCHIVE_YEARS);
+  const cutoffIso = cutoff.toISOString().slice(0, 10);
+  const isOld = (r) => r.date && r.date < cutoffIso;
+
+  const item = (r, secondary) => {
+    const title = r.link ? `<a href="${escapeHtml(r.link)}" target="_blank" rel="noopener">${escapeHtml(r.title)}</a>` : escapeHtml(r.title);
+    const text = [r.title, r.by, r.note, secondary].join(' ').toLowerCase().replace(/\s+/g, ' ').trim();
+    return `<li class="res-item" data-text="${escapeHtml(text)}">
+            <span class="res-title">${title}</span>${secondary ? `<span class="res-by">${secondary}</span>` : ''}${r.note ? `<span class="res-note">${escapeHtml(r.note)}</span>` : ''}
+          </li>`;
+  };
+  const list = (items, secondaryOf) => `<ul class="res-list">${items.map((r) => item(r, secondaryOf(r))).join('\n')}</ul>`;
+  const group = (name, items, secondaryOf) => `<section class="res-group" data-group>
+          <h3>${escapeHtml(name)}</h3>
+          ${list(items, secondaryOf)}
+        </section>`;
+  const grouped = (items, keyOf, sortWithin, secondaryOf) => {
+    const keys = [...new Set(items.map(keyOf))].sort(byName);
+    return keys.map((k) => group(k || 'Other', items.filter((r) => keyOf(r) === k).sort(sortWithin), secondaryOf)).join('\n');
+  };
+  const older = (items, secondaryOf) => items.length
+    ? `<details class="res-older" data-group>
+          <summary>Older <span class="count">${items.length} item${items.length === 1 ? '' : 's'} from more than ${ARCHIVE_YEARS} years ago</span></summary>
+          ${list(items.sort(newestFirst), secondaryOf)}
+        </details>`
+    : '';
+  const dateOnly = (r) => (r.date ? formatDate(r.date) : '');
+  const byAndDate = (r) => [escapeHtml(r.by), dateOnly(r)].filter(Boolean).join(' &middot; ');
+
+  const panels = RESOURCE_TYPES.map((t) => {
+    const items = resources.filter((r) => r.type === t);
+    let body = '';
+    if (items.length) {
+      switch (t.id) {
+        case 'books':
+        case 'music':
+        case 'professional-help':
+          body = list([...items].sort(byTitle), (r) => escapeHtml(r.by));
+          break;
+        case 'podcasts': {
+          const current = items.filter((r) => !isOld(r)), old = items.filter(isOld);
+          body = grouped(current, (r) => r.by, newestFirst, dateOnly) + older(old, byAndDate);
+          break;
+        }
+        case 'publications': {
+          const current = items.filter((r) => !isOld(r)), old = items.filter(isOld);
+          body = grouped(current, (r) => r.by, byTitle, dateOnly) + older(old, byAndDate);
+          break;
+        }
+      }
+    }
+    const empty = `<div class="ph res-empty">Becky is gathering ${t.empty}. Check back soon.</div>`;
+    const help = t.id === 'professional-help' ? `
+        <div class="help-row">
+          <a class="btn btn-primary" href="https://www.psychologytoday.com/us/therapists" target="_blank" rel="noopener">Find a Counselor or Psychologist</a>
+        </div>
+        <div class="quiet-panel help-988">
+          <p class="eyebrow blue">Need someone to talk to?</p>
+          <p>If today feels heavy, you don&rsquo;t have to carry it alone. The <strong>988 Suicide &amp; Crisis Lifeline</strong> is free, confidential, and open 24/7 &mdash; call or text <a href="tel:988"><strong>988</strong></a>, or visit <a href="https://988lifeline.org/" target="_blank" rel="noopener">988lifeline.org</a>. For ongoing support, a licensed counselor can walk with you.</p>
+        </div>` : '';
+    return `
+    <section class="res-panel" id="${t.id}" role="tabpanel" aria-labelledby="tab-${t.id}"${t.id === 'books' ? '' : ' hidden'}>
+      ${help}
+      ${items.length ? `<div class="res-filter"><label for="filter-${t.id}" class="visually-hidden">Filter ${t.label}</label><input type="search" id="filter-${t.id}" placeholder="Filter this list…" autocomplete="off"></div>` : ''}
+      <div class="res-body">${body}</div>
+      ${items.length ? '<p class="res-nomatch muted small" hidden>Nothing here matches. Try another word.</p>' : empty}
+    </section>`;
+  });
+
+  buildSimple('resources', {
+    resource_tabs: RESOURCE_TYPES.map((t) => `<button class="tab" id="tab-${t.id}" role="tab" data-tab="${t.id}" aria-selected="${t.id === 'books'}" aria-controls="${t.id}"${t.id === 'books' ? '' : ' tabindex="-1"'}>${t.label}${resources.some((r) => r.type === t) ? ` <span class="count">${resources.filter((r) => r.type === t).length}</span>` : ''}</button>`).join('\n      '),
+    resource_panels: panels.join('\n'),
+  });
 }
 
-// Contact
+// Contact — the form is the only channel (no email address on the page)
 {
   const { data, body } = pageContent.contact;
-  const email = data.email || '';
   const socials = [];
   const icon = {
     instagram: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 2h10a5 5 0 0 1 5 5v10a5 5 0 0 1-5 5H7a5 5 0 0 1-5-5V7a5 5 0 0 1 5-5zm0 2a3 3 0 0 0-3 3v10a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3V7a3 3 0 0 0-3-3H7zm5 3.5a4.5 4.5 0 1 1 0 9 4.5 4.5 0 0 1 0-9zm0 2a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zM17.5 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/></svg>',
@@ -288,7 +484,6 @@ buildSimple('newsletter', { newsletter_body: renderBody(pageContent.newsletter.b
   if (data.facebook) socials.push(`<a href="${escapeHtml(data.facebook)}" aria-label="Facebook" rel="noopener" target="_blank">${icon.facebook}</a>`);
   buildSimple('contact', {
     contact_body: renderBody(body),
-    contact_email: email.startsWith('[') ? `<span class="ph" style="padding:4px 10px;">${escapeHtml(email)}</span>` : `<a href="mailto:${escapeHtml(email)}">${escapeHtml(email)}</a>`,
     social_links: socials.length ? `<div class="social">${socials.join('')}</div>` : '',
   });
 }
@@ -303,16 +498,16 @@ buildSimple('fingerprints', {
         <p class="from">— ${escapeHtml(f.data.name || 'Anonymous')}</p>
         <p class="meta"><time datetime="${isoDate(f.data.date)}">${formatDate(f.data.date)}</time></p>
       </article>`).join('\n')
-    : '<div class="ph" style="grid-column:1/-1;"><strong>Approved Fingerprints appear here.</strong> When someone shares a moment, Becky reviews it in Netlify Forms, then adds it under Fingerprints in the site editor and ticks "Approved".</div>',
+    : '<div class="ph" style="grid-column:1/-1;"><strong>Approved Fingerprints appear here.</strong> When someone shares a moment marked &ldquo;Share it with everyone,&rdquo; Becky reviews it in Netlify Forms, then adds it under Fingerprints in the site editor and ticks &ldquo;Approved&rdquo;.</div>',
 });
 
 /* ---------- story pages ---------- */
 {
   const { data: tData, body: tBody } = loadPageTemplate('story-template');
   stories.forEach((s) => {
-    const cat = CATEGORIES.includes(s.data.category) ? s.data.category : 'Healing';
+    const shared = (o) => o.cats.filter((c) => s.cats.includes(c)).length;
     const related = stories.filter((o) => o.slug !== s.slug)
-      .sort((a, b) => (b.data.category === cat) - (a.data.category === cat))
+      .sort((a, b) => shared(b) - shared(a) || new Date(b.data.date) - new Date(a.data.date))
       .slice(0, 4);
     const storyComments = comments.filter((c) => c.data.story === s.slug);
     const vars = {
@@ -322,9 +517,9 @@ buildSimple('fingerprints', {
       story_path: `/stories/${s.slug}.html`,
       story_date: formatDate(s.data.date),
       story_date_iso: isoDate(s.data.date),
-      story_category: cat,
-      story_category_slug: slugify(cat),
-      story_body: renderBody(s.body),
+      story_tags: categoryTags(s),
+      story_verses: s.refs.length ? `<div class="verse-chips">${s.refs.map(verseChip).join('')}</div>` : '',
+      story_body: s.bodyHtml,
       story_comments: storyComments.length
         ? storyComments.map((c) => `
             <li class="comment">
@@ -333,7 +528,7 @@ buildSimple('fingerprints', {
             </li>`).join('\n')
         : '<li class="comment-note">No comments yet.</li>',
       related_posts: related.length
-        ? related.map((r) => `<li><a href="/stories/${r.slug}.html">${escapeHtml(r.data.title)}</a><small>${formatDate(r.data.date)} &middot; ${r.data.category}</small></li>`).join('\n')
+        ? related.map((r) => `<li><a href="/stories/${r.slug}.html">${escapeHtml(r.data.title)}</a><small>${formatDate(r.data.date)} &middot; ${r.cats.join(', ')}</small></li>`).join('\n')
         : '<li class="muted small">More stories are on the way.</li>',
     };
     const html = renderPage({
@@ -356,8 +551,8 @@ buildSimple('fingerprints', {
         image: `${SITE_URL}${OG_IMAGE}`,
         mainEntityOfPage: { '@type': 'WebPage', '@id': `${SITE_URL}${vars.story_path}` },
         url: `${SITE_URL}${vars.story_path}`,
-        articleSection: cat,
-        keywords: [cat, 'grief', 'faith', 'healing', 'hope'].join(', '),
+        articleSection: s.cats.join(', '),
+        keywords: [...s.cats, ...s.refs, 'grief', 'faith', 'healing', 'hope'].filter((k, i, a) => a.indexOf(k) === i).join(', '),
         isPartOf: { '@id': `${SITE_URL}/#website` },
       },
     });
@@ -367,9 +562,10 @@ buildSimple('fingerprints', {
 
 /* ---------- sitemap + robots ---------- */
 {
-  const today = new Date().toISOString().slice(0, 10);
+  const today = BUILD_DATE.toISOString().slice(0, 10);
   const pages = [
     ['/', 'weekly', '1.0', today], ['/stories.html', 'weekly', '0.9', stories[0] ? isoDate(stories[0].data.date) : today],
+    ['/scripture.html', 'weekly', '0.7', stories[0] ? isoDate(stories[0].data.date) : today],
     ['/about.html', 'monthly', '0.7', today], ['/fingerprints.html', 'weekly', '0.6', today],
     ['/resources.html', 'monthly', '0.6', today], ['/contact.html', 'yearly', '0.4', today],
     ...stories.map((s) => [`/stories/${s.slug}.html`, 'yearly', '0.8', isoDate(s.data.date)]),
@@ -385,16 +581,15 @@ buildSimple('fingerprints', {
   const rfc822 = (d) => new Date(String(d).length === 10 ? `${d}T12:00:00Z` : d).toUTCString();
   const items = stories.filter((s) => !isPlaceholder(s.body) && !String(s.data.title || '').startsWith('[')).slice(0, 20).map((s) => {
     const url = `${SITE_URL}/stories/${s.slug}.html`;
-    const cat = CATEGORIES.includes(s.data.category) ? s.data.category : 'Healing';
     return `    <item>
       <title>${cdata(s.data.title)}</title>
       <link>${url}</link>
       <guid isPermaLink="true">${url}</guid>
       <pubDate>${rfc822(s.data.date)}</pubDate>
-      <category>${cdata(cat)}</category>
+${s.cats.map((c) => `      <category>${cdata(c)}</category>`).join('\n')}
       <dc:creator>Becky</dc:creator>
       <description>${cdata(s.data.excerpt || '')}</description>
-      <content:encoded>${cdata(renderBody(s.body))}</content:encoded>
+      <content:encoded>${cdata(s.bodyHtml)}</content:encoded>
     </item>`;
   });
   write('feed.xml', `<?xml version="1.0" encoding="UTF-8"?>
@@ -403,10 +598,10 @@ buildSimple('fingerprints', {
     <title>${SITE_NAME} — Stories</title>
     <link>${SITE_URL}/stories.html</link>
     <atom:link href="${SITE_URL}/feed.xml" rel="self" type="application/rss+xml"/>
-    <description>Stories of loss, love, and faith by Becky. One forward step at a time.</description>
+    <description>My stories of loss, love, and faith. ${TAGLINE}</description>
     <language>en-us</language>
     <image><url>${SITE_URL}/images/sbc-logo-512.png</url><title>${SITE_NAME}</title><link>${SITE_URL}</link></image>
-    <lastBuildDate>${new Date().toUTCString()}</lastBuildDate>
+    <lastBuildDate>${BUILD_DATE.toUTCString()}</lastBuildDate>
 ${items.join('\n')}
   </channel>
 </rss>
@@ -415,23 +610,20 @@ ${items.join('\n')}
 
 /* ---------- search index (pushed to Algolia by scripts/algolia-index.js) ---------- */
 {
-  const plain = (md) => marked.parse(md || '').replace(/<[^>]+>/g, ' ')
-    .replace(/&#39;/g, '\u2019').replace(/&quot;/g, '"').replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&nbsp;/g, ' ')
-    .replace(/&[a-z#0-9]+;/g, ' ').replace(/\s+/g, ' ').trim();
-  const records = stories.map((s) => {
-    const cat = CATEGORIES.includes(s.data.category) ? s.data.category : 'Healing';
-    return {
-      objectID: s.slug,
-      title: s.data.title,
-      excerpt: s.data.excerpt || '',
-      body: plain(s.body).slice(0, 9000),
-      category: cat,
-      date: isoDate(s.data.date),
-      date_ts: Math.floor(new Date(`${isoDate(s.data.date)}T12:00:00Z`).getTime() / 1000),
-      url: `/stories/${s.slug}.html`,
-    };
-  });
+  const records = stories.map((s) => ({
+    objectID: s.slug,
+    title: s.data.title,
+    excerpt: s.data.excerpt || '',
+    body: plainText(s.body).slice(0, 9000),
+    categories: s.cats,
+    scriptures: s.refs,
+    scripture_books: s.books,
+    date: isoDate(s.data.date),
+    date_ts: Math.floor(new Date(`${isoDate(s.data.date)}T12:00:00Z`).getTime() / 1000),
+    year: s.year,
+    url: `/stories/${s.slug}.html`,
+  }));
   write('search-index.json', JSON.stringify(records));
 }
 
-console.log(`Built ${stories.length} stor${stories.length === 1 ? 'y' : 'ies'}, ${fingerprints.length} fingerprint(s), ${comments.length} approved comment(s) → dist/`);
+console.log(`Built ${stories.length} stor${stories.length === 1 ? 'y' : 'ies'} (${allBooks.length} Bible book${allBooks.length === 1 ? '' : 's'} referenced), ${resources.length} resource(s), ${fingerprints.length} fingerprint(s), ${comments.length} approved comment(s) → ${path.relative(ROOT, DIST) || 'dist'}/${FIXTURES ? '  [QA fixtures included]' : ''}`);
