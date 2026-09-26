@@ -39,7 +39,7 @@ const RESOURCE_TYPES = [
   { type: 'Music', id: 'music', label: 'Music', by: 'Artist', empty: 'music that is helping' },
   { type: 'Podcast', id: 'podcasts', label: 'Podcasts', by: 'Show', empty: 'podcasts that are helping' },
   { type: 'Publication', id: 'publications', label: 'Publications', by: 'Publication', empty: 'publications that are helping' },
-  { type: 'Professional Help', id: 'professional-help', label: 'Professional Help', by: 'Organization', empty: 'professional help that is helping' },
+  { type: 'Professional Help', id: 'professional-help', label: 'Professional Help', by: 'Organization', empty: 'counselors and support so no one has to carry this alone' },
 ];
 const ARCHIVE_YEARS = 10; // Podcasts + Publications older than this collapse into "Older"
 
