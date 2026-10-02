@@ -129,9 +129,29 @@ A CMS collection, `content/resources/*.md`, one file per item (Decap: **Resource
 
 Podcasts and Publications dated more than `ARCHIVE_YEARS` (10) years before the build date fold into a collapsed "Older" group at the bottom of that tab; Books and Music never archive. The Psychology Today "Find a Counselor" button and the 988 panel are a fixed block under the tabs (`#professional-help`), not a resource type. Tabs are buttons with the active tab in the URL hash (`#podcasts`); each tab has a client-side filter box (`main.js`) matching title, by-line, and note. Empty tabs show a rose placeholder. Disclaimer + liability text sit at the bottom at `#disclaimers` (the footer "Disclaimers" link points there); the old sticky red notice is gone. The old `content/pages/resources.md` markdown page was removed.
 
-## Brand (Sept 2026 identity guide)
+## Brand: Wildflower palette (Oct 2026)
 
-Warm earth brown `#6B4733` (headings, buttons, dividers), story rose `#C85F69` (accents, links, tags), mountain blue `#648FA8` (quiet panels), cream `#F7F1E3`, charcoal `#1F2937`. Lora for headings, Plus Jakarta Sans for nav/body/buttons. Logo = the supplied circular illustration (PNG master `src/images/sbc-logo-1200.png`; sizes 16–512 + favicon + `og-image.jpg` generated from it). The brand guide asks for a simplified icon for favicons and a vector master — both still to come from Becky.
+Mountain blue opens the page, clay rose frames the logo and marks the actions, and the brown of the wooden cross carries the words. All colors are CSS custom properties at the top of `src/css/styles.css`; change a value there, never in a rule.
+
+| Token | Hex | Role |
+|---|---|---|
+| `--field` | `#4A7590` | Opening section on Home. All text on it is paper. |
+| `--ridge` | `#3D6474` | Back ridge layer (decoration). |
+| `--blue` | `#648FA8` | Decoration and chip edges only, never text. |
+| `--rose` | `#B4505B` | Logo ring, ridge line, primary buttons on paper, active nav item. |
+| `--rose-deep` | `#93404A` | Text on paper buttons, hover. |
+| `--link` | `#A9454F` | Links and small rose text. |
+| `--brown` | `#5A3D2B` | Celebration bar, header text, headings, the one band. |
+| `--ink` / `--muted` | `#3A2A20` / `#6E5A4E` | Body text / dates and meta. |
+| `--paper` / `--blush` | `#FFFDFA` / `#F7EDEC` | Page / quiet panels. |
+| `--tag-bg` / `--tag-text` | `#F7E1E2` / `#8E3540` | Category tags. |
+| `--chip-bg` / `--chip-text` | `#E3ECF2` / `#21444E` | Scripture chips. |
+| `--wood` | `#3A281D` | Footer (text `#F1E7E1`, muted `#C2B0A5`, button `#E99AA1` with `#1F1A17` text). |
+| `--rule` / `--line` | `#E8DAD6` / `#8C7A6E` | Hairlines / form and control borders (3:1). |
+
+Rules: mountain blue is the only full color field at the top of a page, and the one other band uses cross-brown (`.band`). The button on blue is paper with rose-deep text (`.btn-field`). Rose stays small. Focus outlines are brown on paper and paper on the blue field, the band, and the footer. Every text pairing passes WCAG 2.2 AA; re-check after any hex change. `theme-color` is `#5A3D2B`. Retired: cream `#F7F1E3`, earth brown `#6B4733`, story rose `#C85F69`, footer `#3E2A20`, charcoal `#1F2937`.
+
+Logo: the supplied circular illustration, never altered (PNG master `src/images/sbc-logo-1200.png`). On the opening it sits in a 5px paper ring and a 7px clay-rose ring (CSS `box-shadow` on `.hero-logo`). The three-layer ridge at the bottom of the opening is an inline SVG in `src/pages/index.html`, traced from the logo's mountain skyline. The share picture `src/images/og-image.jpg` (1200 × 630) shows the framed logo on the blue field with the ridge. The Mailchimp email uses paper background, a mountain-blue header bar, clay-rose buttons, and cross-brown text (`mailchimp/rss-email-template.html` is the reference; the live email is edited in Mailchimp).
 
 ## Copy rules honored in this build
 

@@ -3,8 +3,8 @@
   "short_name": "SBC",
   "start_url": "/",
   "display": "browser",
-  "background_color": "#F7F1E3",
-  "theme_color": "#F7F1E3",
+  "background_color": "#FFFDFA",
+  "theme_color": "#5A3D2B",
   "icons": [
     { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png" },
     { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png" }
