@@ -70,7 +70,7 @@ Netlify Forms is the inbox; Decap CMS is the publisher. Nothing appears on the s
 
 **Site address.** `SITE_URL` in `build.js` is fixed to `https://strongbravecourageous.com`. Canonical, Open Graph, Twitter, sitemap, robots, feed, and structured data all use it on every build, including the preview site, so a preview page never claims to be the real one. It no longer reads Netlify's `URL` variable.
 
-**Preview site.** A second Netlify site builds the `redesign` branch for Becky's review. It has `PREVIEW=true` and nothing else: no `ALGOLIA_WRITE_KEY` (the index script skips itself), no Mailchimp keys (signups stay in that site's Netlify Forms only), no form notifications, and Identity off. Its search box reads the live `stories` index (read-only).
+**Preview site.** A second Netlify site builds the `redesign` branch for Becky's review. It has `PREVIEW=true` and nothing else: no `ALGOLIA_WRITE_KEY` (the index script skips itself), no Mailchimp keys (signups stay in that site's Netlify Forms only), no form notifications, and Identity off. Its search box reads the live `stories` index (read-only). With `PREVIEW=true` the build also adds the sample stories in `qa/preview/stories/` (titles begin "Sample story:"), so Becky can review the homepage lists, the Stories page, and the story page with content. Because search and the filter pills read the live index, the samples appear in the lists but not in search results. As a second safeguard, `PREVIEW` is ignored when Netlify's `URL` is the .com.
 
 **Placeholder stories.** A story whose title or body is still `[bracketed instructions]` is a placeholder (`isPlaceholderStory` in `build.js`). Its page is built so Becky can see it, and it carries `noindex`, but it stays out of `sitemap.xml` and `feed.xml`.
 

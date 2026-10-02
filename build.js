@@ -30,7 +30,12 @@ const DIST = process.env.DIST_DIR ? path.resolve(process.env.DIST_DIR) : path.jo
 const SITE_URL = 'https://strongbravecourageous.com';
 /* PREVIEW=true (set only on the preview site) marks every page noindex and writes a noindex header file.
    The preview site carries no Algolia write key and no Mailchimp keys, so it never touches the live index or audience. */
-const PREVIEW = process.env.PREVIEW === 'true';
+/* Safety: PREVIEW is ignored if Netlify reports this site's own address as the .com, so the live site can never
+   be built as a preview even if the variable is set there by mistake. */
+const PREVIEW = process.env.PREVIEW === 'true' && !/strongbravecourageous\.com/i.test(process.env.URL || '');
+/* Preview site only: sample stories (qa/preview/stories) so the homepage lists, the Stories page, and the
+   letter-style story page can be reviewed with content. They are never built on the live site. */
+const PREVIEW_SAMPLES = PREVIEW ? path.join(ROOT, 'qa', 'preview') : null;
 
 /* Story categories are labels, not folders: a story can carry several. Order here = order of pills/tags. */
 const CATEGORIES = ['Grief', 'Healing', 'Faith', 'Perseverance', 'Humor'];
@@ -141,6 +146,7 @@ const plainText = (md) => marked.parse(md || '').replace(/<[^>]+>/g, ' ')
 function loadCollection(dir) {
   const dirs = [path.join(CONTENT, dir)];
   if (FIXTURES) dirs.push(path.join(FIXTURES, dir));
+  if (PREVIEW_SAMPLES) dirs.push(path.join(PREVIEW_SAMPLES, dir));
   const out = [];
   dirs.filter(exists).forEach((full) => {
     fs.readdirSync(full).filter((f) => f.endsWith('.md')).forEach((f) => {
