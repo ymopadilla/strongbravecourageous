@@ -10,7 +10,7 @@ Static site for Becky, built by Digital Navigation Solutions. Hosted on Netlify.
 | `src/pages/*.html` | Page bodies: `index`, `stories`, `story-template`, `scripture`, `about`, `fingerprints`, `resources`, `newsletter` (hidden from nav until Jan 1, 2027), `contact`, `thanks`, `404` |
 | `lib/scripture.js` | Bible-reference detection: book table (canonical order + short names), the regex, BibleGateway links, `BIBLE_VERSION` |
 | `qa/fixtures/` | Test stories + resources for local QA only (`QA_FIXTURES=1 npm run build`); never published |
-| `src/css/styles.css` | All styling — Sept 2026 brand palette (brown / rose / blue on cream), Lora + Plus Jakarta Sans, mobile-first |
+| `src/css/styles.css` | All styling — Wildflower palette (Oct 2026), Literata + Atkinson Hyperlegible Next, mobile-first |
 | `src/js/search.js` + `src/js/vendor/` | Algolia InstantSearch on the Stories page (self-hosted libraries, no CDN) |
 | `scripts/algolia-index.js` | Pushes stories to the Algolia index after every Netlify build |
 | `netlify/functions/submission-created.js` | Adds newsletter signups (Netlify Forms) to the Mailchimp audience |
@@ -152,6 +152,14 @@ Mountain blue opens the page, clay rose frames the logo and marks the actions, a
 Rules: mountain blue is the only full color field at the top of a page, and the one other band uses cross-brown (`.band`). The button on blue is paper with rose-deep text (`.btn-field`). Rose stays small. Focus outlines are brown on paper and paper on the blue field, the band, and the footer. Every text pairing passes WCAG 2.2 AA; re-check after any hex change. `theme-color` is `#5A3D2B`. Retired: cream `#F7F1E3`, earth brown `#6B4733`, story rose `#C85F69`, footer `#3E2A20`, charcoal `#1F2937`.
 
 Logo: the supplied circular illustration, never altered (PNG master `src/images/sbc-logo-1200.png`). On the opening it sits in a 5px paper ring and a 7px clay-rose ring (CSS `box-shadow` on `.hero-logo`). The three-layer ridge at the bottom of the opening is an inline SVG in `src/pages/index.html`: a few large peaks drawn from the logo's mountain skyline, with clear height differences between the layers (back `#3D6474`, clay rose, paper). An earlier version with many small peaks read as torn paper and was replaced. The share picture `src/images/og-image.jpg` (1200 × 630) shows the framed logo on the blue field with the ridge. The Mailchimp email uses paper background, a mountain-blue header bar, clay-rose buttons, and cross-brown text (`mailchimp/rss-email-template.html` is the reference; the live email is edited in Mailchimp).
+
+## Type and layout (Oct 2026)
+
+- **Fonts:** Literata for headings and reading text (story bodies, lead lines, verses); Atkinson Hyperlegible Next for nav, buttons, forms, dates, and tags. Both load from Google Fonts in `layout.html`. The tagline is set in Literata until Becky's handwriting arrives; do not substitute a script font.
+- **Home:** blue opening (logo left, tagline + button + Joshua 1:9 right; stacked on phones) → Becky's sentence beside "My why" → story lists → one cross-brown band.
+- **Story lists** are dated rows, not cards (`storyCard()` in `build.js`; `src/js/search.js` builds the same markup for search results, so change both together). The homepage shows up to three **Start here** stories (the `featured` toggle in the editor; the heading is hidden when none are marked) and the three most recent others. Placeholder stories never appear on the live homepage; the preview site shows them when nothing else exists.
+- **Story page** is set like a dated letter: blush surround, paper sheet, one column, Literata 18px (19px from 768px up), line height 1.75, `--measure: 64ch`. Under the letter: older / newer links (`storyNav()`), one signup line, then comments. There is no sidebar. A comment in `story-template.html` marks where Becky's handwritten signature will go.
+- Page-name labels above headings were removed (the menu already shows the page).
 
 ## Copy rules honored in this build
 

@@ -308,17 +308,17 @@ const BOOK_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" st
 const verseChip = (ref) => `<a class="verse-chip" href="${scripture.gatewayUrl(ref)}" target="_blank" rel="noopener" title="${escapeHtml(ref)} (${BIBLE_VERSION}) on BibleGateway">${BOOK_ICON}${escapeHtml(ref)}</a>`;
 const categoryTags = (s) => s.cats.map((c) => `<span class="tag tag-${slugify(c)}">${c}</span>`).join('');
 
-function storyCard(s) {
+/* One story in a list: date on the left, then title, excerpt, tags, and verse chips. Used on Home and Stories.
+   src/js/search.js builds the same markup for search results; keep the two in step. */
+function storyCard(s, level = 'h3') {
   return `
       <article class="card" data-categories="${s.catSlugs.join(' ')}" data-books="${s.bookSlugs.join(' ')}" data-year="${s.year}">
-        <div class="meta">
-          <time datetime="${isoDate(s.data.date)}">${formatDate(s.data.date)}</time>
-          ${categoryTags(s)}
+        <time datetime="${isoDate(s.data.date)}">${formatDate(s.data.date)}</time>
+        <div class="row-main">
+          <${level}><a href="/stories/${s.slug}.html">${escapeHtml(s.data.title)}</a></${level}>
+          <p class="excerpt">${escapeHtml(s.data.excerpt || '')}</p>
+          <div class="row-tags">${categoryTags(s)}${s.refs.map(verseChip).join('')}</div>
         </div>
-        <h3><a href="/stories/${s.slug}.html">${escapeHtml(s.data.title)}</a></h3>
-        <p class="excerpt">${escapeHtml(s.data.excerpt || '')}</p>
-        ${s.refs.length ? `<div class="verse-chips">${s.refs.map(verseChip).join('')}</div>` : ''}
-        <a class="more" href="/stories/${s.slug}.html">Read the story &rarr;</a>
       </article>`;
 }
 
@@ -334,7 +334,7 @@ function storyYearView() {
     return `
     <details class="year-group"${y === openYear ? ' open' : ''} data-year="${y}">
       <summary><span class="year">${y}</span><span class="count">${n} stor${n === 1 ? 'y' : 'ies'}</span></summary>
-      <div class="grid-3 year-grid">${list.map(storyCard).join('\n')}</div>
+      <div class="story-list year-grid">${list.map((s) => storyCard(s)).join('\n')}</div>
     </details>`;
   }).join('\n');
 }
@@ -359,7 +359,22 @@ function buildSimple(name, vars = {}) {
   write(name === 'index' ? 'index.html' : `${name}.html`, html);
 }
 
-buildSimple('index');
+/* Homepage story lists. Placeholder stories are left out on the live site; the preview site shows them
+   when there is nothing else, so the layout can be reviewed. */
+{
+  const real = stories.filter((s) => !isPlaceholderStory(s));
+  const pool = real.length ? real : (PREVIEW ? stories : []);
+  const featured = pool.filter((s) => s.data.featured === true).slice(0, 3);
+  const recent = pool.filter((s) => !featured.includes(s)).slice(0, 3);
+  buildSimple('index', {
+    home_start_here: featured.length
+      ? `<div class="list-head"><h2>Start here</h2></div>\n    <div class="story-list">${featured.map((s) => storyCard(s)).join('\n')}</div>`
+      : '',
+    home_recent: recent.length
+      ? `<div class="story-list">${recent.map((s) => storyCard(s)).join('\n')}</div>`
+      : '<p class="muted">More stories are on the way.</p>',
+  });
+}
 buildSimple('thanks');
 ['signup', 'message', 'fingerprint', 'comment'].forEach((t) => buildSimple(`thanks-${t}`));
 buildSimple('404');
@@ -415,7 +430,7 @@ buildSimple('stories', {
   buildSimple('about', {
     about_body: renderBody(body),
     about_photo: data.photo
-      ? `<img src="${escapeHtml(data.photo)}" alt="Becky" style="border-radius:12px;box-shadow:0 6px 24px rgba(31,41,55,.12);">`
+      ? `<img src="${escapeHtml(data.photo)}" alt="Becky" style="border-radius:4px 28px 4px 28px;">`
       : '<div class="ph">[PHOTO &mdash; new headshot coming from Becky. Upload it in Site Pages &rarr; About.]</div>',
   });
 }
@@ -524,6 +539,18 @@ buildSimple('fingerprints', {
 });
 
 /* ---------- story pages ---------- */
+/* Newer / older links under each story. Placeholders are skipped unless the story itself is one. */
+function storyNav(s) {
+  const list = isPlaceholderStory(s) ? stories : stories.filter((o) => !isPlaceholderStory(o));
+  const i = list.indexOf(s);
+  const newer = i > 0 ? list[i - 1] : null;
+  const older = i >= 0 && i < list.length - 1 ? list[i + 1] : null;
+  if (!newer && !older) return '';
+  const link = (o, label, cls) => (o
+    ? `<a class="${cls}" href="/stories/${o.slug}.html"><span>${label}</span>${escapeHtml(o.data.title)}</a>`
+    : '<span></span>');
+  return `<nav class="story-nav" aria-label="More stories">${link(older, '&larr; Older story', 'older')}${link(newer, 'Newer story &rarr;', 'newer')}</nav>`;
+}
 {
   const { data: tData, body: tBody } = loadPageTemplate('story-template');
   stories.forEach((s) => {
@@ -540,7 +567,8 @@ buildSimple('fingerprints', {
       story_date: formatDate(s.data.date),
       story_date_iso: isoDate(s.data.date),
       story_tags: categoryTags(s),
-      story_verses: s.refs.length ? `<div class="verse-chips">${s.refs.map(verseChip).join('')}</div>` : '',
+      story_verses: s.refs.map(verseChip).join(''),
+      story_nav: storyNav(s),
       story_body: s.bodyHtml,
       story_comments: storyComments.length
         ? storyComments.map((c) => `

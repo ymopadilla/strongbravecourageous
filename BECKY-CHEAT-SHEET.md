@@ -56,6 +56,9 @@ You'll get an email from Netlify with what they wrote. Nothing shows on the site
 
 Don't want something on the site? Do nothing. It stays private in your Netlify inbox.
 
+## Choosing the stories a new reader sees first
+Each story has a **Start here** switch. Turn it on for a story you would hand to someone visiting for the first time. The homepage lists up to three of these under "Start here," and your three newest stories under "Recent stories." Turn the switch off any time to take a story out of that spot.
+
 ## The picture people see when a story is shared
 Each story has an optional **Share image** box. Add a photo there and it becomes the picture shown when someone shares the story on Facebook or in a text. Wider than tall works best. Leave it empty and the site uses its standard picture.
 

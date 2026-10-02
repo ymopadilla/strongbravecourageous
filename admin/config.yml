@@ -37,6 +37,7 @@ collections:
       - { label: "Categories", name: "categories", widget: "select", multiple: true, required: true, options: ["Grief", "Healing", "Faith", "Perseverance", "Humor"], default: ["Healing"], hint: "Pick every one true of the story, usually one to three." }
       - { label: "Excerpt", name: "excerpt", widget: "text", hint: "One or two sentences in your own words. Shows on the story card and in search." }
       - { label: "Share image (optional)", name: "share_image", widget: "image", required: false, hint: "The picture people see when this story is shared on Facebook or in a text message. Best shape: wider than tall, about 1200 × 630. Leave it empty to use the site's standard picture." }
+      - { label: "Start here (show first on the homepage)", name: "featured", widget: "boolean", default: false, required: false, hint: "Turn on for a story a new reader should begin with. The homepage shows up to three, newest first." }
       - { label: "Story", name: "body", widget: "markdown", hint: "Use the image button to add photos. Paste a YouTube or Vimeo link on its own line to embed a video. Write Bible references naturally (Joshua 1:9, Ps 23, 1 Corinthians 13:4-7) — the site finds and links them." }
 
   - name: "resources"

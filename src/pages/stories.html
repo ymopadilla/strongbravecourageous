@@ -9,7 +9,6 @@ body_extra: <script src="/js/vendor/algoliasearch-lite-4.24.0.umd.js"></script><
 <section>
   <div class="container">
     <div class="text-center">
-      <p class="eyebrow">Stories</p>
       <h1>Strength Through Story</h1>
       <p class="lead" style="max-width:560px;margin:0 auto;">Real people. Real pain. Real hope. A brighter tomorrow.</p>
     </div>
@@ -45,7 +44,7 @@ body_extra: <script src="/js/vendor/algoliasearch-lite-4.24.0.umd.js"></script><
       {{story_years}}
     </div>
     <!-- Filtered / searched view: one flat list across all years, newest first. -->
-    <div class="grid-3" id="story-grid" hidden></div>
+    <div class="story-list" id="story-grid" hidden></div>
     <p class="empty-note" id="empty-note">No stories match these filters yet.</p>
     <div class="search-more" id="search-more" hidden><button type="button" class="btn btn-outline" id="search-more-btn">Show more stories</button></div>
     <p class="search-note" id="search-note" hidden>Search by <a href="https://www.algolia.com/" target="_blank" rel="noopener">Algolia</a></p>

@@ -54,12 +54,11 @@
     var refs = Array.isArray(hit.scriptures) ? hit.scriptures : [];
     var books = Array.isArray(hit.scripture_books) ? hit.scripture_books : [];
     return '<article class="card" data-categories="' + esc(cats.map(slug).join(' ')) + '" data-books="' + esc(books.map(slug).join(' ')) + '">' +
-      '<div class="meta"><time datetime="' + esc(hit.date) + '">' + esc(fmtDate(hit.date)) + '</time>' +
-      cats.map(function (c) { return '<span class="tag tag-' + slug(c) + '">' + esc(c) + '</span>'; }).join('') + '</div>' +
-      '<h3><a href="' + esc(hit.url) + '">' + hl(hit, 'title') + '</a></h3>' +
+      '<time datetime="' + esc(hit.date) + '">' + esc(fmtDate(hit.date)) + '</time>' +
+      '<div class="row-main"><h3><a href="' + esc(hit.url) + '">' + hl(hit, 'title') + '</a></h3>' +
       '<p class="excerpt">' + snip(hit) + '</p>' +
-      (refs.length ? '<div class="verse-chips">' + refs.map(function (r) { return '<a class="verse-chip" href="' + gateway(r) + '" target="_blank" rel="noopener">' + BOOK_ICON + esc(r) + '</a>'; }).join('') + '</div>' : '') +
-      '<a class="more" href="' + esc(hit.url) + '">Read the story &rarr;</a></article>';
+      '<div class="row-tags">' + cats.map(function (c) { return '<span class="tag tag-' + slug(c) + '">' + esc(c) + '</span>'; }).join('') +
+      refs.map(function (r) { return '<a class="verse-chip" href="' + gateway(r) + '" target="_blank" rel="noopener">' + BOOK_ICON + esc(r) + '</a>'; }).join('') + '</div></div></article>';
   };
 
   var client = window.algoliasearch(appId, searchKey);

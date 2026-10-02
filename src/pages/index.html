@@ -7,9 +7,11 @@ head_extra: <script>(function(){if(!/(invite_token|recovery_token|confirmation_t
 ---
 <!-- Opening: the one mountain-blue field. Ridge: three large peaks drawn from the logo's mountain skyline, in three flat layers (decorative). -->
 <section class="opening">
-  <div class="container">
+  <div class="container opening-grid">
     <!-- Logo is raster art (1176px master). Never display it larger than 300px. -->
     <img class="hero-logo" src="/images/sbc-logo-560.webp" srcset="/images/sbc-logo-280.webp 280w, /images/sbc-logo-560.webp 560w, /images/sbc-logo-840.webp 840w" sizes="(max-width: 600px) 64vw, 280px" fetchpriority="high" alt="Strong. Brave. Courageous. Blog — a woman sits on a rock looking out over mountains and a winding river at sunrise, beside a wooden cross and wildflowers" width="280" height="280">
+    <div class="opening-text">
+    <!-- Tagline: set in Literata until Becky's handwriting arrives. No script or handwriting-style font as a stand-in. -->
     <p class="tagline">One foot in front of the other.</p>
     <p class="hero-cta"><a class="btn btn-field btn-lg" href="/stories.html">Read the Stories</a></p>
 
@@ -17,34 +19,45 @@ head_extra: <script>(function(){if(!/(invite_token|recovery_token|confirmation_t
       <p>Have I not commanded you? Be strong and courageous. Do not be afraid; do not be discouraged, for the L<span class="sc">ord</span> your God will be with you wherever you go.</p>
       <cite><a href="{{joshua_url}}" target="_blank" rel="noopener">Joshua 1:9 ({{bible_version}})</a></cite>
     </blockquote>
+    </div>
   </div>
   <svg class="ridge" viewBox="0 0 1440 140" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path fill="#3D6474" d="M0 140 L0 27 L101 8 L245 40 L432 72 L634 40 L720 18 L806 40 L1008 72 L1195 40 L1339 8 L1440 27 L1440 140 Z"/><path fill="#B4505B" d="M0 140 L0 103 L173 112 L432 76 L605 101 L720 108 L835 99 L1008 80 L1224 108 L1440 94 L1440 140 Z"/><path fill="#FFFDFA" d="M0 140 L0 128 L288 120 L648 129 L893 123 L1152 130 L1440 125 L1440 140 Z"/></svg>
 </section>
 
 <section class="intro-section">
-  <div class="container">
+  <div class="container intro-grid">
     <h1>I&rsquo;m Becky. I share my stories of loss, love, and faith to help others see God&rsquo;s movement in their pain.</h1>
-  </div>
-</section>
-
-<section class="section-tight">
-  <div class="container narrow">
-    <div class="mission-box">
+    <aside class="why-panel">
       <p class="eyebrow">My why</p>
       <h2>A Faith-Rooted Community by Becky</h2>
       <p class="why">Strong. Brave. Courageous. exists to bring hope through real stories — honoring pain, celebrating healing, and reminding people a brighter tomorrow is possible.</p>
       <div class="word-strip" aria-label="People, Stories, Hope"><span>People</span><span>Stories</span><span>Hope</span></div>
+    </aside>
+  </div>
+</section>
+
+<!-- Stories on the homepage: every reader is one click from a story.
+     "Start here" lists the stories Becky marks "Start here" in the editor; it is hidden when none are marked. -->
+<section class="home-stories" id="stories">
+  <div class="container">
+    {{home_start_here}}
+    <div class="list-head">
+      <h2>Recent stories</h2>
+      <a href="/stories.html">See all stories</a>
     </div>
+    {{home_recent}}
   </div>
 </section>
 
 <!-- The one cross-brown band on this page. -->
 <section class="band">
-  <div class="container narrow text-center">
-    <h2>Grief Changes You. So Does Hope.</h2>
-    <p class="pullquote" style="text-align:left; display:inline-block;">Stories have power. People have purpose. Brighter tomorrows are possible.</p>
-    <p class="eyebrow">Strength through story</p>
-    <p class="lead">Real people. Real progress. A brighter tomorrow.</p>
-    <p><a class="btn btn-band" href="/stories.html">Read the Stories</a></p>
+  <div class="container band-inner">
+    <div>
+      <h2>Grief Changes You. So Does Hope.</h2>
+      <p class="pullquote">Stories have power. People have purpose. Brighter tomorrows are possible.</p>
+      <p class="eyebrow">Strength through story</p>
+      <p class="lead">Real people. Real progress. A brighter tomorrow.</p>
+    </div>
+    <a class="btn btn-band" href="/stories.html">Read the Stories</a>
   </div>
 </section>
