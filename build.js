@@ -175,7 +175,7 @@ const BECKY = {
   '@id': `${SITE_URL}/#becky`,
   name: 'Becky',
   url: `${SITE_URL}/about.html`,
-  description: "I'm Becky. I share my stories of loss, love, and faith to help others see God's movement in their pain.",
+  description: "I'm Becky. I write about loss, love, and where I see God in it.",
 };
 const ROBOTS_META = /<meta name="robots"[^>]*>/g;
 

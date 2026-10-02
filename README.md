@@ -163,7 +163,7 @@ Logo: the supplied circular illustration, never altered (PNG master `src/images/
 
 ## Copy rules honored in this build
 
-First-person voice everywhere (Becky is talking: "my", never "our"; buttons say "Read the Stories", not "Becky's"). No past tense about healing anywhere. Tagline is "One foot in front of the other." (site-wide constant `TAGLINE` in `build.js` for meta/feed; literal in templates). "Brighter tomorrow", never "braver". "In celebration of Steve, Mason, and Josh." is the celebration line at the top of every page (`layout.html`). Joshua 1:9 (NIV) sits on the homepage under the primary button, linked to BibleGateway. Every spot Becky still needs to fill is a rose dashed `.ph` box — search the CMS or the code for `[` placeholders.
+First-person voice everywhere (Becky is talking: "my", never "our"; buttons say "Read the stories", not "Becky's"; headings and buttons use sentence case). No past tense about healing anywhere. Tagline is "One foot in front of the other." (site-wide constant `TAGLINE` in `build.js` for meta/feed; literal in templates). "Brighter tomorrow", never "braver". "In celebration of Steve, Mason, and Josh." is the celebration line at the top of every page (`layout.html`). Joshua 1:9 (NIV) sits on the homepage under the primary button, linked to BibleGateway. Every spot Becky still needs to fill is a rose dashed `.ph` box — search the CMS or the code for `[` placeholders.
 
 Fingerprints form: a required `audience` radio (`everyone` / `becky`) arrives in the Netlify Forms submission; the CMS Approved toggle reminds Becky to approve only "Share it with everyone" moments.
 
