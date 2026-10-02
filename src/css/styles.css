@@ -220,9 +220,9 @@ section { padding: 48px 0; }
 .btn-row { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; }
 
 /* ---------- Opening section (Home) ----------
-   The one full color field. All text on it is paper. It ends in a three-layer ridge traced from the
-   logo's own mountains: treeline teal at the back, a clay-rose line, then paper. Flat color, no gradients. */
-.opening { background: var(--field); color: var(--paper); position: relative; padding: 48px 0 150px; text-align: center; }
+   The one full color field. All text on it is paper. It ends in a three-layer ridge of a few large peaks, drawn from the
+   logo's mountain skyline: treeline teal at the back, a clay-rose line, then paper. Flat color, no gradients. */
+.opening { background: var(--field); color: var(--paper); position: relative; padding: 48px 0 180px; text-align: center; }
 .opening :focus-visible { outline-color: var(--paper); }
 /* Logo frame: a 5px paper ring directly around the logo, then a 7px clay-rose ring. The logo itself is untouched. */
 .hero-logo { width: min(280px, 64vw); margin: 0 auto 34px; border-radius: 50%; box-shadow: 0 0 0 5px var(--paper), 0 0 0 12px var(--rose); }
@@ -234,8 +234,8 @@ section { padding: 48px 0; }
 .scripture-block .sc { font-variant: small-caps; letter-spacing: 0.04em; }
 .scripture-block cite { font-style: normal; font-family: var(--font-ui); font-weight: 500; font-size: 14px; }
 .scripture-block cite a { color: var(--paper); text-decoration: underline; text-underline-offset: 3px; }
-.ridge { position: absolute; left: 0; right: 0; bottom: -1px; width: 100%; height: 110px; display: block; max-width: none; }
-@media (min-width: 768px) { .opening { padding: 64px 0 170px; } }
+.ridge { position: absolute; left: 0; right: 0; bottom: -1px; width: 100%; height: 140px; display: block; max-width: none; }
+@media (min-width: 768px) { .opening { padding: 64px 0 190px; } }
 
 /* ---------- Intro (Home): Becky's sentence and "My why" ---------- */
 .intro-section { padding: 40px 0 28px; text-align: center; }
@@ -578,4 +578,4 @@ main p:not(.eyebrow) a:not(.btn):not(.verse-chip), .story-body a:not(.verse-chip
 .req { font-weight: 500; font-size: 13px; color: var(--muted); margin-left: 4px; letter-spacing: 0; text-transform: none; }
 .signoff { font-family: var(--font-heading); font-style: italic; color: var(--brown); }
 main > section:last-child:not(.band) { padding-bottom: 88px; }
-@media (max-width: 600px) { .ridge { height: 64px; } .opening { padding-bottom: 104px; } }
+@media (max-width: 600px) { .ridge { height: 84px; } .opening { padding-bottom: 116px; } }
