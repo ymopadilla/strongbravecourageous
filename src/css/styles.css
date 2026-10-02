@@ -24,7 +24,7 @@
   --cream-pale: #FBF7EE;
   --footer: #3E2A20;             /* dark brown field for the footer */
   --gray-line: #DDD5C6;
-  --gray-input: #CFC6B5;
+  --gray-input: #8C7A6E;           /* form field borders: 4.0:1 on white (WCAG 1.4.11 needs 3:1) */
   --white: #FFFFFF;
   --muted: #5B6470;
 
@@ -590,3 +590,26 @@ fieldset.choice legend { font-family: var(--font-ui); font-weight: 700; font-siz
   .word-strip span + span::before { margin-right: 14px; }
   .pullquote { font-size: 18px; }
 }
+
+/* ---------- Batch 1b: accessibility fixes (colors here are replaced by the Wildflower palette in Batch 2) ---------- */
+:focus-visible { outline-color: var(--blue-text); }
+.field input:focus-visible, .field textarea:focus-visible, .field select:focus-visible,
+.search-box input[type="search"]:focus-visible, .search-dates input[type="date"]:focus-visible { outline: 3px solid var(--blue-text); outline-offset: 2px; }
+/* Links inside sentences are underlined, so they don't rely on color alone (WCAG 1.4.1). */
+main p:not(.eyebrow) a:not(.btn):not(.verse-chip), .story-body a:not(.verse-chip) { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; }
+.tag-grief { color: #8E3540; }
+.tag-healing { color: #3B5A70; }
+.tag-humor { background: var(--blue-text); border-color: var(--blue-text); }
+.eyebrow.blue { color: #3B5A70; }
+.crisis strong { color: #8E3540; }
+.req { font-weight: 500; font-size: 13px; color: var(--muted); margin-left: 4px; letter-spacing: 0; text-transform: none; }
+.signoff { font-family: var(--font-heading); font-style: italic; color: var(--brown); }
+.signup-note { font-size: 14px; margin: 10px 0 0; }
+.site-footer .signup-note { color: rgba(255,255,255,.88); }
+.site-footer h2 { font-family: var(--font-ui); color: #E9A7AE; font-size: 13px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; margin: 0 0 12px; }
+.site-footer .btn-primary { background: #E99AA1; border-color: #E99AA1; color: #1F1A17; }
+.site-footer .btn-primary:hover { background: #F2B4B9; border-color: #F2B4B9; }
+.footer-crisis { margin: 18px 0 0; font-size: 15px; max-width: 30em; }
+.footer-crisis a { font-weight: 700; text-decoration: underline; text-underline-offset: 3px; }
+/* Links on tinted panels: darker rose plus an underline (4.5:1 text contrast, and not color alone). */
+.quiet-panel a:not(.btn), .crisis a:not(.btn), .form-box.gold a:not(.btn), .form-box.blue a:not(.btn) { color: #8E3540; text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; }

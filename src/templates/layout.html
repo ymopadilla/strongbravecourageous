@@ -14,9 +14,8 @@
   <meta property="og:description" content="{{description}}">
   <meta property="og:url" content="{{site_url}}{{path}}">
   <meta property="og:image" content="{{site_url}}{{og_image}}">
-  <meta property="og:image:width" content="1200">
-  <meta property="og:image:height" content="630">
-  <meta property="og:image:alt" content="Strong. Brave. Courageous. — illustrated logo of a woman looking out over mountains at sunrise beside a wooden cross">
+  {{og_image_dims}}
+  <meta property="og:image:alt" content="{{og_image_alt}}">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="{{title}}">
   <meta name="twitter:description" content="{{description}}">
@@ -41,19 +40,18 @@
   <!-- Structured data -->
   <script type="application/ld+json">{{structured_data}}</script>
   {{head_extra}}
-  <!-- GA4: paste the gtag snippet here when analytics is set up -->
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
 
   <!-- Site-wide celebration line: the very top of every page -->
-  <div class="celebration"><div class="container">In celebration of Steve, Mason, and Josh.</div></div>
+  <aside class="celebration" aria-label="Dedication"><div class="container">In celebration of Steve, Mason, and Josh.</div></aside>
 
   <header class="site-header">
     <div class="container header-inner">
       <a class="brand" href="/" aria-label="Strong. Brave. Courageous. — Home">
         <!-- Logo is raster art (1254px master, no vector). srcset keeps it sharp on Retina; never show it larger than 300px. -->
-        <img src="/images/sbc-logo-256.png" srcset="/images/sbc-logo-128.png 128w, /images/sbc-logo-256.png 256w" sizes="52px" alt="Strong. Brave. Courageous. logo" width="52" height="52">
+        <img src="/images/sbc-logo-128.webp" srcset="/images/sbc-logo-64.webp 64w, /images/sbc-logo-128.webp 128w" sizes="52px" alt="" width="52" height="52">
         <span class="brand-text">
           <span class="brand-name">Strong. Brave. Courageous.</span>
         </span>
@@ -85,14 +83,16 @@
       <div class="footer-grid">
         <div>
           <a class="footer-brand brand" href="/">
-            <img src="/images/sbc-logo-256.png" srcset="/images/sbc-logo-128.png 128w, /images/sbc-logo-256.png 256w" sizes="72px" alt="Strong. Brave. Courageous. logo" width="72" height="72">
+            <img src="/images/sbc-logo-128.webp" srcset="/images/sbc-logo-128.webp 128w, /images/sbc-logo-256.webp 256w" sizes="72px" alt="" width="72" height="72" loading="lazy">
             <span class="brand-text">
               <span class="brand-name">Strong. Brave. Courageous.</span>
             </span>
           </a>
+          <!-- Draft wording, flagged for Becky's review. Shows on every page. -->
+          <p class="footer-crisis">If you&rsquo;re struggling or in crisis, call or text <a href="tel:988">988</a>, any time.</p>
         </div>
         <div>
-          <h4>Explore</h4>
+          <h2>Explore</h2>
           <ul>
             <li><a href="/stories.html">Stories</a></li>
             <li><a href="/scripture.html">Scripture</a></li>
@@ -104,8 +104,8 @@
           </ul>
         </div>
         <div>
-          <h4>One foot in front of the other</h4>
-          <form name="newsletter-footer" method="POST" action="/thanks.html" data-netlify="true" netlify-honeypot="bot-field" class="stack">
+          <h2>One foot in front of the other</h2>
+          <form name="newsletter-footer" method="POST" action="/thanks-signup.html" data-netlify="true" netlify-honeypot="bot-field" class="stack">
             <input type="hidden" name="form-name" value="newsletter-footer">
             <p class="hp"><label>Don’t fill this out if you’re human: <input name="bot-field"></label></p>
             <div class="field mb-0">
@@ -114,6 +114,7 @@
             </div>
             <button type="submit" class="btn btn-primary">Sign up</button>
           </form>
+          <p class="signup-note">One email when I share a new story. Nothing else.</p>
         </div>
       </div>
       <div class="footer-bottom">
@@ -125,5 +126,6 @@
 
   <script src="/js/main.js" defer></script>
   {{body_extra}}
+  {{analytics}}
 </body>
 </html>

@@ -56,6 +56,13 @@ You'll get an email from Netlify with what they wrote. Nothing shows on the site
 
 Don't want something on the site? Do nothing. It stays private in your Netlify inbox.
 
+## The picture people see when a story is shared
+Each story has an optional **Share image** box. Add a photo there and it becomes the picture shown when someone shares the story on Facebook or in a text. Wider than tall works best. Leave it empty and the site uses its standard picture.
+
+## What readers see after they send something
+- **Email signup:** a page asking them to check their email and confirm. They are added to your list only after they click the link in the email.
+- **Contact, Fingerprint, or Comment:** a short thank-you from you. Nothing they sent appears on the site until you approve it.
+
 ## Practice posts stay private from Google
 Any story whose title or text is still inside `[square brackets]` is treated as a practice post. You can see it on the site, but it is left out of Google, the site map, and the email to subscribers. Once you replace the brackets with your own title and words, it counts as a real story.
 

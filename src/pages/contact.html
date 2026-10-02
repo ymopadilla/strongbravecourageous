@@ -13,19 +13,19 @@ path: /contact.html
     </div>
 
     <div class="form-box" style="margin-top:24px;">
-      <form name="contact" method="POST" action="/thanks.html" data-netlify="true" netlify-honeypot="bot-field">
+      <form name="contact" method="POST" action="/thanks-message.html" data-netlify="true" netlify-honeypot="bot-field">
         <input type="hidden" name="form-name" value="contact">
         <p class="hp"><label>Don’t fill this out if you’re human: <input name="bot-field"></label></p>
         <div class="field">
-          <label for="c-name">Name</label>
+          <label for="c-name">Name <span class="req">(required)</span></label>
           <input type="text" id="c-name" name="name" required autocomplete="name">
         </div>
         <div class="field">
-          <label for="c-email">Email</label>
+          <label for="c-email">Email <span class="req">(required)</span></label>
           <input type="email" id="c-email" name="email" required autocomplete="email">
         </div>
         <div class="field">
-          <label for="c-message">Message</label>
+          <label for="c-message">Message <span class="req">(required)</span></label>
           <textarea id="c-message" name="message" required></textarea>
         </div>
         <button type="submit" class="btn btn-primary">Send</button>

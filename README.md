@@ -78,6 +78,16 @@ Netlify Forms is the inbox; Decap CMS is the publisher. Nothing appears on the s
 
 **Security headers** (`netlify.toml`): `Strict-Transport-Security: max-age=31536000` with no `includeSubDomains` and no `preload` (subdomains belong to WordPress.com), plus `Permissions-Policy`, `X-Frame-Options`, `X-Content-Type-Options`, and `Referrer-Policy`.
 
+**Analytics.** Cloudflare Web Analytics (cookieless, no banner needed). The snippet and token live in `build.js` (`CF_BEACON_TOKEN`) and are added before `</body>` only when Netlify reports `CONTEXT=production` and `PREVIEW` is not set, so the preview site and local builds are never counted. **Never delete the site from the Cloudflare dashboard**: the token would stop working.
+
+**Thank-you pages.** Each form lands on its own page: newsletter and footer signup → `/thanks-signup.html`; contact → `/thanks-message.html`; fingerprint → `/thanks-fingerprint.html`; comment → `/thanks-comment.html`. All are `noindex`. `/thanks.html` remains as a general fallback. The signup page tells readers to confirm by email, so the production site needs `MAILCHIMP_DOUBLE_OPT_IN=true`.
+
+**Share image per story.** Stories have an optional "Share image" field (`share_image`). When set, it becomes that story's `og:image`, `twitter:image`, and `BlogPosting` image; otherwise `images/og-image.jpg` is used.
+
+**Logo files.** Pages load WebP copies (`sbc-logo-64/128/256/280/560/840.webp`) made from `sbc-logo-1200.png`. The PNG originals stay in `src/images/` and are still used for the feed and the share picture.
+
+**Crisis line.** The footer on every page carries the 988 line (`.footer-crisis` in `layout.html`).
+
 **Favicons.** `src/favicon.ico`, `sbc-logo-16.png`, `sbc-logo-32.png`, `favicon-48.png`, `apple-touch-icon.png` (180), `icon-192.png`, `icon-512.png`, and `site.webmanifest`, all generated from `src/images/sbc-logo-1200.png`. Any `.ico`, `.png`, `.txt`, `.xml`, or `.webmanifest` file directly inside `src/` is copied to the site root.
 
 The Algolia Application ID and **Search-only** key are in `build.js` on purpose — the search key is public by design.

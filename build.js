@@ -59,6 +59,13 @@ const ALGOLIA = {
 const SITE_NAME = 'Strong. Brave. Courageous.';
 const TAGLINE = 'One foot in front of the other.';
 const OG_IMAGE = '/images/og-image.jpg';
+const OG_IMAGE_ALT = 'Strong. Brave. Courageous. — illustrated logo of a woman looking out over mountains at sunrise beside a wooden cross';
+/* Cloudflare Web Analytics (cookieless). Added only on the live site: Netlify sets CONTEXT=production on
+   production deploys, and the preview site is excluded by PREVIEW. Local builds never include it. */
+const CF_BEACON_TOKEN = 'fa02f73736e94daf880f420bf11cd376';
+const ANALYTICS = (!PREVIEW && process.env.CONTEXT === 'production')
+  ? `<!-- Cloudflare Web Analytics --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "${CF_BEACON_TOKEN}"}'></script><!-- End Cloudflare Web Analytics -->`
+  : '';
 const BUILD_DATE = new Date();
 const CURRENT_YEAR = BUILD_DATE.getFullYear();
 
@@ -172,7 +179,7 @@ const BECKY = {
 };
 const ROBOTS_META = /<meta name="robots"[^>]*>/g;
 
-function renderPage({ title, description, nav, pathname, content, og_type = 'website', og_image = OG_IMAGE, head_extra = '', body_extra = '', structured_data, noindex = false }) {
+function renderPage({ title, description, nav, pathname, content, og_type = 'website', og_image = OG_IMAGE, og_image_alt = OG_IMAGE_ALT, head_extra = '', body_extra = '', structured_data, noindex = false }) {
   if (PREVIEW) head_extra = `${head_extra.replace(ROBOTS_META, '')}<meta name="robots" content="noindex, nofollow">`;
   else if (noindex && !ROBOTS_META.test(head_extra)) head_extra += '<meta name="robots" content="noindex">';
   ROBOTS_META.lastIndex = 0;
@@ -212,6 +219,9 @@ function renderPage({ title, description, nav, pathname, content, og_type = 'web
     path: pathname,
     og_type,
     og_image,
+    og_image_alt: escapeHtml(og_image_alt),
+    og_image_dims: og_image === OG_IMAGE ? '<meta property="og:image:width" content="1200">\n  <meta property="og:image:height" content="630">' : '',
+    analytics: ANALYTICS,
     head_extra,
     body_extra,
     structured_data: JSON.stringify(sd),
@@ -351,6 +361,7 @@ function buildSimple(name, vars = {}) {
 
 buildSimple('index');
 buildSimple('thanks');
+['signup', 'message', 'fingerprint', 'comment'].forEach((t) => buildSimple(`thanks-${t}`));
 buildSimple('404');
 
 // Stories
@@ -548,6 +559,9 @@ buildSimple('fingerprints', {
       nav: 'stories',
       pathname: vars.story_path,
       og_type: 'article',
+      // Optional "Share image" from the editor; otherwise the site's standard share picture.
+      og_image: s.data.share_image || OG_IMAGE,
+      og_image_alt: s.data.share_image ? String(s.data.title || '') : OG_IMAGE_ALT,
       noindex: isPlaceholderStory(s),
       content: fill(tBody, vars),
       structured_data: {
@@ -560,7 +574,7 @@ buildSimple('fingerprints', {
         author: { '@type': 'Person', '@id': `${SITE_URL}/#becky`, name: 'Becky', url: `${SITE_URL}/about.html` },
         publisher: { '@id': `${SITE_URL}/#becky` },
         description: s.data.excerpt || '',
-        image: `${SITE_URL}${OG_IMAGE}`,
+        image: `${SITE_URL}${s.data.share_image || OG_IMAGE}`,
         mainEntityOfPage: { '@type': 'WebPage', '@id': `${SITE_URL}${vars.story_path}` },
         url: `${SITE_URL}${vars.story_path}`,
         articleSection: s.cats.join(', '),
