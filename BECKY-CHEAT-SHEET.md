@@ -56,5 +56,8 @@ You'll get an email from Netlify with what they wrote. Nothing shows on the site
 
 Don't want something on the site? Do nothing. It stays private in your Netlify inbox.
 
+## Practice posts stay private from Google
+Any story whose title or text is still inside `[square brackets]` is treated as a practice post. You can see it on the site, but it is left out of Google, the site map, and the email to subscribers. Once you replace the brackets with your own title and words, it counts as a real story.
+
 ## Questions
 Reach Yvonne at Digital Navigation Solutions. A short training video and a walkthrough are coming with your handoff.

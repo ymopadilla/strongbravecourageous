@@ -20,6 +20,15 @@
     X-Frame-Options = "SAMEORIGIN"
     X-Content-Type-Options = "nosniff"
     Referrer-Policy = "strict-origin-when-cross-origin"
+    # HTTPS only, for this exact domain. No includeSubDomains and no preload on purpose:
+    # the wildcard DNS record and WordPress.com email forwarding live on subdomains this site doesn't control.
+    Strict-Transport-Security = "max-age=31536000"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=(), payment=(), usb=()"
+
+[[headers]]
+  for = "/site.webmanifest"
+  [headers.values]
+    Content-Type = "application/manifest+json; charset=utf-8"
 
 # Long cache for static assets
 [[headers]]

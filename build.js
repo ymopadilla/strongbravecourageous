@@ -25,7 +25,12 @@ const SRC = path.join(ROOT, 'src');
 const CONTENT = path.join(ROOT, 'content');
 const FIXTURES = process.env.QA_FIXTURES ? path.join(ROOT, 'qa', 'fixtures') : null;
 const DIST = process.env.DIST_DIR ? path.resolve(process.env.DIST_DIR) : path.join(ROOT, 'dist');
-const SITE_URL = (process.env.URL || 'https://strongbravecourageous.com').replace(/\/$/, '');
+/* The production address is fixed here on purpose. Netlify's URL variable is each site's own address, so the
+   preview site (sbc-preview.netlify.app) would otherwise stamp itself into canonical, share, sitemap, and feed links. */
+const SITE_URL = 'https://strongbravecourageous.com';
+/* PREVIEW=true (set only on the preview site) marks every page noindex and writes a noindex header file.
+   The preview site carries no Algolia write key and no Mailchimp keys, so it never touches the live index or audience. */
+const PREVIEW = process.env.PREVIEW === 'true';
 
 /* Story categories are labels, not folders: a story can carry several. Order here = order of pills/tags. */
 const CATEGORIES = ['Grief', 'Healing', 'Faith', 'Perseverance', 'Humor'];
@@ -98,6 +103,9 @@ function isPlaceholder(body) {
   const t = (body || '').trim();
   return t.startsWith('[') && t.endsWith(']');
 }
+/* A story is a placeholder when its body or its title is still [bracketed] instructions.
+   Placeholders stay out of the sitemap and the feed, and their pages carry noindex. */
+const isPlaceholderStory = (s) => isPlaceholder(s.body) || String((s.data && s.data.title) || '').trim().startsWith('[');
 
 /* Markdown → HTML. Bare YouTube/Vimeo links on their own line become responsive embeds.
    Placeholder text in [BRACKETS] renders as a rose dashed instruction box. */
@@ -153,17 +161,21 @@ const stampAssets = (html) => html
 
 const layout = stampAssets(read(path.join(SRC, 'templates', 'layout.html')));
 
-const ORGANIZATION = {
-  '@type': 'Organization',
-  '@id': `${SITE_URL}/#organization`,
-  name: SITE_NAME,
-  url: SITE_URL,
-  logo: { '@type': 'ImageObject', url: `${SITE_URL}/images/sbc-logo-512.png`, width: 512, height: 512 },
-  founder: { '@type': 'Person', name: 'Becky' },
-  description: `I'm Becky. I share my stories of loss, love, and faith to help others see God's movement in their pain. ${TAGLINE}`,
+/* The site is one person's blog, so the structured data names a Person (Becky), not an Organization.
+   The description repeats the homepage's visible intro sentence. */
+const BECKY = {
+  '@type': 'Person',
+  '@id': `${SITE_URL}/#becky`,
+  name: 'Becky',
+  url: `${SITE_URL}/about.html`,
+  description: "I'm Becky. I share my stories of loss, love, and faith to help others see God's movement in their pain.",
 };
+const ROBOTS_META = /<meta name="robots"[^>]*>/g;
 
-function renderPage({ title, description, nav, pathname, content, og_type = 'website', og_image = OG_IMAGE, head_extra = '', body_extra = '', structured_data }) {
+function renderPage({ title, description, nav, pathname, content, og_type = 'website', og_image = OG_IMAGE, head_extra = '', body_extra = '', structured_data, noindex = false }) {
+  if (PREVIEW) head_extra = `${head_extra.replace(ROBOTS_META, '')}<meta name="robots" content="noindex, nofollow">`;
+  else if (noindex && !ROBOTS_META.test(head_extra)) head_extra += '<meta name="robots" content="noindex">';
+  ROBOTS_META.lastIndex = 0;
   const active = {};
   ['home', 'stories', 'scripture', 'about', 'fingerprints', 'resources', 'newsletter', 'contact'].forEach((n) => {
     active[`active_${n}`] = nav === n ? 'aria-current="page"' : '';
@@ -172,14 +184,15 @@ function renderPage({ title, description, nav, pathname, content, og_type = 'web
     ? {
         '@context': 'https://schema.org',
         '@graph': [
-          ORGANIZATION,
+          BECKY,
           {
             '@type': 'WebSite',
             '@id': `${SITE_URL}/#website`,
             name: SITE_NAME,
             url: SITE_URL,
             description,
-            publisher: { '@id': `${SITE_URL}/#organization` },
+            inLanguage: 'en',
+            publisher: { '@id': `${SITE_URL}/#becky` },
             potentialAction: { '@type': 'SearchAction', target: { '@type': 'EntryPoint', urlTemplate: `${SITE_URL}/stories.html?q={search_term_string}` }, 'query-input': 'required name=search_term_string' },
           },
         ],
@@ -191,7 +204,6 @@ function renderPage({ title, description, nav, pathname, content, og_type = 'web
         url: `${SITE_URL}${pathname}`,
         description,
         isPartOf: { '@id': `${SITE_URL}/#website` },
-        publisher: { '@id': `${SITE_URL}/#organization` },
       });
   return fill(layout, {
     title: escapeHtml(title),
@@ -277,7 +289,7 @@ function copyDir(from, to) {
   });
 }
 ['css', 'js', 'images'].forEach((d) => copyDir(path.join(SRC, d), path.join(DIST, d)));
-fs.readdirSync(SRC).filter((f) => /\.(ico|png|txt|xml)$/.test(f)).forEach((f) => fs.copyFileSync(path.join(SRC, f), path.join(DIST, f)));
+fs.readdirSync(SRC).filter((f) => /\.(ico|png|txt|xml|webmanifest)$/.test(f)).forEach((f) => fs.copyFileSync(path.join(SRC, f), path.join(DIST, f)));
 copyDir(path.join(ROOT, 'admin'), path.join(DIST, 'admin'));
 if (exists(path.join(ROOT, 'uploads'))) copyDir(path.join(ROOT, 'uploads'), path.join(DIST, 'uploads'));
 
@@ -536,6 +548,7 @@ buildSimple('fingerprints', {
       nav: 'stories',
       pathname: vars.story_path,
       og_type: 'article',
+      noindex: isPlaceholderStory(s),
       content: fill(tBody, vars),
       structured_data: {
         '@context': 'https://schema.org',
@@ -544,8 +557,8 @@ buildSimple('fingerprints', {
         headline: s.data.title,
         datePublished: isoDate(s.data.date),
         dateModified: isoDate(s.data.date),
-        author: { '@type': 'Person', name: 'Becky', url: `${SITE_URL}/about.html` },
-        publisher: { '@id': `${SITE_URL}/#organization` },
+        author: { '@type': 'Person', '@id': `${SITE_URL}/#becky`, name: 'Becky', url: `${SITE_URL}/about.html` },
+        publisher: { '@id': `${SITE_URL}/#becky` },
         description: s.data.excerpt || '',
         image: `${SITE_URL}${OG_IMAGE}`,
         mainEntityOfPage: { '@type': 'WebPage', '@id': `${SITE_URL}${vars.story_path}` },
@@ -562,23 +575,27 @@ buildSimple('fingerprints', {
 /* ---------- sitemap + robots ---------- */
 {
   const today = BUILD_DATE.toISOString().slice(0, 10);
+  const real = stories.filter((s) => !isPlaceholderStory(s));
   const pages = [
-    ['/', 'weekly', '1.0', today], ['/stories.html', 'weekly', '0.9', stories[0] ? isoDate(stories[0].data.date) : today],
-    ['/scripture.html', 'weekly', '0.7', stories[0] ? isoDate(stories[0].data.date) : today],
+    ['/', 'weekly', '1.0', today], ['/stories.html', 'weekly', '0.9', real[0] ? isoDate(real[0].data.date) : today],
+    ['/scripture.html', 'weekly', '0.7', real[0] ? isoDate(real[0].data.date) : today],
     ['/about.html', 'monthly', '0.7', today], ['/fingerprints.html', 'weekly', '0.6', today],
     ['/resources.html', 'monthly', '0.6', today], ['/contact.html', 'yearly', '0.4', today],
-    ...stories.map((s) => [`/stories/${s.slug}.html`, 'yearly', '0.8', isoDate(s.data.date)]),
+    ...real.map((s) => [`/stories/${s.slug}.html`, 'yearly', '0.8', isoDate(s.data.date)]),
   ];
   // /newsletter.html is intentionally left out until it returns to the menu (Jan 1, 2027).
   write('sitemap.xml', `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${pages.map(([u, f, p, d]) => `  <url><loc>${SITE_URL}${u}</loc><lastmod>${d}</lastmod><changefreq>${f}</changefreq><priority>${p}</priority></url>`).join('\n')}\n</urlset>\n`);
   write('robots.txt', `User-agent: *\nAllow: /\nDisallow: /admin/\nDisallow: /thanks.html\nSitemap: ${SITE_URL}/sitemap.xml\n`);
+  // Preview site only: a header telling search engines to ignore every file (pages, images, feed).
+  // Crawling stays allowed so they can read the noindex instruction.
+  if (PREVIEW) write('_headers', '/*\n  X-Robots-Tag: noindex, nofollow\n');
 }
 
 /* ---------- RSS feed (Mailchimp "RSS to email" reads this) ---------- */
 {
   const cdata = (s) => `<![CDATA[${String(s || '').replace(/]]>/g, ']]]]><![CDATA[>')}]]>`;
   const rfc822 = (d) => new Date(String(d).length === 10 ? `${d}T12:00:00Z` : d).toUTCString();
-  const items = stories.filter((s) => !isPlaceholder(s.body) && !String(s.data.title || '').startsWith('[')).slice(0, 20).map((s) => {
+  const items = stories.filter((s) => !isPlaceholderStory(s)).slice(0, 20).map((s) => {
     const url = `${SITE_URL}/stories/${s.slug}.html`;
     return `    <item>
       <title>${cdata(s.data.title)}</title>

@@ -66,6 +66,19 @@ Netlify Forms is the inbox; Decap CMS is the publisher. Nothing appears on the s
 | `MAILCHIMP_API_KEY` | `netlify/functions/submission-created.js` | Mailchimp API key (ends in `-us18`). |
 | `MAILCHIMP_AUDIENCE_ID` | same | ID of the "Story Subscribers" audience (Mailchimp → Audience → Settings → *Audience name and defaults*). |
 | `MAILCHIMP_DOUBLE_OPT_IN` | same, optional | `true` sends a confirmation email first. Default: subscribe immediately. |
+| `PREVIEW` | `build.js` | Set to `true` **only on the preview site** (sbc-preview.netlify.app, built from the `redesign` branch). Every page gets `noindex, nofollow` and the build writes a `_headers` file with `X-Robots-Tag: noindex, nofollow`. Never set it on production. |
+
+**Site address.** `SITE_URL` in `build.js` is fixed to `https://strongbravecourageous.com`. Canonical, Open Graph, Twitter, sitemap, robots, feed, and structured data all use it on every build, including the preview site, so a preview page never claims to be the real one. It no longer reads Netlify's `URL` variable.
+
+**Preview site.** A second Netlify site builds the `redesign` branch for Becky's review. It has `PREVIEW=true` and nothing else: no `ALGOLIA_WRITE_KEY` (the index script skips itself), no Mailchimp keys (signups stay in that site's Netlify Forms only), no form notifications, and Identity off. Its search box reads the live `stories` index (read-only).
+
+**Placeholder stories.** A story whose title or body is still `[bracketed instructions]` is a placeholder (`isPlaceholderStory` in `build.js`). Its page is built so Becky can see it, and it carries `noindex`, but it stays out of `sitemap.xml` and `feed.xml`.
+
+**Structured data.** Homepage: `WebSite` + `Person` (Becky). Stories: `BlogPosting` with Becky as author and publisher. Other pages: `WebPage`. Keep the Person description identical to the homepage intro sentence.
+
+**Security headers** (`netlify.toml`): `Strict-Transport-Security: max-age=31536000` with no `includeSubDomains` and no `preload` (subdomains belong to WordPress.com), plus `Permissions-Policy`, `X-Frame-Options`, `X-Content-Type-Options`, and `Referrer-Policy`.
+
+**Favicons.** `src/favicon.ico`, `sbc-logo-16.png`, `sbc-logo-32.png`, `favicon-48.png`, `apple-touch-icon.png` (180), `icon-192.png`, `icon-512.png`, and `site.webmanifest`, all generated from `src/images/sbc-logo-1200.png`. Any `.ico`, `.png`, `.txt`, `.xml`, or `.webmanifest` file directly inside `src/` is copied to the site root.
 
 The Algolia Application ID and **Search-only** key are in `build.js` on purpose — the search key is public by design.
 
