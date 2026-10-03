@@ -440,6 +440,15 @@ section { padding: 48px 0; }
 .wall-top { padding-bottom: 8px; }
 .wall-intro { margin: 18px 0 22px; }
 .wall-list { display: grid; gap: 28px; }
+.wall-search { display: flex; flex-wrap: wrap; gap: 10px; margin: 0 0 18px; }
+.wall-search input[type="search"] {
+  flex: 1 1 220px; min-height: 48px; padding: 10px 16px; font: inherit; color: var(--ink);
+  background: var(--white); border: 1px solid var(--line); border-radius: 999px;
+}
+.wall-search input[type="search"]::placeholder { color: var(--muted); opacity: 1; }
+.wall-search input[type="search"]:focus-visible { outline: 3px solid var(--brown); outline-offset: 2px; }
+.wall-search .btn { padding: 10px 22px; }
+.wall-result { margin: 0 0 16px; overflow-wrap: anywhere; }
 .wall-more { margin: 28px 0 0; text-align: center; }
 .wall-card:focus { outline: none; }
 .wall-card { background: var(--blush); border-radius: 4px 28px 4px 28px; padding: 24px 26px; }

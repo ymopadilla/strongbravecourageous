@@ -197,9 +197,15 @@
   function get(path) {
     return fetch(URL_BASE + '/rest/v1/' + path, { headers: headers() }).then(function (r) { if (!r.ok) throw new Error('load'); return r.json(); });
   }
-  // Newest APPROVED first. Each card still shows the day the memory was submitted.
+  /* The list comes from the database function wall_memories: approved memories only, newest APPROVED first
+     (each card still shows the day the memory was submitted). A search runs in the database across the
+     whole wall, by first name and memory text; it is not a filter on the cards already loaded. */
+  var query = '';
   function fetchMemories(offset) {
-    return get('memories?select=id,created_at,first_name,memory,photo_path,youtube_id,heart_count&status=eq.approved&order=approved_at.desc.nullslast,id.desc&limit=' + (PAGE + 1) + '&offset=' + offset);
+    return fetch(URL_BASE + '/rest/v1/rpc/wall_memories', {
+      method: 'POST', headers: headers({ 'Content-Type': 'application/json' }),
+      body: JSON.stringify({ p_query: query || null, p_limit: PAGE + 1, p_offset: offset })
+    }).then(function (r) { if (!r.ok) throw new Error('load'); return r.json(); });
   }
   function load(reset) {
     if (reset) { shown = 0; seen = {}; }
@@ -216,7 +222,12 @@
       return comments.then(function (all) {
         statusLine.hidden = true;
         if (reset) list.textContent = '';
-        emptyLine.hidden = !(reset && !rows.length);
+        var none = reset && !rows.length;
+        emptyLine.hidden = !(none && !query);
+        noMatch.hidden = !(none && query);
+        // The words searched for are shown as plain text, like everything else a visitor types.
+        resultLine.textContent = query && !none ? 'Memories matching \u201c' + query + '\u201d' : '';
+        resultLine.hidden = !resultLine.textContent;
         var first = null;
         rows.forEach(function (m) {
           var card = memoryCard(m, all.filter(function (c) { return c.memory_id === m.id; }));
@@ -229,6 +240,22 @@
     }).catch(function () { statusLine.textContent = MSG.loadFail; statusLine.hidden = false; more.disabled = false; });
   }
   more.addEventListener('click', function () { load(false); });
+
+  /* ---------- search ---------- */
+  var searchForm = document.getElementById('wall-search');
+  var searchBox = document.getElementById('wall-q');
+  var clearBtn = document.getElementById('wall-clear');
+  var noMatch = document.getElementById('wall-nomatch');
+  var resultLine = document.getElementById('wall-result');
+  function runSearch(text) {
+    query = String(text || '').trim().slice(0, 100);
+    clearBtn.hidden = !query;
+    return load(true);
+  }
+  searchForm.addEventListener('submit', function (ev) { ev.preventDefault(); runSearch(searchBox.value); });
+  clearBtn.addEventListener('click', function () { searchBox.value = ''; runSearch(''); searchBox.focus(); });
+  // The small "x" some browsers draw inside a search box also restores the full wall.
+  searchBox.addEventListener('input', function () { if (!searchBox.value && query) runSearch(''); });
 
   /* ---------- photo: made smaller in the browser, re-saved as JPEG (this also drops location data) ---------- */
   var MAX_SIDE = 1600;
