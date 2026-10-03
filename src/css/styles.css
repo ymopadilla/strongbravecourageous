@@ -411,6 +411,22 @@ section { padding: 48px 0; }
 .inline-form { display: flex; flex-direction: column; gap: 10px; }
 @media (min-width: 600px) { .inline-form { flex-direction: row; } .inline-form .field { flex: 1; margin: 0; } }
 
+/* ---------- Flowers from the logo (decoration; one per screen, never behind text, none inside a story body) ---------- */
+.flower { display: block; height: auto; }
+.flower-rule { display: flex; justify-content: center; padding: 8px 0 28px; }
+.flower-rule.tight { padding: 4px 0 20px; }
+.flower-sprig { width: 190px; }
+.flower-sprig.small { width: 120px; }
+.flower-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 20px; }
+.flower-head h1 { margin-bottom: 0; }
+.flower-cluster { width: 92px; flex: none; }
+.end-mark { margin: 44px 0 0; display: flex; justify-content: center; }
+.flower-blossom { width: 34px; }
+@media (max-width: 600px) {
+  .flower-sprig { width: 150px; }
+  .flower-cluster { width: 64px; }
+}
+
 /* ---------- Page intro text (Fingerprints definition, Contact note) ---------- */
 .page-intro { max-width: 38em; margin: 14px auto 0; text-align: left; }
 .contact-note p { font-size: 18px; margin: 0 0 12px; }

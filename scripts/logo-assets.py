@@ -76,3 +76,57 @@ d.ellipse(((cx - D/2 - 5) * S, (cy - D/2 - 5) * S, (cx + D/2 + 5) * S, (cy + D/2
 lg = full.resize((D * S, D * S), Image.LANCZOS); og.paste(lg, (int((cx - D/2) * S), int((cy - D/2) * S)), lg)
 og.resize((W, H), Image.LANCZOS).save(f'{IMG}/og-image.jpg', quality=88, optimize=True, progressive=True)
 print('done')
+
+# ---------- Flowers cut from the logo (decorations; see README "Flowers") ----------
+import numpy as np
+RGBm = master.convert('RGB')
+
+def key_white(region, poly=None, thresh=244, drop_grey=False, max_r=None):
+    """Cut a piece of the artwork off its white background: near-white pixels connected to the
+    edge of the piece become transparent; whites enclosed by the drawing (petals) stay."""
+    x0, y0, x1, y1 = region
+    im = RGBm.crop(region); w, h = im.size
+    a = np.array(im).astype(int)
+    white = a.min(axis=2) >= thresh
+    inside = np.ones((h, w), bool)
+    if poly:
+        pm = Image.new('L', (w, h), 0); ImageDraw.Draw(pm).polygon([(x - x0, y - y0) for x, y in poly], fill=255)
+        inside = np.array(pm) > 0
+    if max_r:   # stay inside the logo's thin inner ring
+        yy, xx = np.mgrid[y0:y1, x0:x1]; inside &= ((xx - CX) ** 2 + (yy - CY) ** 2) < max_r ** 2
+    if drop_grey:   # the rock behind the flowers: low-colour, mid-brightness pixels
+        sat = a.max(axis=2) - a.min(axis=2); lum = a.mean(axis=2)
+        grey = (sat < 34) & (lum > 95)
+        white = white | np.array(Image.fromarray((grey * 255).astype('uint8')).filter(ImageFilter.MedianFilter(5))) .astype(bool)
+    passable = white | ~inside
+    seen = np.zeros((h, w), bool); stack = [(0, x) for x in range(w)] + [(h - 1, x) for x in range(w)] + [(y, 0) for y in range(h)] + [(y, w - 1) for y in range(h)]
+    while stack:
+        y, x = stack.pop()
+        if y < 0 or x < 0 or y >= h or x >= w or seen[y, x] or not passable[y, x]: continue
+        seen[y, x] = True
+        stack.extend(((y + 1, x), (y - 1, x), (y, x + 1), (y, x - 1)))
+    alpha = Image.fromarray((~seen * 255).astype('uint8')).filter(ImageFilter.MedianFilter(7)).filter(ImageFilter.MinFilter(11)).filter(ImageFilter.MaxFilter(11)).filter(ImageFilter.GaussianBlur(1.6))
+    out = im.convert('RGBA'); out.putalpha(alpha)
+    return out.crop(out.getbbox())
+
+def fit(im, width):
+    return im.resize((width, round(im.height * width / im.width)), Image.LANCZOS)
+
+# leaf-and-heart sprig (sits on white under the description)
+sprig = key_white((1340, 3290, 2640, 3640), poly=[(1340, 3440), (1500, 3310), (2500, 3310), (2640, 3440), (2500, 3610), (2250, 3640), (1750, 3640), (1500, 3610)])
+fit(sprig, 480).save(f'{IMG}/flower-sprig.webp', quality=88, method=6)
+# blossom cluster (the wildflowers and fern at the foot of the rock, lower left)
+V = lambda x, y: (round(100 + x * 4 / 3), round(1800 + y * 4 / 3))
+cluster = key_white((120, 1840, 980, 3000), poly=[V(*p) for p in [(40, 175), (120, 140), (215, 135), (245, 225), (335, 290), (350, 395), (430, 440), (560, 520), (625, 600), (560, 880), (60, 700)]], drop_grey=True, max_r=1800)
+fit(cluster, 420).save(f'{IMG}/flower-cluster.webp', quality=88, method=6)
+# single blossom (the pink flower below the white one): keep only its pink and gold
+cx, cy = (round(2880 + 522 * 4 / 3), round(1200 + 572 * 4 / 3)); r = 135
+b = RGBm.crop((cx - r, cy - r, cx + r, cy + r)); a = np.array(b).astype(int)
+yy, xx = np.mgrid[0:2 * r, 0:2 * r]
+keep = ((a[..., 0] > a[..., 1] + 22) & (a[..., 0] > 150)) & ((xx - r) ** 2 + (yy - r) ** 2 < (r - 4) ** 2)
+k = Image.fromarray((keep * 255).astype('uint8')).filter(ImageFilter.MedianFilter(7)).filter(ImageFilter.MaxFilter(9))
+filled = k.copy(); ImageDraw.floodfill(filled, (0, 0), 128)             # outside becomes 128; holes stay 0
+al = filled.point(lambda v: 0 if v == 128 else 255).filter(ImageFilter.MinFilter(9)).filter(ImageFilter.GaussianBlur(1.5))
+b = b.convert('RGBA'); b.putalpha(al); b = b.crop(b.getbbox())
+fit(b, 120).save(f'{IMG}/flower-blossom.webp', quality=90, method=6)
+print('flowers', sprig.size, cluster.size, b.size)
