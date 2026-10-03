@@ -463,6 +463,22 @@ section { padding: 48px 0; }
 .wall-thanks:focus { outline: none; }
 #share .radio { margin-bottom: 18px; }
 
+/* ---------- Memorial wall approval screen ---------- */
+.wa-gap { margin-top: 16px; }
+.wa-link { background: none; border: 0; padding: 0; font: inherit; color: var(--link); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; text-align: left; }
+.wa-link:focus-visible { outline: 3px solid var(--brown); outline-offset: 2px; }
+.field input[type="password"] { width: 100%; min-height: 48px; padding: 10px 14px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--white); font: inherit; color: var(--ink); }
+.wa-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+.wa-bar .muted { margin-right: auto; }
+#wa-main h3 { margin: 24px 0 12px; }
+#wa-main .count { font-family: var(--font-ui); font-weight: 700; font-size: 14px; color: var(--muted); margin-left: 6px; }
+.wa-group { border-top: 1px solid var(--rule); margin-top: 28px; padding-top: 6px; }
+.wa-group summary { cursor: pointer; font-family: var(--font-heading); font-weight: 700; font-size: 22px; color: var(--brown); padding: 12px 0; }
+.wa-group summary:focus-visible { outline: 3px solid var(--brown); outline-offset: 2px; }
+.wa-fact { margin: 6px 0 0; font-size: 14px; color: var(--muted); overflow-wrap: anywhere; }
+.wa-actions { margin-top: 16px; justify-content: flex-start; }
+.wa-files { padding-left: 20px; font-size: 14px; overflow-wrap: anywhere; }
+
 /* ---------- Page intro text (Fingerprints definition, Contact note) ---------- */
 .page-intro { max-width: 38em; margin: 14px auto 0; text-align: left; }
 .contact-note p { font-size: 18px; margin: 0 0 12px; }

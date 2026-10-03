@@ -1,0 +1,77 @@
+---
+title: Memorial wall approvals — Strong. Brave. Courageous.
+description: Approval screen for the Memorial wall.
+nav: none
+path: /wall-admin.html
+head_extra: <meta name="robots" content="noindex, nofollow">
+body_extra: <script src="/js/wall-admin.js" defer data-url="{{supabase_url}}" data-key="{{supabase_key}}"></script>
+---
+<!-- Approval screen for the Memorial wall. For Becky and Yvonne only: sign-in is by invitation, and the
+     database checks the approval list (wall_admins) on every request. Not in the menu, the sitemap, or search engines.
+     Everything a visitor wrote is shown as plain text, never as HTML (src/js/wall-admin.js). -->
+<section>
+  <div class="container narrow">
+    <h1>Memorial wall approvals</h1>
+    <hr class="divider">
+    <p class="wall-msg" id="wa-msg" role="alert" hidden></p>
+    <noscript><p class="ph">This screen needs JavaScript turned on.</p></noscript>
+
+    <!-- Sign in -->
+    <div class="form-box" id="wa-signin" hidden>
+      <h2>Sign in</h2>
+      <form id="wa-signin-form">
+        <div class="field">
+          <label for="wa-email">Email</label>
+          <input type="email" id="wa-email" required autocomplete="username">
+        </div>
+        <div class="field">
+          <label for="wa-password">Password</label>
+          <input type="password" id="wa-password" required autocomplete="current-password">
+        </div>
+        <button type="submit" class="btn btn-primary">Sign in</button>
+      </form>
+      <p class="hint wa-gap"><button type="button" class="wa-link" id="wa-forgot">Forgot your password? Email me a link to set a new one.</button></p>
+    </div>
+
+    <!-- Choose a password (after an invitation or a reset link) -->
+    <div class="form-box" id="wa-setpw" hidden>
+      <h2>Choose your password</h2>
+      <form id="wa-setpw-form">
+        <div class="field">
+          <label for="wa-newpw">New password</label>
+          <p class="hint" id="wa-newpw-hint">At least 10 characters.</p>
+          <input type="password" id="wa-newpw" required minlength="10" autocomplete="new-password" aria-describedby="wa-newpw-hint">
+        </div>
+        <button type="submit" class="btn btn-primary">Save password</button>
+      </form>
+    </div>
+
+    <!-- The approval screen -->
+    <div id="wa-main" hidden>
+      <p class="wa-bar"><span id="wa-who" class="muted"></span> <button type="button" class="btn btn-outline" id="wa-refresh">Refresh</button> <button type="button" class="btn btn-outline" id="wa-signout">Sign out</button></p>
+
+      <h2 id="wa-h-pending">Waiting for you</h2>
+      <h3>Memories <span class="count" id="wa-n-pm"></span></h3>
+      <div class="wall-list" id="wa-pending-memories"></div>
+      <h3>Comments <span class="count" id="wa-n-pc"></span></h3>
+      <div class="wall-list" id="wa-pending-comments"></div>
+
+      <details class="wa-group">
+        <summary>On the wall <span class="count" id="wa-n-ok"></span></summary>
+        <div class="wall-list" id="wa-approved"></div>
+      </details>
+      <details class="wa-group">
+        <summary>Not shown <span class="count" id="wa-n-no"></span></summary>
+        <p class="hint">A rejected memory keeps its photo for 30 days, so the decision can be undone. After 30 days the photo is removed.</p>
+        <div class="wall-list" id="wa-rejected"></div>
+      </details>
+      <details class="wa-group">
+        <summary>Housekeeping <span class="count" id="wa-n-orph"></span></summary>
+        <p class="hint">Uploaded photos more than 7 days old with no memory attached. These come from a form someone started and did not finish.</p>
+        <ul class="wa-files" id="wa-orphans"></ul>
+        <p><button type="button" class="btn btn-outline" id="wa-orphans-remove" hidden>Remove these files</button></p>
+        <p class="hint" id="wa-clean-note"></p>
+      </details>
+    </div>
+  </div>
+</section>

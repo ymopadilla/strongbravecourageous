@@ -586,6 +586,8 @@ buildSimple('fingerprints', {
 
 // Memorial wall (memories load in the browser from Supabase; see src/js/wall.js)
 buildSimple('memorial-wall');
+// Approval screen for Becky and Yvonne (sign-in required; noindex; never in the menu or sitemap)
+buildSimple('wall-admin');
 
 /* ---------- story pages ---------- */
 /* Newer / older links under each story. Placeholders are skipped unless the story itself is one. */
@@ -676,7 +678,7 @@ function storyNav(s) {
   ];
   // /newsletter.html is intentionally left out until it returns to the menu (Jan 1, 2027).
   write('sitemap.xml', `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${pages.map(([u, f, p, d]) => `  <url><loc>${SITE_URL}${u}</loc><lastmod>${d}</lastmod><changefreq>${f}</changefreq><priority>${p}</priority></url>`).join('\n')}\n</urlset>\n`);
-  write('robots.txt', `User-agent: *\nAllow: /\nDisallow: /admin/\nDisallow: /thanks.html\nSitemap: ${SITE_URL}/sitemap.xml\n`);
+  write('robots.txt', `User-agent: *\nAllow: /\nDisallow: /admin/\nDisallow: /wall-admin.html\nDisallow: /thanks.html\nSitemap: ${SITE_URL}/sitemap.xml\n`);
   // Preview site only: a header telling search engines to ignore every file (pages, images, feed).
   // Crawling stays allowed so they can read the noindex instruction.
   if (PREVIEW) write('_headers', '/*\n  X-Robots-Tag: noindex, nofollow\n');
