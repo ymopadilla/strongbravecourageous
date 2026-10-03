@@ -189,24 +189,45 @@
     return art;
   }
 
-  function load() {
-    var get = function (path) {
-      return fetch(URL_BASE + '/rest/v1/' + path, { headers: headers() }).then(function (r) { if (!r.ok) throw new Error('load'); return r.json(); });
-    };
-    Promise.all([
-      get('memories?select=id,created_at,first_name,memory,photo_path,youtube_id,heart_count&status=eq.approved&order=created_at.desc&limit=500'),
-      get('comments?select=id,memory_id,created_at,first_name,comment&status=eq.approved&order=created_at.asc&limit=2000')
-    ]).then(function (out) {
-      var memories = out[0], comments = out[1];
-      statusLine.hidden = true;
-      list.textContent = '';
-      if (!memories.length) { emptyLine.hidden = false; return; }
-      emptyLine.hidden = true;
-      memories.forEach(function (m) {
-        list.appendChild(memoryCard(m, comments.filter(function (c) { return c.memory_id === m.id; })));
-      });
-    }).catch(function () { statusLine.textContent = MSG.loadFail; statusLine.hidden = false; });
+  /* Memories load 20 at a time. One extra row is requested each time, only to learn whether a "Show more"
+     button is needed; there is no upper limit on how many the wall can hold. */
+  var PAGE = 20;
+  var more = document.getElementById('wall-more');
+  var shown = 0, seen = {};
+  function get(path) {
+    return fetch(URL_BASE + '/rest/v1/' + path, { headers: headers() }).then(function (r) { if (!r.ok) throw new Error('load'); return r.json(); });
   }
+  function fetchMemories(offset) {
+    return get('memories?select=id,created_at,first_name,memory,photo_path,youtube_id,heart_count&status=eq.approved&order=created_at.desc,id.desc&limit=' + (PAGE + 1) + '&offset=' + offset);
+  }
+  function load(reset) {
+    if (reset) { shown = 0; seen = {}; }
+    more.disabled = true;
+    return fetchMemories(shown).then(function (rows) {
+      var hasMore = rows.length > PAGE;
+      rows = rows.slice(0, PAGE);
+      shown += rows.length;
+      rows = rows.filter(function (m) { if (seen[m.id]) return false; seen[m.id] = true; return true; });
+      var ids = rows.map(function (m) { return m.id; });
+      var comments = ids.length
+        ? get('comments?select=id,memory_id,created_at,first_name,comment&status=eq.approved&memory_id=in.(' + ids.join(',') + ')&order=created_at.asc')
+        : Promise.resolve([]);
+      return comments.then(function (all) {
+        statusLine.hidden = true;
+        if (reset) list.textContent = '';
+        emptyLine.hidden = !(reset && !rows.length);
+        var first = null;
+        rows.forEach(function (m) {
+          var card = memoryCard(m, all.filter(function (c) { return c.memory_id === m.id; }));
+          list.appendChild(card); first = first || card;
+        });
+        more.hidden = !hasMore; more.disabled = false;
+        // After "Show more", keyboard and screen-reader users land on the first new memory.
+        if (!reset && first) { first.tabIndex = -1; first.focus(); }
+      });
+    }).catch(function () { statusLine.textContent = MSG.loadFail; statusLine.hidden = false; more.disabled = false; });
+  }
+  more.addEventListener('click', function () { load(false); });
 
   /* ---------- photo: made smaller in the browser, re-saved as JPEG (this also drops location data) ---------- */
   var MAX_SIDE = 1600;
@@ -291,5 +312,5 @@
     });
   });
 
-  load();
+  load(true);
 })();

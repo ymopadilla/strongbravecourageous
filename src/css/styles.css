@@ -431,6 +431,8 @@ section { padding: 48px 0; }
 .wall-top { padding-bottom: 8px; }
 .wall-intro { margin: 18px 0 22px; }
 .wall-list { display: grid; gap: 28px; }
+.wall-more { margin: 28px 0 0; text-align: center; }
+.wall-card:focus { outline: none; }
 .wall-card { background: var(--blush); border-radius: 4px 28px 4px 28px; padding: 24px 26px; }
 .wall-photo { display: block; width: 100%; height: auto; max-height: 560px; object-fit: contain; background: var(--paper); border-radius: 2px 20px 2px 2px; margin: 0 0 18px; }
 /* Visitor text: plain text only. pre-line keeps the writer's line breaks. */
