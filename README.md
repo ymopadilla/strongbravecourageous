@@ -26,7 +26,7 @@ Static site for Becky, built by Digital Navigation Solutions. Hosted on Netlify.
 | `admin/` | Decap CMS editor (`index.html` + `config.yml`) |
 | `build.js` | Plain Node script — turns `src/` + `content/` into `dist/` |
 | `netlify.toml` | Build command, publish folder, headers, friendly redirects |
-| `BECKY-CHEAT-SHEET.md` | Plain-English instructions for Becky |
+| `BECKY-CHEAT-SHEET.md` | One-line pointer. Becky's guides are maintained in Google Drive, not in this repo: SBC > 04_Guides and reference > "SBC — Managing Your Site (posting guide)". Edit the guide there. |
 
 Only dependency: `marked` (Markdown → HTML). No frameworks.
 
