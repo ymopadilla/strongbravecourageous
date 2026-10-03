@@ -87,3 +87,64 @@ begin
   perform set_config('role', 'postgres', true);
   raise exception 'RESULTS (everything above was rolled back):%', r;
 end $$;
+
+-- ---------------------------------------------------------------------------------------------------
+-- Follow-ups (Oct 3): tags, approval-date order, search, and the older page's six-value call.
+-- Run this block separately. Same pattern: the error text is the results, and everything is rolled back.
+do $$
+declare r text := ''; v int; t text; a uuid; b uuid; c uuid;
+begin
+  perform set_config('role', 'anon', true);
+  -- the page live before these changes: six named values, no tags
+  perform public.submit_memory(p_first_name := 'Old page', p_memory := 'six values', p_photo_path := null, p_youtube_id := null, p_photo_permission := false, p_email := null);
+  r := r || E'\nolder page call (six values): accepted';
+  perform public.submit_memory('Tag none', 'We went fishing', null, null, false, null, '{}');
+  perform public.submit_memory('Tag one', 'FISHING with Josh', null, null, false, null, array['josh']);
+  perform public.submit_memory('Tag several', '100% true_story', null, null, false, null, array['steve', 'mason', 'family', 'steve']);
+  begin perform public.submit_memory('Bad', 'x', null, null, false, null, array['josh', 'someone else']); r := r || E'\ntag outside the four: ALLOWED (BAD)';
+  exception when others then r := r || E'\ntag outside the four refused: ' || sqlstate; end;
+  begin update public.memories set tags = array['josh'] where first_name = 'Tag none'; r := r || E'\npublic edits tags: ALLOWED (BAD)';
+  exception when others then r := r || E'\npublic edits tags refused: ' || sqlstate; end;
+  select count(*) into v from public.wall_page(); r := r || E'\npublic sees pending rows through wall_page, want 0: ' || v;
+
+  perform set_config('role', 'postgres', true);
+  select string_agg(first_name || '=' || array_to_string(tags, '+'), ', ' order by first_name) into t from public.memories;
+  r := r || E'\nstored tags (none, one, several without repeats): ' || t;
+  select id into a from public.memories where first_name = 'Tag none';
+  select id into b from public.memories where first_name = 'Tag one';
+  select id into c from public.memories where first_name = 'Tag several';
+  update public.memories set created_at = now() - interval '1 day' where id = a;   -- a was SUBMITTED later than b
+  update public.memories set created_at = now() - interval '9 days' where id = b;
+  update public.memories set status = 'approved' where id = a;
+  perform pg_sleep(0.02);
+  update public.memories set status = 'approved', approved_at = '2020-01-01' where id = c;  -- a request cannot choose the date
+  begin insert into public.memories (first_name, memory, tags) values ('x', 'y', array['nope']); r := r || E'\ntable accepts a bad tag: (BAD)';
+  exception when others then r := r || E'\ntable itself refuses a bad tag: ' || sqlstate; end;
+
+  -- a signed-in user who is NOT on the approval list cannot edit tags
+  perform set_config('role', 'authenticated', true);
+  perform set_config('request.jwt.claims', json_build_object('sub', gen_random_uuid(), 'role', 'authenticated')::text, true);
+  update public.memories set tags = array['josh'] where id = a; get diagnostics v = row_count;
+  r := r || E'\nsigned-in stranger edits tags, want 0 rows: ' || v;
+
+  perform set_config('role', 'postgres', true);
+  perform pg_sleep(0.02);
+  update public.memories set status = 'approved' where id = b;   -- b: submitted earliest, approved LAST
+  perform set_config('role', 'anon', true);
+  select string_agg(first_name, ' > ' order by ord) into t
+    from public.wall_page() with ordinality as w(id, created_at, approved_at, first_name, memory, photo_path, youtube_id, heart_count, tags, ord);
+  r := r || E'\norder, want Tag one > Tag several > Tag none (newest approved first): ' || t;
+  select string_agg(first_name, ',' order by first_name) into t from public.wall_page('fishing'); r := r || E'\nsearch a word, any case, want Tag none,Tag one: ' || t;
+  select string_agg(first_name, ',') into t from public.wall_page('tag sev'); r := r || E'\nsearch part of a name, want Tag several: ' || t;
+  select count(*) into v from public.wall_page('zzzz'); r := r || E'\nsearch with no match, want 0: ' || v;
+  select count(*) into v from public.wall_page('%'); r := r || E'\nsearch for a percent sign is literal, want 1: ' || v;
+  select count(*) into v from public.wall_page('_'); r := r || E'\nsearch for an underscore is literal, want 1: ' || v;
+  select string_agg(first_name, ',') into t from public.wall_page(null, 'josh'); r := r || E'\nfilter josh, want Tag one: ' || t;
+  select string_agg(first_name, ',') into t from public.wall_page(null, 'family'); r := r || E'\nfilter family, want Tag several: ' || t;
+  select count(*) into v from public.wall_page('fishing', 'josh'); r := r || E'\nfilter plus search (fishing within josh), want 1: ' || v;
+  select count(*) into v from public.wall_page('fishing', 'mason'); r := r || E'\nfilter plus search with no match, want 0: ' || v;
+  select count(*) into v from public.wall_page(null, null, 2, 0); r := r || E'\nfirst page of 2, want 2: ' || v;
+  select count(*) into v from public.wall_page(null, null, 2, 2); r := r || E'\nnext page, want 1: ' || v;
+  perform set_config('role', 'postgres', true);
+  raise exception 'RESULTS (everything above was rolled back):%', r;
+end $$;

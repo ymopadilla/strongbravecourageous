@@ -12,7 +12,7 @@ language plpgsql set search_path = ''
 as $$
 begin
   if new.status = 'approved' and (tg_op = 'INSERT' or old.status is distinct from 'approved') then
-    new.approved_at := now();
+    new.approved_at := clock_timestamp();  -- the real moment, so two approvals in one batch still order correctly
   end if;
   return new;
 end $$;
