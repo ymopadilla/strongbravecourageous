@@ -197,8 +197,9 @@
   function get(path) {
     return fetch(URL_BASE + '/rest/v1/' + path, { headers: headers() }).then(function (r) { if (!r.ok) throw new Error('load'); return r.json(); });
   }
+  // Newest APPROVED first. Each card still shows the day the memory was submitted.
   function fetchMemories(offset) {
-    return get('memories?select=id,created_at,first_name,memory,photo_path,youtube_id,heart_count&status=eq.approved&order=created_at.desc,id.desc&limit=' + (PAGE + 1) + '&offset=' + offset);
+    return get('memories?select=id,created_at,first_name,memory,photo_path,youtube_id,heart_count&status=eq.approved&order=approved_at.desc.nullslast,id.desc&limit=' + (PAGE + 1) + '&offset=' + offset);
   }
   function load(reset) {
     if (reset) { shown = 0; seen = {}; }
