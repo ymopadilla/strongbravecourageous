@@ -9,6 +9,14 @@ body_extra: <script src="/js/wall-admin.js" defer data-url="{{supabase_url}}" da
 <!-- Approval screen for the Memorial wall. For Becky and Yvonne only: sign-in is by invitation, and the
      database checks the approval list (wall_admins) on every request. Not in the menu, the sitemap, or search engines.
      Everything a visitor wrote is shown as plain text, never as HTML (src/js/wall-admin.js). -->
+<!-- Registers the "memorial-alert" form with Netlify so its form notifications can email Becky and Yvonne.
+     Never shown and never filled in by a person: netlify/functions/memorial-alert.js files the entries. -->
+<form name="memorial-alert" data-netlify="true" hidden>
+  <input type="hidden" name="form-name" value="memorial-alert">
+  <input type="hidden" name="message">
+  <input type="hidden" name="waiting_memories">
+  <input type="hidden" name="waiting_comments">
+</form>
 <section>
   <div class="container narrow">
     <h1>Memorial wall approvals</h1>
