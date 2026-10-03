@@ -181,7 +181,7 @@ Logo: the supplied circular illustration, cropped to its circle on a transparent
 
 First-person voice everywhere (Becky is talking: "my", never "our"; buttons say "Read the stories", not "Becky's"; headings and buttons use sentence case). No past tense about healing anywhere. Tagline is "One foot in front of the other." (site-wide constant `TAGLINE` in `build.js` for meta/feed; literal in templates). "Brighter tomorrow", never "braver". "In celebration of Steve, Mason, and Josh." is the celebration line at the top of every page (`layout.html`). Joshua 1:9 (NIV) sits on the homepage under the primary button, linked to BibleGateway. "A faith-rooted community by Becky" was removed everywhere on Oct 2.
 
-**DNS-written copy.** Where Becky has not supplied wording, Yvonne's copy is in place, each block marked `<!-- DNS-written, Becky may edit -->`: the About text (`content/pages/about.md`), the Fingerprints definition (`src/pages/fingerprints.html`), the Contact note (`content/pages/contact.md`), the empty-list lines for Fingerprints and Scripture (`build.js`), the About slot headings (`build.js`), and the Memorial wall status lines, form labels, and messages (`src/pages/memorial-wall.html`, `src/js/wall.js`). Story content is never DNS-written.
+**DNS-written copy.** Where Becky has not supplied wording, Yvonne's copy is in place, each block marked `<!-- DNS-written, Becky may edit -->`: the About text (`content/pages/about.md`), the Fingerprints definition (`src/pages/fingerprints.html`), the Contact note (`content/pages/contact.md`), the empty-list lines for Fingerprints and Scripture (`build.js`), the About slot headings (`build.js`), and the Memorial wall status lines, form labels, search and filter labels, the "Who is this memory about?" question, and messages (`src/pages/memorial-wall.html`, `src/js/wall.js`). Story content is never DNS-written.
 
 **Menu order:** Home, Stories, About, Scripture, Fingerprints, Memorial wall, Resources, Contact (footer: the same without Home).
 
@@ -201,19 +201,25 @@ A page where people share a photo, a memory, or a story celebrating Steve, Mason
 
 | Table | Holds | Public (site key) | Approvers |
 |---|---|---|---|
-| `memories` | first name, memory, photo file name, YouTube ID, permission box, status, heart count | reads approved rows | read all, set status, delete |
+| `memories` | first name, memory, photo file name, YouTube ID, permission box, status, heart count, tags (who it is about), approval time | reads approved rows | read all, set status, delete |
 | `memory_contacts` | the optional email, apart from the memory | nothing | read |
 | `comments` | first name, comment, status | reads approved comments on approved memories | read all, set status, delete |
 | `hearts` | memory + device ID | nothing | read |
 | `wall_admins` | who may approve | nothing | own row |
 
-The public never inserts into a table. Three database functions do it and return no row: `submit_memory`, `submit_comment`, and `add_heart` (which answers with the public heart count). They force `pending`, check lengths, accept a photo only when its name matches `<uuid>.jpg` **and** that file exists in the pending bucket, and accept a YouTube ID only when it is 11 valid characters. A flood cap refuses new memories while 200 are pending and new comments while 500 are pending (error code `WB001`; the page shows "Please try again later."). Hearts are one per device, permanent, with no login: the device ID is a random value kept in the browser.
+The public never inserts into a table. Three database functions do it and return no row: `submit_memory`, `submit_comment`, and `add_heart` (which answers with the public heart count). `submit_memory` exists in two forms: seven values (with `p_tags`, used by the current page) and the original six values (kept so a page deployed before the tags change keeps working; it hands over to the seven-value form with no tags). They force `pending`, check lengths, accept a photo only when its name matches `<uuid>.jpg` **and** that file exists in the pending bucket, and accept a YouTube ID only when it is 11 valid characters. A flood cap refuses new memories while 200 are pending and new comments while 500 are pending (error code `WB001`; the page shows "Please try again later."). Hearts are one per device, permanent, with no login: the device ID is a random value kept in the browser.
+
+**The list, search, and filters** (`wall_page`, `supabase/migrations/004` and `005`). The page asks the database function `wall_page(p_query, p_tag, p_limit, p_offset)` for 20 memories at a time (it requests 21 to learn whether a **Show more** button is needed; there is no upper limit). Order: newest **approved** first (`approved_at`, stamped by the database each time a memory becomes approved; a request cannot set it). Each card still shows the **submitted** date. Search matches part of a first name or of the memory text, not case-sensitive, across every approved memory; `%`, `_`, and `\` are matched literally. Comments are fetched for the memories on screen only. `wall_memories` (migration 004) was replaced by `wall_page`, is closed to the public, and can be dropped.
+
+**Tags (who a memory is about).** `memories.tags` holds any of `steve`, `mason`, `josh`, `family`; the table and `submit_memory` both refuse anything else (error `WB005`). The form asks "Who is this memory about?" (optional checkboxes in a fieldset). Filter buttons above the wall (All, Steve, Mason, Josh, The whole family; one active at a time) pass `p_tag`, so filter, search, and Show more all run in the same database query. Cards show tags as chips. Approvers tick or untick tags on the approval screen before or after approving; the public has no update right on any column.
+
+**Changing the database while the site is live.** The live site and the preview share one database, so a change must keep the already-deployed page working: add columns with defaults, add functions or new forms of a function, and never drop or rename what the live page calls. Drops in the Supabase connector also wait for Yvonne's confirmation.
 
 **Photos.** Two storage buckets. `memorial-pending` is private: the public can add a JPEG named `<uuid>.jpg` (5 MB limit) and can do nothing else. `memorial-photos` is public-read and only approvers write to it. Approving copies the photo across; rejecting removes the public copy and keeps the pending copy for 30 days so the decision can be undone; after 30 days the approval screen deletes it. The page resizes every photo in the browser to 1600px on the long side and re-saves it as JPEG, which also drops location data.
 
 **Plain text only.** Names, memories, and comments are placed with `textContent` on the wall and on the approval screen. Never `innerHTML`. A memory containing `<script>` or `<img onerror>` displays as those characters.
 
-**Approval screen** (`/wall-admin.html`; noindex, blocked in robots.txt, not in the menu or sitemap). Sign-in is Supabase email and password, by invitation only; `wall_admins` is the allow-list. Sections: Waiting for you (memories, comments), On the wall, Not shown, and Housekeeping (uploaded files more than 7 days old with no memory attached, with a button to remove them).
+**Approval screen** (`/wall-admin.html`; noindex, blocked in robots.txt, not in the menu or sitemap). Sign-in is Supabase email and password, by invitation only; `wall_admins` is the allow-list. Each memory card has a "Who is this memory about?" tag editor. Sections: Waiting for you (memories, comments), On the wall, Not shown, and Housekeeping (uploaded files more than 7 days old with no memory attached, with a button to remove them).
 
 **Adding an approver** (Yvonne): Supabase → Authentication → Users → Invite user. Then add the user's ID to `public.wall_admins`. Public sign-ups stay off: Authentication → Sign In / Providers → User Signups → "Allow new users to sign up" off. Authentication → URL Configuration must list `https://strongbravecourageous.com/wall-admin.html` (Site URL) and `https://sbc-preview.netlify.app/wall-admin.html` (Redirect URLs), so invitation and reset links land on the approval screen.
 
@@ -221,7 +227,7 @@ The public never inserts into a table. Three database functions do it and return
 
 **Preview site.** The preview shares the same database, so a memory sent from the preview is a real pending memory. Before go-live, open the approval screen and use **Delete for good** on every test memory (pending, approved, and rejected).
 
-**Tests.** `qa/wall-test.js` (browser, against a stand-in for Supabase: submit, approve, heart, comment, reject, a 10 MB photo, zero memories, markup shown as text, flood cap, honeypot, 30-day cleanup, leftover files) and `qa/wall-rules-test.sql` (the database rules themselves; rolls itself back).
+**Tests.** `qa/wall-test.js` (browser, against a stand-in for Supabase: submit, approve, heart, comment, reject, a 10 MB photo, zero memories, markup shown as text, flood cap, honeypot, 30-day cleanup, leftover files, Show more, approval-date order, search, tags and filters, tag editing by an approver, and the previously deployed page against the changed database) and `qa/wall-rules-test.sql` (the database rules themselves, in two blocks; each rolls itself back).
 
 ## Local QA
 

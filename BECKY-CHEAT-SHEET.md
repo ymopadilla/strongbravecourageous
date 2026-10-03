@@ -69,10 +69,13 @@ People share photos and memories celebrating Steve, Mason, and Josh at **strongb
 1. You get an email saying something is waiting.
 2. Go to **strongbravecourageous.com/wall-admin.html** and sign in. This sign-in is separate from the story editor.
 3. Under **Waiting for you**, read each memory or comment, then choose **Approve** or **Reject**.
+   Each memory has a **Who is this memory about?** box (Steve, Mason, Josh, The whole family). The writer may have ticked some. Tick or untick any of them, before or after approving; each change saves on its own.
 4. Changed your mind? Open **On the wall** and choose **Take off the wall**, or open **Not shown** and choose **Approve**. A rejected memory keeps its photo for 30 days.
 5. **Delete for good** removes a memory, its photo, and its comments forever. Use it for spam.
 
 If someone left an email address, only you and Yvonne see it, on this screen. It is never shown on the wall.
+
+**What readers see on the wall:** the memory you approved most recently is at the top, and each one shows the day it was written. Readers can search by a name or a word, tap **Steve**, **Mason**, **Josh**, or **The whole family** to see those memories, and tap **Show more** for the next 20.
 
 ## When someone shares a Fingerprint or leaves a Comment
 You'll get an email from Netlify with what they wrote. Nothing shows on the site until you approve it:
