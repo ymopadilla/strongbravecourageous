@@ -407,6 +407,15 @@ section { padding: 48px 0; }
 .field input:focus-visible, .field textarea:focus-visible, .field select:focus-visible,
 .search-box input[type="search"]:focus-visible, .search-dates input[type="date"]:focus-visible, .res-filter input[type="search"]:focus-visible { outline: 3px solid var(--brown); outline-offset: 2px; }
 .field input[type="file"] { display: block; font: inherit; padding: 10px 0; max-width: 100%; }
+/* "Choose File" drawn like the site's outline button (the file name stays beside it). */
+.field input[type="file"]::file-selector-button {
+  min-height: 44px; padding: 9px 22px; margin: 0 14px 0 0; border-radius: 999px;
+  font-family: var(--font-ui); font-weight: 700; font-size: 15px;
+  background: var(--white); color: var(--brown); border: 2px solid var(--brown); cursor: pointer;
+}
+.field input[type="file"]::file-selector-button:hover { background: var(--blush); }
+.field input[type="file"] { font-size: 15px; color: var(--muted); }
+.field input[type="file"]:focus-visible { outline: 3px solid var(--brown); outline-offset: 3px; border-radius: var(--radius-sm); }
 .hp { position: absolute; left: -9999px; opacity: 0; height: 0; overflow: hidden; }
 .inline-form { display: flex; flex-direction: column; gap: 10px; }
 @media (min-width: 600px) { .inline-form { flex-direction: row; } .inline-form .field { flex: 1; margin: 0; } }
@@ -460,7 +469,16 @@ section { padding: 48px 0; }
 .wall-comment-form summary:focus-visible { outline: 3px solid var(--brown); outline-offset: 2px; }
 .wall-comment-form form { margin-top: 10px; }
 .wall-comment-form textarea { min-height: 110px; }
-.wall-comment-form .hp { position: absolute; left: -9999px; }
+.wall-comment-form /* "Choose File" drawn like the site's outline button (the file name stays beside it). */
+.field input[type="file"]::file-selector-button {
+  min-height: 44px; padding: 9px 22px; margin: 0 14px 0 0; border-radius: 999px;
+  font-family: var(--font-ui); font-weight: 700; font-size: 15px;
+  background: var(--white); color: var(--brown); border: 2px solid var(--brown); cursor: pointer;
+}
+.field input[type="file"]::file-selector-button:hover { background: var(--blush); }
+.field input[type="file"] { font-size: 15px; color: var(--muted); }
+.field input[type="file"]:focus-visible { outline: 3px solid var(--brown); outline-offset: 3px; border-radius: var(--radius-sm); }
+.hp { position: absolute; left: -9999px; }
 .wall-msg { background: var(--white); border: 1px solid var(--rose-deep); border-radius: var(--radius-sm); padding: 12px 14px; color: var(--ink); font-size: 15px; }
 .wall-thanks:focus { outline: none; }
 #share .radio { margin-bottom: 18px; }
