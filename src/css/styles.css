@@ -415,6 +415,21 @@ section { padding: 48px 0; }
 .page-intro { max-width: 38em; margin: 14px auto 0; text-align: left; }
 .contact-note p { font-size: 18px; margin: 0 0 12px; }
 
+/* ---------- About: photo, handwritten note, obituary, videos ---------- */
+.about-figure { margin: 0; position: relative; }
+.about-photo { display: block; width: 100%; border-radius: 4px 28px 4px 28px; }
+.about-note { display: block; width: min(60%, 220px); margin: 10px 0 0 auto; transform: rotate(-3deg); }
+.soon {
+  display: flex; align-items: center; justify-content: center;
+  aspect-ratio: 4 / 5; border: 1px solid var(--rule); background: var(--blush);
+  border-radius: 4px 28px 4px 28px; box-shadow: 0 0 0 6px var(--paper), 0 0 0 7px var(--rule); margin: 7px;
+}
+.soon span { font-family: var(--font-read); font-style: italic; font-size: 17px; color: var(--muted); }
+.about-slot { padding: 0; margin: 48px 0 0; }
+.about-slot h2 { margin: 0 0 14px; }
+.about-slot .video { position: relative; aspect-ratio: 16 / 9; border-radius: 2px; overflow: hidden; background: var(--wood); }
+.about-slot .video iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+
 /* ---------- Placeholders (Becky fills these in) ---------- */
 .ph {
   border: 2px dashed var(--line);

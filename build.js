@@ -284,7 +284,7 @@ const resources = loadCollection('resources')
   .filter((r) => r.type);
 
 const pageContent = {};
-['about', 'newsletter', 'contact'].forEach((n) => {
+['about', 'obituary', 'newsletter', 'contact'].forEach((n) => {
   const p = path.join(CONTENT, 'pages', `${n}.md`);
   pageContent[n] = exists(p) ? parseFrontMatter(read(p)) : { data: {}, body: '' };
 });
@@ -431,13 +431,40 @@ buildSimple('stories', {
 }
 
 // About
+/* Slots on the About page. The photo shows a calm "Photo coming soon." frame until Becky uploads one.
+   The handwritten note, the obituary, and the two videos render nothing until their content exists. */
+function videoEmbed(url, title) {
+  const u = String(url || '').trim();
+  if (!u) return '';
+  const yt = u.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([\w-]{6,})/);
+  const vm = u.match(/vimeo\.com\/(?:video\/)?(\d+)/);
+  if (yt) return `<div class="video"><iframe src="https://www.youtube-nocookie.com/embed/${yt[1]}" title="${escapeHtml(title)}" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe></div>`;
+  if (vm) return `<div class="video"><iframe src="https://player.vimeo.com/video/${vm[1]}" title="${escapeHtml(title)}" allow="fullscreen; picture-in-picture" allowfullscreen loading="lazy"></iframe></div>`;
+  return /^https?:\/\//.test(u) ? `<p><a href="${escapeHtml(u)}" target="_blank" rel="noopener">Watch the video</a></p>` : '';
+}
 {
   const { data, body } = pageContent.about;
+  const obit = pageContent.obituary;
+  const obitText = (obit.body || '').trim() && !isPlaceholder(obit.body) ? marked.parse(obit.body) : '';
+  const obitLink = /^https?:\/\//.test(String(data.obituary_link || '').trim())
+    ? `<p><a href="${escapeHtml(String(data.obituary_link).trim())}" target="_blank" rel="noopener">Read the obituary</a></p>` : '';
+  const slots = [
+    ['obituary', 'Obituary', obitText + obitLink],
+    ['celebration', 'Celebration of life', videoEmbed(data.celebration_video, 'Celebration of life')],
+    ['drive-by', 'The post office drive-by', videoEmbed(data.driveby_video, 'The post office drive-by')],
+  ].filter(([, , html]) => html);
+  const note = data.photo_note
+    ? `<img class="about-note" src="${escapeHtml(data.photo_note)}" alt="${escapeHtml(data.photo_note_text || 'A handwritten note from Becky')}" loading="lazy">` : '';
   buildSimple('about', {
     about_body: renderBody(body),
-    about_photo: data.photo
-      ? `<img src="${escapeHtml(data.photo)}" alt="Becky" style="border-radius:4px 28px 4px 28px;">`
-      : '<div class="ph">[PHOTO &mdash; new headshot coming from Becky. Upload it in Site Pages &rarr; About.]</div>',
+    about_photo: `<figure class="about-figure">${data.photo
+      ? `<img class="about-photo" src="${escapeHtml(data.photo)}" alt="Becky">${note}`
+      : '<div class="soon"><span>Photo coming soon.</span></div>'}</figure>`,
+    about_more: slots.map(([id, heading, html]) => `
+    <section class="about-slot" id="${id}">
+      <h2>${heading}</h2>
+      ${html}
+    </section>`).join('\n'),
   });
 }
 

@@ -94,8 +94,18 @@ collections:
         label: "About page"
         file: "content/pages/about.md"
         fields:
-          - { label: "Your photo", name: "photo", widget: "image", required: false, hint: "Your new headshot goes here." }
+          - { label: "Your photo", name: "photo", widget: "image", required: false, hint: "A photo of you. Until one is here, the page shows a quiet 'Photo coming soon.' frame." }
+          - { label: "Handwritten note for the photo", name: "photo_note", widget: "image", required: false, hint: "A picture of your handwriting, such as \"that's me\". It sits beside your photo. Leave empty to show nothing." }
+          - { label: "What the handwritten note says", name: "photo_note_text", widget: "string", required: false, hint: "Type the same words, for readers who use a screen reader." }
+          - { label: "Obituary link (optional)", name: "obituary_link", widget: "string", required: false, hint: "Web address of the obituary. To put the full text on the page instead, use Site Pages > Obituary." }
+          - { label: "Celebration of life video", name: "celebration_video", widget: "string", required: false, hint: "Paste the YouTube or Vimeo link. Leave empty to show nothing." }
+          - { label: "Post office drive-by video", name: "driveby_video", widget: "string", required: false, hint: "Paste the YouTube or Vimeo link. Leave empty to show nothing." }
           - { label: "Your story", name: "body", widget: "markdown" }
+      - name: "obituary"
+        label: "Obituary (shown on About)"
+        file: "content/pages/obituary.md"
+        fields:
+          - { label: "Obituary text", name: "body", widget: "markdown", required: false, hint: "Paste the obituary here to show it on the About page. Leave empty to show nothing." }
       - name: "newsletter"
         label: "Newsletter page"
         file: "content/pages/newsletter.md"

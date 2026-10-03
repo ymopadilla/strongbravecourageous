@@ -1,5 +1,10 @@
 ---
 photo: ""
+photo_note: ""
+photo_note_text: ""
+obituary_link: ""
+celebration_video: ""
+driveby_video: ""
 ---
 I’m Becky. I’m Steve’s wife, and I’m Mason and Josh’s mom.
 
