@@ -68,6 +68,10 @@ const SUPABASE = {
   url: 'https://weaoqfeujfgakjogzepq.supabase.co',
   publicKey: 'sb_publishable_XynqBceZvriz_PmKHRlC0Q_9Mik2Ahz',
 };
+/* Memorial wall switch. One line controls the page, its menu link (header, mobile menu, footer), and its
+   sitemap entry. Leave it true. Set it to false only in an emergency: the page, link, and sitemap entry
+   disappear on the next build, and nothing in the database is touched. The approval screen stays. */
+const MEMORIAL_WALL = true;
 const SITE_NAME = 'Strong. Brave. Courageous.';
 const TAGLINE = 'One foot in front of the other.';
 const OG_IMAGE = '/images/og-image.jpg';
@@ -241,6 +245,8 @@ function renderPage({ title, description, nav, pathname, content, og_type = 'web
     structured_data: JSON.stringify(sd),
     content,
     year: String(CURRENT_YEAR),
+    nav_wall: MEMORIAL_WALL ? `<li><a href="/memorial-wall.html" ${nav === 'wall' ? 'aria-current="page"' : ''}>Memorial wall</a></li>` : '',
+    footer_wall: MEMORIAL_WALL ? '<li><a href="/memorial-wall.html">Memorial wall</a></li>' : '',
     ...active,
   });
 }
@@ -585,7 +591,7 @@ buildSimple('fingerprints', {
 });
 
 // Memorial wall (memories load in the browser from Supabase; see src/js/wall.js)
-buildSimple('memorial-wall');
+if (MEMORIAL_WALL) buildSimple('memorial-wall');
 // Approval screen for Becky and Yvonne (sign-in required; noindex; never in the menu or sitemap)
 buildSimple('wall-admin');
 
@@ -673,6 +679,7 @@ function storyNav(s) {
     ['/', 'weekly', '1.0', today], ['/stories.html', 'weekly', '0.9', real[0] ? isoDate(real[0].data.date) : today],
     ['/scripture.html', 'weekly', '0.7', real[0] ? isoDate(real[0].data.date) : today],
     ['/about.html', 'monthly', '0.7', today], ['/fingerprints.html', 'weekly', '0.6', today],
+    ...(MEMORIAL_WALL ? [['/memorial-wall.html', 'weekly', '0.6', today]] : []),
     ['/resources.html', 'monthly', '0.6', today], ['/contact.html', 'yearly', '0.4', today],
     ...real.map((s) => [`/stories/${s.slug}.html`, 'yearly', '0.8', isoDate(s.data.date)]),
   ];
