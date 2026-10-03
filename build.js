@@ -120,9 +120,10 @@ function isPlaceholder(body) {
 const isPlaceholderStory = (s) => isPlaceholder(s.body) || String((s.data && s.data.title) || '').trim().startsWith('[');
 
 /* Markdown → HTML. Bare YouTube/Vimeo links on their own line become responsive embeds.
-   Placeholder text in [BRACKETS] renders as a rose dashed instruction box. */
+   Placeholder text in [BRACKETS] is an instruction for the editor, so it never reaches the public page:
+   the page shows one calm line instead. */
 function renderBody(md) {
-  if (isPlaceholder(md)) return `<div class="ph">${escapeHtml(md.trim())}</div>`;
+  if (isPlaceholder(md)) return '<p class="ph">Coming soon.</p>';
   const withEmbeds = md.replace(
     /^(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/)([\w-]{6,})\S*$/gm,
     (_, id) => `<div class="video"><iframe src="https://www.youtube-nocookie.com/embed/${id}" title="Video" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe></div>`
@@ -251,8 +252,11 @@ function storyCategories(s) {
   return valid.length ? valid : ['Healing'];
 }
 
+/* Placeholder stories ([bracketed] instructions) are built only on the preview site and in QA builds.
+   The live site never shows them, in lists or as pages. */
 const stories = loadCollection('stories')
   .filter((s) => s.data.draft !== true)
+  .filter((s) => PREVIEW || FIXTURES || !isPlaceholderStory(s))
   .sort((a, b) => new Date(b.data.date) - new Date(a.data.date))
   .map((s) => {
     const cats = storyCategories(s);
@@ -419,7 +423,7 @@ buildSimple('stories', {
           }).join('\n          ')}
         </ul>
       </section>`).join('\n')
-    : '<div class="ph text-center" style="max-width:640px;margin:0 auto;">Passages from Becky&rsquo;s stories will appear here as she writes.</div>';
+    : '<!-- DNS-written, Becky may edit --><p class="ph text-center" style="max-width:640px;margin:0 auto;">Passages from my stories will appear here as I write.</p>';
   const passageCount = byBook.reduce((n, b) => n + b.refs.length, 0);
   buildSimple('scripture', {
     scripture_body,
@@ -568,7 +572,7 @@ buildSimple('fingerprints', {
         <p class="from">— ${escapeHtml(f.data.name || 'Anonymous')}</p>
         <p class="meta"><time datetime="${isoDate(f.data.date)}">${formatDate(f.data.date)}</time></p>
       </article>`).join('\n')
-    : '<div class="ph" style="grid-column:1/-1;"><strong>Approved Fingerprints appear here.</strong> When someone shares a moment marked &ldquo;Share it with everyone,&rdquo; Becky reviews it in Netlify Forms, then adds it under Fingerprints in the site editor and ticks &ldquo;Approved&rdquo;.</div>',
+    : '<!-- DNS-written, Becky may edit --><p class="ph text-center" style="grid-column:1/-1;">The first fingerprints will appear here soon.</p>',
 });
 
 /* ---------- story pages ---------- */

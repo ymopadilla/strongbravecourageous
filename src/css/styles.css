@@ -432,12 +432,13 @@ section { padding: 48px 0; }
 
 /* ---------- Placeholders (Becky fills these in) ---------- */
 .ph {
-  border: 2px dashed var(--line);
+  border: 1px solid var(--rule);
   background: var(--blush);
   border-radius: var(--radius-sm);
-  padding: 16px 18px;
-  color: var(--ink);
-  font-family: var(--font-body);
+  padding: 18px 20px;
+  margin: 0;
+  color: var(--muted);
+  font-family: var(--font-read);
   font-style: italic;
 }
 .ph strong { font-style: normal; font-family: var(--font-ui); }
