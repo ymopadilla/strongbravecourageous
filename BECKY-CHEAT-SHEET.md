@@ -1,7 +1,7 @@
 # Your site, in plain English — Strong. Brave. Courageous.
 
 **Where to sign in:** strongbravecourageous.com/admin/
-**Your login:** the email you were invited with + the password you chose. (Forgot it? Use "Forgot password" on the login screen.)
+**Your login:** the email you were invited with. (Locked out? Use the "Forgot" link on the login screen.)
 
 Everything below happens in the editor. No code, ever.
 
@@ -9,7 +9,15 @@ Everything below happens in the editor. No code, ever.
 1. Click **Stories** → **New Story**.
 2. Fill in the title, the date, the categories, and a one- or two-sentence excerpt in your own words (it shows on the story card and in search).
 3. Write the story in the big box. To add a photo, click the **+** (or image icon) in the toolbar. To add a video, paste a YouTube or Vimeo link on its own line.
-4. Top right: **Save**. Then change the status from *Draft* to *In review*, then *Ready*, then click **Publish**. The site updates itself in about a minute.
+4. Top right: **Save**. Then change the status from *Draft* to *Ready* and click **Publish**. The site updates itself in about a minute.
+
+**Draft, In review, Ready:** Draft means you're still writing. In review is an optional step for teams, so you can skip it. Ready unlocks the Publish button.
+
+**The three Publish choices:** *Publish now* publishes the story. *Publish and create new* publishes it and opens a blank story. *Publish and duplicate* publishes it and opens a copy to edit.
+
+**Pictures:** always upload the picture. "Insert from URL" links to a picture stored on another website, so skip it.
+
+**Quoting someone:** name the person right in the sentence, such as "I borrowed this from..." Nothing more is needed.
 
 When you publish, two things happen on their own: the story becomes searchable on the Stories page, and your email subscribers get a note with the story preview and a "Read the full story" link (sent by Mailchimp within a day).
 
@@ -43,8 +51,28 @@ Click **Resources** → **New Resource**. One entry per item. The site sorts eve
 
 Then **Publish**. Readers can suggest resources through the Contact form; nothing goes on the site until you add it here.
 
-## Fix your About, Newsletter, or Contact page
-Click **Site Pages** → pick the page → edit → **Publish**. Your photo and social links live here too. The Contact page shows the form only — no email address.
+## Fix your About or Contact page
+Click **Site Pages** → pick the page → edit → **Publish**. The Contact page shows the form only — no email address.
+
+The **About page** has these boxes. Any box you leave empty shows nothing on the site, except the photo, which shows a quiet "Photo coming soon." frame until you add one.
+- **Your photo**
+- **Handwritten note for the photo** — a picture of your handwriting, such as "that's me." Type the same words in the box under it, for readers who use a screen reader.
+- **Obituary link**, or paste the full text under **Site Pages → Obituary**
+- **Celebration of life video** and **Post office drive-by video** — paste the YouTube or Vimeo link
+- **Your story** — the words on the page. Yvonne wrote a first version for you; change anything you like.
+
+Yvonne also wrote the short definition at the top of Fingerprints and the note above the Contact form. Tell her any wording you want changed on Fingerprints; the Contact note is yours to edit under Site Pages → Contact.
+
+## The Memorial wall
+People share photos and memories celebrating Steve, Mason, and Josh at **strongbravecourageous.com/memorial-wall.html**. Nothing appears until you or Yvonne approve it.
+
+1. You get an email saying something is waiting.
+2. Go to **strongbravecourageous.com/wall-admin.html** and sign in. This sign-in is separate from the story editor.
+3. Under **Waiting for you**, read each memory or comment, then choose **Approve** or **Reject**.
+4. Changed your mind? Open **On the wall** and choose **Take off the wall**, or open **Not shown** and choose **Approve**. A rejected memory keeps its photo for 30 days.
+5. **Delete for good** removes a memory, its photo, and its comments forever. Use it for spam.
+
+If someone left an email address, only you and Yvonne see it, on this screen. It is never shown on the wall.
 
 ## When someone shares a Fingerprint or leaves a Comment
 You'll get an email from Netlify with what they wrote. Nothing shows on the site until you approve it:
@@ -66,8 +94,11 @@ Each story has an optional **Share image** box. Add a photo there and it becomes
 - **Email signup:** a page asking them to check their email and confirm. They are added to your list only after they click the link in the email.
 - **Contact, Fingerprint, or Comment:** a short thank-you from you. Nothing they sent appears on the site until you approve it.
 
-## Practice posts stay private from Google
-Any story whose title or text is still inside `[square brackets]` is treated as a practice post. You can see it on the site, but it is left out of Google, the site map, and the email to subscribers. Once you replace the brackets with your own title and words, it counts as a real story.
+## Practice posts stay off the site
+Any story whose title or text is still inside `[square brackets]` is treated as a practice post. It does not appear on the live site, in Google, or in the email to subscribers. Once you replace the brackets with your own title and words, it counts as a real story.
+
+## Scripture buttons
+The Scripture buttons on the Stories page appear on their own as your stories mention new books of the Bible.
 
 ## Questions
-Reach Yvonne at Digital Navigation Solutions. A short training video and a walkthrough are coming with your handoff.
+Reach Yvonne at Digital Navigation Solutions. You write the stories; Yvonne manages everything else on the site.
