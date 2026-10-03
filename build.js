@@ -61,6 +61,13 @@ const ALGOLIA = {
   searchKey: process.env.ALGOLIA_SEARCH_KEY || 'e64adedb439574d6facf60bf1712dc75',
   index: process.env.ALGOLIA_INDEX || 'stories',
 };
+/* Memorial wall (Supabase project "StrongBraveCourageous"). Only the PUBLIC key belongs here: it is safe in
+   site code because the database rules (supabase/migrations) decide what it may do. The service key is not
+   used by this site and must never be added to this file or to any page. */
+const SUPABASE = {
+  url: 'https://weaoqfeujfgakjogzepq.supabase.co',
+  publicKey: 'sb_publishable_XynqBceZvriz_PmKHRlC0Q_9Mik2Ahz',
+};
 const SITE_NAME = 'Strong. Brave. Courageous.';
 const TAGLINE = 'One foot in front of the other.';
 const OG_IMAGE = '/images/og-image.jpg';
@@ -167,11 +174,11 @@ function fill(template, vars) {
 /* Cache-busting: netlify.toml caches /css and /js for a year, so every build stamps a short
    content hash onto the stylesheet and script URLs. Returning visitors always get the current files. */
 const ASSET_V = require('crypto').createHash('md5')
-  .update(['css/styles.css', 'js/main.js', 'js/search.js'].map((f) => (exists(path.join(SRC, f)) ? read(path.join(SRC, f)) : '')).join('\n'))
+  .update(['css/styles.css', 'js/main.js', 'js/search.js', 'js/wall.js', 'js/wall-admin.js'].map((f) => (exists(path.join(SRC, f)) ? read(path.join(SRC, f)) : '')).join('\n'))
   .digest('hex').slice(0, 8);
 const stampAssets = (html) => html
   .replace(/(\/css\/styles\.css)(?=["'])/g, `$1?v=${ASSET_V}`)
-  .replace(/(\/js\/(?:main|search)\.js)(?=["'])/g, `$1?v=${ASSET_V}`);
+  .replace(/(\/js\/(?:main|search|wall|wall-admin)\.js)(?=["'])/g, `$1?v=${ASSET_V}`);
 
 const layout = stampAssets(read(path.join(SRC, 'templates', 'layout.html')));
 
@@ -191,7 +198,7 @@ function renderPage({ title, description, nav, pathname, content, og_type = 'web
   else if (noindex && !ROBOTS_META.test(head_extra)) head_extra += '<meta name="robots" content="noindex">';
   ROBOTS_META.lastIndex = 0;
   const active = {};
-  ['home', 'stories', 'scripture', 'about', 'fingerprints', 'resources', 'newsletter', 'contact'].forEach((n) => {
+  ['home', 'stories', 'scripture', 'about', 'fingerprints', 'wall', 'resources', 'newsletter', 'contact'].forEach((n) => {
     active[`active_${n}`] = nav === n ? 'aria-current="page"' : '';
   });
   const sd = structured_data || (nav === 'home'
@@ -357,6 +364,8 @@ const GLOBAL_VARS = {
   site_url: SITE_URL,
   bible_version: BIBLE_VERSION,
   joshua_url: scripture.gatewayUrl('Joshua 1:9'),
+  supabase_url: SUPABASE.url,
+  supabase_key: SUPABASE.publicKey,
 };
 
 function buildSimple(name, vars = {}) {
@@ -574,6 +583,9 @@ buildSimple('fingerprints', {
       </article>`).join('\n')
     : '<!-- DNS-written, Becky may edit --><p class="ph text-center" style="grid-column:1/-1;">The first fingerprints will appear here soon.</p>',
 });
+
+// Memorial wall (memories load in the browser from Supabase; see src/js/wall.js)
+buildSimple('memorial-wall');
 
 /* ---------- story pages ---------- */
 /* Newer / older links under each story. Placeholders are skipped unless the story itself is one. */

@@ -1,0 +1,76 @@
+---
+title: Memorial wall — Strong. Brave. Courageous.
+description: A place to celebrate the lives of Steve, Mason, and Josh. Share a photo, a memory, or a story about our family.
+nav: wall
+path: /memorial-wall.html
+body_extra: <script src="/js/wall.js" defer data-url="{{supabase_url}}" data-key="{{supabase_key}}"></script>
+---
+<!-- Memorial wall. Memories, comments, and hearts live in Supabase (see README, "Memorial wall").
+     Everything a visitor writes is shown as plain text, never as HTML (src/js/wall.js). -->
+<section class="wall-top">
+  <div class="container narrow">
+    <!-- Flower from the logo: blossom cluster beside the page heading. -->
+    <div class="flower-head">
+      <h1>Memorial wall</h1>
+      <img class="flower flower-cluster" src="/images/flower-cluster.webp" alt="" width="420" height="560" decoding="async">
+    </div>
+    <hr class="divider">
+    <!-- Intro copy supplied by Yvonne, Oct 2. Use exactly. -->
+    <p class="lead wall-intro">This is a place to celebrate the lives of Steve, Mason, and Josh. Share a photo, a memory, or a story about our family. The funny ones are welcome too. I read everything before it appears here.</p>
+    <p><a class="btn btn-primary" href="#share">Share a memory</a></p>
+  </div>
+</section>
+
+<section class="section-tight">
+  <div class="container narrow">
+    <h2 class="visually-hidden">Memories</h2>
+    <!-- DNS-written, Becky may edit: the three status lines below. -->
+    <p class="muted" id="wall-status" role="status">Loading memories&hellip;</p>
+    <p class="ph" id="wall-empty" hidden>The first memories will appear here soon.</p>
+    <div class="wall-list" id="wall-list"></div>
+    <noscript><p class="ph">The Memorial wall needs JavaScript turned on to show memories.</p></noscript>
+  </div>
+</section>
+
+<section id="share">
+  <div class="container narrow">
+    <div class="form-box blue">
+      <p class="form-first"><strong>I read everything before it appears here.</strong></p>
+      <h2>Share a memory</h2>
+      <!-- DNS-written, Becky may edit: field labels, hints, and messages in this form.
+           The email label was supplied by Yvonne, Oct 3. -->
+      <form id="wall-form" novalidate>
+        <p class="hp"><label>Don&rsquo;t fill this out if you&rsquo;re human: <input name="website" id="wall-hp" tabindex="-1" autocomplete="off"></label></p>
+        <div class="field">
+          <label for="wall-name">First name <span class="req">(required)</span></label>
+          <input type="text" id="wall-name" name="first_name" required maxlength="40" autocomplete="given-name">
+        </div>
+        <div class="field">
+          <label for="wall-memory">Your memory <span class="req">(required)</span></label>
+          <textarea id="wall-memory" name="memory" required maxlength="4000"></textarea>
+        </div>
+        <div class="field">
+          <label for="wall-photo">Photo (optional)</label>
+          <p class="hint" id="wall-photo-hint">One photo. It is made smaller on your device before it is sent.</p>
+          <input type="file" id="wall-photo" name="photo" accept="image/*" aria-describedby="wall-photo-hint">
+        </div>
+        <label class="radio" for="wall-permission"><input type="checkbox" id="wall-permission" name="photo_permission"> I have permission to share this photo, including from anyone else pictured in it.</label>
+        <div class="field">
+          <label for="wall-video">YouTube link (optional)</label>
+          <input type="text" id="wall-video" name="youtube" inputmode="url" autocomplete="off">
+        </div>
+        <div class="field">
+          <label for="wall-email">Email (optional, never shown).</label>
+          <p class="hint" id="wall-email-hint">Only so Becky can reach you about your memory.</p>
+          <input type="email" id="wall-email" name="email" maxlength="254" autocomplete="email" aria-describedby="wall-email-hint">
+        </div>
+        <p class="wall-msg" id="wall-msg" role="alert" hidden></p>
+        <button type="submit" class="btn btn-primary" id="wall-submit">Share your memory</button>
+      </form>
+      <div id="wall-thanks" class="wall-thanks" tabindex="-1" hidden>
+        <p class="lead">Thank you. I read everything before it appears here.</p>
+        <p><button type="button" class="btn btn-outline" id="wall-again">Share another memory</button></p>
+      </div>
+    </div>
+  </div>
+</section>

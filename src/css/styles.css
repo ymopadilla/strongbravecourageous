@@ -427,6 +427,42 @@ section { padding: 48px 0; }
   .flower-cluster { width: 64px; }
 }
 
+/* ---------- Memorial wall ---------- */
+.wall-top { padding-bottom: 8px; }
+.wall-intro { margin: 18px 0 22px; }
+.wall-list { display: grid; gap: 28px; }
+.wall-card { background: var(--blush); border-radius: 4px 28px 4px 28px; padding: 24px 26px; }
+.wall-photo { display: block; width: 100%; height: auto; max-height: 560px; object-fit: contain; background: var(--paper); border-radius: 2px 20px 2px 2px; margin: 0 0 18px; }
+/* Visitor text: plain text only. pre-line keeps the writer's line breaks. */
+.wall-text { font-family: var(--font-read); font-size: 18px; line-height: 1.7; color: var(--ink); white-space: pre-line; overflow-wrap: anywhere; margin: 0 0 14px; }
+.wall-card .video { position: relative; aspect-ratio: 16 / 9; margin: 0 0 16px; border-radius: 2px; overflow: hidden; background: var(--wood); }
+.wall-card .video iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+.wall-foot { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+.wall-by { margin: 0; overflow-wrap: anywhere; }
+.wall-by .from { font-family: var(--font-heading); font-style: italic; font-weight: 600; color: var(--brown); margin-right: 10px; }
+.wall-by time { font-size: 14px; color: var(--muted); }
+.wall-heart {
+  display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 8px 16px;
+  border: 1px solid var(--line); border-radius: 999px; background: var(--white); color: var(--brown);
+  font-family: var(--font-ui); font-weight: 700; font-size: 15px; cursor: pointer;
+}
+.wall-heart:hover { background: var(--paper); }
+.wall-heart:focus-visible { outline: 3px solid var(--brown); outline-offset: 2px; }
+.wall-heart-icon { color: var(--link); font-size: 18px; line-height: 1; }
+.wall-heart[aria-pressed="true"] { background: var(--tag-bg); border-color: var(--rose-deep); color: var(--tag-text); cursor: default; }
+.wall-comments { margin: 20px 0 0; }
+.wall-comments .comment { background: var(--paper); }
+.wall-comments .wall-text { font-size: 16px; margin: 6px 0 0; }
+.wall-comment-form { margin-top: 16px; }
+.wall-comment-form summary { cursor: pointer; font-family: var(--font-ui); font-weight: 700; font-size: 15px; color: var(--link); padding: 10px 0; }
+.wall-comment-form summary:focus-visible { outline: 3px solid var(--brown); outline-offset: 2px; }
+.wall-comment-form form { margin-top: 10px; }
+.wall-comment-form textarea { min-height: 110px; }
+.wall-comment-form .hp { position: absolute; left: -9999px; }
+.wall-msg { background: var(--white); border: 1px solid var(--rose-deep); border-radius: var(--radius-sm); padding: 12px 14px; color: var(--ink); font-size: 15px; }
+.wall-thanks:focus { outline: none; }
+#share .radio { margin-bottom: 18px; }
+
 /* ---------- Page intro text (Fingerprints definition, Contact note) ---------- */
 .page-intro { max-width: 38em; margin: 14px auto 0; text-align: left; }
 .contact-note p { font-size: 18px; margin: 0 0 12px; }
