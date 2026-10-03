@@ -448,6 +448,11 @@ section { padding: 48px 0; }
 .wall-search input[type="search"]::placeholder { color: var(--muted); opacity: 1; }
 .wall-search input[type="search"]:focus-visible { outline: 3px solid var(--brown); outline-offset: 2px; }
 .wall-search .btn { padding: 10px 22px; }
+.wall-filters { justify-content: flex-start; margin: 0 0 20px; }
+.wall-tags { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 14px; }
+.wall-about { margin-bottom: 18px; }
+.wa-tags { margin: 14px 0 0; }
+.wa-saved { margin-left: 4px; }
 .wall-result { margin: 0 0 16px; overflow-wrap: anywhere; }
 .wall-more { margin: 28px 0 0; text-align: center; }
 .wall-card:focus { outline: none; }

@@ -159,6 +159,12 @@
       art.appendChild(img);
     }
     art.appendChild(el('p', 'wall-text', m.memory));
+    var chips = TAGS.filter(function (t) { return (m.tags || []).indexOf(t[0]) !== -1; });
+    if (chips.length) {
+      var row = el('div', 'wall-tags');
+      chips.forEach(function (t) { row.appendChild(el('span', 'tag', t[1])); }); // labels come from the fixed list above
+      art.appendChild(row);
+    }
     if (m.youtube_id && VIDEO_RE.test(m.youtube_id)) {
       var v = el('div', 'video'); var fr = el('iframe');
       fr.src = 'https://www.youtube-nocookie.com/embed/' + m.youtube_id;
@@ -197,14 +203,16 @@
   function get(path) {
     return fetch(URL_BASE + '/rest/v1/' + path, { headers: headers() }).then(function (r) { if (!r.ok) throw new Error('load'); return r.json(); });
   }
-  /* The list comes from the database function wall_memories: approved memories only, newest APPROVED first
+  /* The list comes from the database function wall_page: approved memories only, newest APPROVED first
      (each card still shows the day the memory was submitted). A search runs in the database across the
-     whole wall, by first name and memory text; it is not a filter on the cards already loaded. */
-  var query = '';
+     whole wall, by first name and memory text; it is not a filter on the cards already loaded.
+     The "who is it about" buttons narrow the same database query, so search, filter, and "Show more" work together. */
+  var query = '', tag = '';
+  var TAGS = [['steve', 'Steve'], ['mason', 'Mason'], ['josh', 'Josh'], ['family', 'The whole family']];
   function fetchMemories(offset) {
-    return fetch(URL_BASE + '/rest/v1/rpc/wall_memories', {
+    return fetch(URL_BASE + '/rest/v1/rpc/wall_page', {
       method: 'POST', headers: headers({ 'Content-Type': 'application/json' }),
-      body: JSON.stringify({ p_query: query || null, p_limit: PAGE + 1, p_offset: offset })
+      body: JSON.stringify({ p_query: query || null, p_tag: tag || null, p_limit: PAGE + 1, p_offset: offset })
     }).then(function (r) { if (!r.ok) throw new Error('load'); return r.json(); });
   }
   function load(reset) {
@@ -223,7 +231,8 @@
         statusLine.hidden = true;
         if (reset) list.textContent = '';
         var none = reset && !rows.length;
-        emptyLine.hidden = !(none && !query);
+        emptyLine.hidden = !(none && !query && !tag);
+        noneHere.hidden = !(none && !query && tag);
         noMatch.hidden = !(none && query);
         // The words searched for are shown as plain text, like everything else a visitor types.
         resultLine.textContent = query && !none ? 'Memories matching \u201c' + query + '\u201d' : '';
@@ -240,6 +249,17 @@
     }).catch(function () { statusLine.textContent = MSG.loadFail; statusLine.hidden = false; more.disabled = false; });
   }
   more.addEventListener('click', function () { load(false); });
+
+  /* ---------- filter: who the memory is about (one active at a time; "All" is the default) ---------- */
+  var noneHere = document.getElementById('wall-nonehere');
+  var filterButtons = document.querySelectorAll('#wall-filters .filter-btn');
+  Array.prototype.forEach.call(filterButtons, function (b) {
+    b.addEventListener('click', function () {
+      tag = b.getAttribute('data-tag') || '';
+      Array.prototype.forEach.call(filterButtons, function (x) { x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); });
+      load(true);
+    });
+  });
 
   /* ---------- search ---------- */
   var searchForm = document.getElementById('wall-search');
@@ -331,7 +351,8 @@
     upload.then(function () {
       return rpc('submit_memory', {
         p_first_name: name, p_memory: memory, p_photo_path: photoName, p_youtube_id: video || null,
-        p_photo_permission: !!(file && permission.checked), p_email: email || null
+        p_photo_permission: !!(file && permission.checked), p_email: email || null,
+        p_tags: Array.prototype.map.call(form.querySelectorAll('input[name="tags"]:checked'), function (c) { return c.value; })
       });
     }).then(showThanks).catch(function (e) {
       submit.disabled = false; submit.textContent = 'Share your memory';

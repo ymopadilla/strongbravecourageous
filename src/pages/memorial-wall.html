@@ -33,9 +33,18 @@ body_extra: <script src="/js/wall.js" defer data-url="{{supabase_url}}" data-key
       <button type="submit" class="btn btn-outline">Search</button>
       <button type="button" class="btn btn-outline" id="wall-clear" hidden>Clear</button>
     </form>
+    <!-- DNS-written, Becky may edit: the filter names and "No memories here yet." One filter is active at a time. -->
+    <div class="filters wall-filters" id="wall-filters" role="group" aria-label="Show memories about">
+      <button type="button" class="filter-btn" data-tag="" aria-pressed="true">All</button>
+      <button type="button" class="filter-btn" data-tag="steve" aria-pressed="false">Steve</button>
+      <button type="button" class="filter-btn" data-tag="mason" aria-pressed="false">Mason</button>
+      <button type="button" class="filter-btn" data-tag="josh" aria-pressed="false">Josh</button>
+      <button type="button" class="filter-btn" data-tag="family" aria-pressed="false">The whole family</button>
+    </div>
     <p class="muted wall-result" id="wall-result" role="status" hidden></p>
     <p class="muted" id="wall-status" role="status">Loading memories&hellip;</p>
     <p class="ph" id="wall-empty" hidden>The first memories will appear here soon.</p>
+    <p class="ph" id="wall-nonehere" hidden>No memories here yet.</p>
     <p class="ph" id="wall-nomatch" hidden>No memories match. Try another name or word.</p>
     <div class="wall-list" id="wall-list"></div>
     <p class="wall-more"><button type="button" class="btn btn-outline" id="wall-more" hidden>Show more</button></p>
@@ -60,6 +69,14 @@ body_extra: <script src="/js/wall.js" defer data-url="{{supabase_url}}" data-key
           <label for="wall-memory">Your memory <span class="req">(required)</span></label>
           <textarea id="wall-memory" name="memory" required maxlength="4000"></textarea>
         </div>
+        <!-- DNS-written, Becky may edit: the question and its four choices. -->
+        <fieldset class="choice wall-about">
+          <legend>Who is this memory about? <span class="req">(optional)</span></legend>
+          <label class="radio"><input type="checkbox" name="tags" value="steve"> Steve</label>
+          <label class="radio"><input type="checkbox" name="tags" value="mason"> Mason</label>
+          <label class="radio"><input type="checkbox" name="tags" value="josh"> Josh</label>
+          <label class="radio"><input type="checkbox" name="tags" value="family"> The whole family</label>
+        </fieldset>
         <div class="field">
           <label for="wall-photo">Photo (optional)</label>
           <p class="hint" id="wall-photo-hint">One photo. It is made smaller on your device before it is sent.</p>

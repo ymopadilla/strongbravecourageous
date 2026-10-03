@@ -14,6 +14,7 @@
   var DAY = 86400000, KEEP_REJECTED_DAYS = 30, ORPHAN_DAYS = 7;
   var PHOTO_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\.jpg$/;
   var VIDEO_RE = /^[A-Za-z0-9_-]{11}$/;
+  var TAGS = [['steve', 'Steve'], ['mason', 'Mason'], ['josh', 'Josh'], ['family', 'The whole family']];
   var $ = function (id) { return document.getElementById(id); };
   var msg = $('wa-msg');
   var session = null;
@@ -128,6 +129,31 @@
     });
     return img;
   }
+  /* Who the memory is about. An approver can tick or untick at any time, before or after approving.
+     Each change is saved at once; the database accepts only the four names. */
+  function tagEditor(m) {
+    var box = el('fieldset', 'choice wa-tags');
+    box.appendChild(el('legend', null, 'Who is this memory about?'));
+    var note = el('span', 'hint wa-saved'); note.setAttribute('role', 'status');
+    var inputs = TAGS.map(function (t) {
+      var label = el('label', 'radio'); var c = el('input'); c.type = 'checkbox'; c.value = t[0];
+      c.checked = (m.tags || []).indexOf(t[0]) !== -1;
+      label.appendChild(c); label.appendChild(document.createTextNode(' ' + t[1]));
+      box.appendChild(label);
+      return c;
+    });
+    inputs.forEach(function (c) {
+      c.addEventListener('change', function () {
+        var tags = inputs.filter(function (x) { return x.checked; }).map(function (x) { return x.value; });
+        inputs.forEach(function (x) { x.disabled = true; }); note.textContent = '';
+        patch('memories', m.id, { tags: tags }).then(function () { m.tags = tags; note.textContent = 'Saved.'; }, function () {
+          c.checked = !c.checked; say('The tags could not be saved. Please try again.');
+        }).then(function () { inputs.forEach(function (x) { x.disabled = false; }); c.focus(); });
+      });
+    });
+    box.appendChild(note);
+    return box;
+  }
   function memoryCard(m, email, comments) {
     var art = el('article', 'wall-card');
     if (m.photo_path && PHOTO_RE.test(m.photo_path)) art.appendChild(photoPreview(m));
@@ -142,6 +168,7 @@
     by.appendChild(el('span', 'from', '— ' + m.first_name));
     by.appendChild(el('time', null, formatDate(m.created_at)));
     art.appendChild(by);
+    art.appendChild(tagEditor(m));
     var facts = [];
     if (email) facts.push('Email (private): ' + email);
     if (m.photo_path) facts.push(m.photo_permission ? 'Photo permission box: ticked' : 'Photo permission box: not ticked');
