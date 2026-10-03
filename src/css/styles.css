@@ -411,6 +411,10 @@ section { padding: 48px 0; }
 .inline-form { display: flex; flex-direction: column; gap: 10px; }
 @media (min-width: 600px) { .inline-form { flex-direction: row; } .inline-form .field { flex: 1; margin: 0; } }
 
+/* ---------- Page intro text (Fingerprints definition, Contact note) ---------- */
+.page-intro { max-width: 38em; margin: 14px auto 0; text-align: left; }
+.contact-note p { font-size: 18px; margin: 0 0 12px; }
+
 /* ---------- Placeholders (Becky fills these in) ---------- */
 .ph {
   border: 2px dashed var(--line);

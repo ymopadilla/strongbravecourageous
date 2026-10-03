@@ -10,6 +10,11 @@ path: /contact.html
       <h1>Reach out</h1>
     </div>
 
+    <!-- DNS-written, Becky may edit (the text lives in content/pages/contact.md; Site pages > Contact page in the editor) -->
+    <div class="page-intro contact-note">
+      {{contact_body}}
+    </div>
+
     <div class="form-box" style="margin-top:24px;">
       <form name="contact" method="POST" action="/thanks-message.html" data-netlify="true" netlify-honeypot="bot-field">
         <input type="hidden" name="form-name" value="contact">
@@ -31,8 +36,6 @@ path: /contact.html
     </div>
 
     <div class="stack" style="margin-top:32px;">
-      {{contact_body}}
-
       <div class="crisis">
         <strong>Companion, not a clinician</strong> — if you’re in crisis, call <a href="tel:988">988</a>. More help is on the <a href="/resources.html">Resources page</a>.
       </div>

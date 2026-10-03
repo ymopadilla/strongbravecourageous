@@ -2,4 +2,4 @@
 instagram: ""
 facebook: ""
 ---
-[CONTACT MESSAGE — Becky to write a short note: what people can expect when they reach out, and resource suggestions are welcome here.]
+I’d love to hear from you. Send a question, a thought, or a resource helping you right now. I read every message myself.
