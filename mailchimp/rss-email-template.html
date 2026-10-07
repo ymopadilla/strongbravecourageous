@@ -3,65 +3,80 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="supported-color-schemes" content="light">
 <title>*|RSSITEM:TITLE|* — Strong. Brave. Courageous.</title>
 <!--
   Mailchimp RSS-to-email template — Strong. Brave. Courageous.
-  Paste into Mailchimp: Create → Email → (RSS campaign) → Design → "Code your own" → Paste in code.
-  Uses Mailchimp RSS merge tags (*|RSSITEMS:|* … *|END:RSSITEMS|*). Colors per Sept 2026 brand guide.
+  Restyled Oct 5, 2026 to match the live redesign (Wildflower palette).
+  Paste into Mailchimp: RSS campaign → Template → "Code your own" → Paste in code.
+  Uses Mailchimp RSS merge tags (*|RSSITEMS:|* … *|END:RSSITEMS|*).
+
+  Colors: paper #FFFDFA, mountain-blue-deep #4A7590, clay-rose #B4505B,
+  link-rose #A9454F, cross-brown #5A3D2B, muted #6E5A4E, blush #F7EDEC.
+  Fonts: Literata and Atkinson Hyperlegible Next where installed; Georgia and
+  Helvetica/Arial everywhere else (most email apps cannot load web fonts).
 -->
 <style>
   body { margin:0; padding:0; background:#FFFDFA; }
-  table { border-collapse:collapse; }
+  table { border-collapse:separate; }
   img { border:0; display:block; }
   a { color:#A9454F; }
-  .btn a { background:#B4505B; color:#FFFFFF !important; text-decoration:none; font-family:'Atkinson Hyperlegible Next',Helvetica,Arial,sans-serif; font-weight:700; font-size:15px; padding:14px 28px; border-radius:999px; display:inline-block; }
   @media only screen and (max-width:620px) {
     .wrap { width:100% !important; }
     .pad { padding-left:20px !important; padding-right:20px !important; }
-    h1 { font-size:26px !important; }
+    h1 { font-size:25px !important; }
   }
 </style>
 </head>
 <body style="margin:0;padding:0;background:#FFFDFA;">
+<!-- Preview text set in the campaign's Setup step -->
+<span style="display:none !important;visibility:hidden;opacity:0;color:transparent;height:0;width:0;max-height:0;max-width:0;overflow:hidden;font-size:1px;line-height:1px;">*|MC_PREVIEW_TEXT|*</span>
 <center>
 <table role="presentation" width="100%" bgcolor="#FFFDFA" cellpadding="0" cellspacing="0" style="background:#FFFDFA;">
-  <tr><td align="center" style="padding:28px 12px;">
+  <tr><td align="center" style="padding:24px 12px;">
     <table role="presentation" class="wrap" width="600" cellpadding="0" cellspacing="0" style="width:600px;max-width:600px;">
 
-      <!-- Header -->
-      <tr><td align="center" style="padding:0 0 22px;">
+      <!-- Header bar: mountain blue -->
+      <tr><td align="center" bgcolor="#4A7590" style="background:#4A7590;border-radius:14px 14px 0 0;padding:28px 20px 24px;">
         <a href="https://strongbravecourageous.com" style="text-decoration:none;">
-          <img src="https://strongbravecourageous.com/images/sbc-logo-256.png" width="120" height="120" alt="Strong. Brave. Courageous." style="width:120px;height:120px;border-radius:60px;margin:0 auto;">
+          <img src="https://strongbravecourageous.com/images/sbc-logo-512.png" width="112" height="112" alt="Strong. Brave. Courageous." style="width:112px;height:112px;border-radius:56px;margin:0 auto;">
         </a>
-        <p style="margin:14px 0 0;font-family:'Atkinson Hyperlegible Next',Helvetica,Arial,sans-serif;font-size:12px;letter-spacing:2px;text-transform:uppercase;color:#A9454F;font-weight:700;">One forward step at a time</p>
+        <p style="margin:16px 0 0;font-family:Literata,Georgia,'Times New Roman',serif;font-style:italic;font-size:18px;line-height:1.4;color:#FFFDFA;">One foot in front of the other.</p>
       </td></tr>
 
-      <!-- Story card(s) -->
+      <!-- Story (repeats if more than one new story) -->
       *|RSSITEMS:|*
-      <tr><td style="background:#FFFFFF;border:1px solid #E8DAD6;border-top:10px solid #4A7590;border-radius:14px;">
+      <tr><td bgcolor="#FFFDFA" style="background:#FFFDFA;border-left:1px solid #E8DAD6;border-right:1px solid #E8DAD6;border-bottom:1px solid #E8DAD6;">
         <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
-          <tr><td class="pad" style="padding:30px 34px 10px;">
-            <p style="margin:0 0 10px;font-family:'Atkinson Hyperlegible Next',Helvetica,Arial,sans-serif;font-size:13px;color:#6E5A4E;">*|RSSITEM:DATE:F j, Y|*</p>
-            <h1 style="margin:0 0 14px;font-family:Lora,Georgia,'Times New Roman',serif;font-size:30px;line-height:1.2;font-weight:700;color:#5A3D2B;">*|RSSITEM:TITLE|*</h1>
-            <div style="font-family:'Atkinson Hyperlegible Next',Helvetica,Arial,sans-serif;font-size:16px;line-height:1.65;color:#5A3D2B;">*|RSSITEM:CONTENT_TRUNCATE:400|*</div>
+          <tr><td class="pad" style="padding:30px 34px 8px;">
+            <p style="margin:0 0 10px;font-family:'Atkinson Hyperlegible Next',Helvetica,Arial,sans-serif;font-size:14px;color:#6E5A4E;">*|RSSITEM:DATE:F j, Y|*</p>
+            <h1 style="margin:0 0 14px;font-family:Literata,Georgia,'Times New Roman',serif;font-size:29px;line-height:1.25;font-weight:700;color:#5A3D2B;">*|RSSITEM:TITLE|*</h1>
+            <div style="font-family:Literata,Georgia,'Times New Roman',serif;font-size:17px;line-height:1.7;color:#5A3D2B;">*|RSSITEM:CONTENT_TRUNCATE:400|*</div>
           </td></tr>
-          <tr><td class="pad btn" align="left" style="padding:8px 34px 32px;">
-            <a href="*|RSSITEM:URL|*">Read the Full Story &rarr;</a>
+          <tr><td class="pad" align="left" style="padding:14px 34px 32px;">
+            <!-- Button: clay rose -->
+            <table role="presentation" cellpadding="0" cellspacing="0">
+              <tr><td align="center" bgcolor="#B4505B" style="background:#B4505B;border-radius:999px;">
+                <a href="*|RSSITEM:URL|*" style="display:inline-block;padding:14px 28px;font-family:'Atkinson Hyperlegible Next',Helvetica,Arial,sans-serif;font-size:16px;font-weight:700;line-height:1.2;color:#FFFDFA;text-decoration:none;border-radius:999px;">Read the full story &rarr;</a>
+              </td></tr>
+            </table>
           </td></tr>
         </table>
       </td></tr>
-      <tr><td style="height:18px;line-height:18px;font-size:0;">&nbsp;</td></tr>
       *|END:RSSITEMS|*
 
-      <!-- Quiet note -->
-      <tr><td style="background:#F7EDEC;border:1px solid #E8DAD6;border-radius:14px;padding:22px 30px;font-family:'Atkinson Hyperlegible Next',Helvetica,Arial,sans-serif;font-size:15px;line-height:1.6;color:#5A3D2B;">
-        <span style="font-family:Lora,Georgia,serif;font-style:italic;font-size:18px;color:#5A3D2B;">Stories have power. People have purpose. Braver tomorrows are possible.</span><br>
-        <span style="font-size:14px;color:#6E5A4E;">Companion, not a clinician &mdash; if you&rsquo;re in crisis, call or text 988.</span>
+      <!-- Spacer -->
+      <tr><td style="height:18px;line-height:18px;font-size:0;">&nbsp;</td></tr>
+
+      <!-- Crisis line (same wording as the site footer) -->
+      <tr><td bgcolor="#F7EDEC" style="background:#F7EDEC;border-radius:14px;padding:18px 30px;font-family:'Atkinson Hyperlegible Next',Helvetica,Arial,sans-serif;font-size:15px;line-height:1.6;color:#5A3D2B;">
+        If you&rsquo;re in crisis, call or text 988, any time.
       </td></tr>
 
       <!-- Footer -->
-      <tr><td align="center" style="padding:30px 20px 10px;font-family:'Atkinson Hyperlegible Next',Helvetica,Arial,sans-serif;font-size:13px;line-height:1.6;color:#6E5A4E;">
-        <p style="margin:0 0 6px;font-family:Lora,Georgia,serif;font-style:italic;color:#5A3D2B;">In memory of Steve, Mason, and Josh.</p>
+      <tr><td align="center" style="padding:28px 20px 10px;font-family:'Atkinson Hyperlegible Next',Helvetica,Arial,sans-serif;font-size:14px;line-height:1.6;color:#6E5A4E;">
+        <p style="margin:0 0 8px;font-family:Literata,Georgia,'Times New Roman',serif;font-style:italic;font-size:16px;color:#5A3D2B;">In celebration of Steve, Mason, and Josh.</p>
         <p style="margin:0 0 6px;">&copy; *|CURRENT_YEAR|* Strong. Brave. Courageous.</p>
         <p style="margin:0 0 6px;">*|LIST:ADDRESSLINE|*</p>
         <p style="margin:0;"><a href="*|UNSUB|*" style="color:#A9454F;">Unsubscribe</a> &nbsp;&middot;&nbsp; <a href="*|UPDATE_PROFILE|*" style="color:#A9454F;">Update preferences</a> &nbsp;&middot;&nbsp; <a href="https://strongbravecourageous.com/stories.html" style="color:#A9454F;">All stories</a></p>
