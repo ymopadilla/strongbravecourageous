@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Regenerates every logo file from the 4000px master (kept in the SBC Drive folder, 01_Brand and logo).
 Usage: python3 scripts/logo-assets.py /path/to/Strong_Brave_Courageous_4000px.png
-Needs Pillow. Writes: full logo (homepage opening, feed, share image), the simplified mark
+Needs Pillow 11.3 or newer (for AVIF). Writes: full logo (homepage opening, feed, share image), the simplified mark
 (header, footer, favicons), and src/images/og-image.jpg.
 """
 import sys, os, re
@@ -50,8 +50,10 @@ def save(im, size, path, **kw):
 
 save(full, 1200, f'{IMG}/sbc-logo-1200.png', optimize=True)
 for s in (512, 256, 128): save(full, s, f'{IMG}/sbc-logo-{s}.png', optimize=True)
-for s in (280, 560, 840, 1120): save(full, s, f'{IMG}/sbc-logo-{s}.webp', quality=86, method=6)
-for s in (64, 128, 256): save(mark, s, f'{IMG}/sbc-mark-{s}.webp', quality=88, method=6)
+# Homepage opening: AVIF first, WebP as the fallback (the <picture> in src/pages/index.html lists both).
+for s in (300, 480, 600, 720, 900):
+    save(full, s, f'{IMG}/sbc-logo-{s}.avif', quality=64, speed=0); save(full, s, f'{IMG}/sbc-logo-{s}.webp', quality=80, method=6)
+for s in (64, 96, 128, 256): save(mark, s, f'{IMG}/sbc-mark-{s}.webp', quality=88, method=6)
 save(mark, 512, f'{IMG}/sbc-mark-512.png', optimize=True)
 
 def on_paper(im, size):
@@ -115,10 +117,12 @@ def fit(im, width):
 # leaf-and-heart sprig (sits on white under the description)
 sprig = key_white((1340, 3290, 2640, 3640), poly=[(1340, 3440), (1500, 3310), (2500, 3310), (2640, 3440), (2500, 3610), (2250, 3640), (1750, 3640), (1500, 3610)])
 fit(sprig, 480).save(f'{IMG}/flower-sprig.webp', quality=88, method=6)
+for w in (240, 320): fit(sprig, w).save(f'{IMG}/flower-sprig-{w}.webp', quality=84, method=6)   # smaller copies for srcset
 # blossom cluster (the wildflowers and fern at the foot of the rock, lower left)
 V = lambda x, y: (round(100 + x * 4 / 3), round(1800 + y * 4 / 3))
 cluster = key_white((120, 1840, 980, 3000), poly=[V(*p) for p in [(40, 175), (120, 140), (215, 135), (245, 225), (335, 290), (350, 395), (430, 440), (560, 520), (625, 600), (560, 880), (60, 700)]], drop_grey=True, max_r=1800)
 fit(cluster, 420).save(f'{IMG}/flower-cluster.webp', quality=88, method=6)
+for w in (96, 192, 288): fit(cluster, w).save(f'{IMG}/flower-cluster-{w}.webp', quality=84, method=6)
 # single blossom (the pink flower below the white one): keep only its pink and gold
 cx, cy = (round(2880 + 522 * 4 / 3), round(1200 + 572 * 4 / 3)); r = 135
 b = RGBm.crop((cx - r, cy - r, cx + r, cy + r)); a = np.array(b).astype(int)
@@ -129,4 +133,5 @@ filled = k.copy(); ImageDraw.floodfill(filled, (0, 0), 128)             # outsid
 al = filled.point(lambda v: 0 if v == 128 else 255).filter(ImageFilter.MinFilter(9)).filter(ImageFilter.GaussianBlur(1.5))
 b = b.convert('RGBA'); b.putalpha(al); b = b.crop(b.getbbox())
 fit(b, 120).save(f'{IMG}/flower-blossom.webp', quality=90, method=6)
+fit(b, 72).save(f'{IMG}/flower-blossom-72.webp', quality=84, method=6)
 print('flowers', sprig.size, cluster.size, b.size)

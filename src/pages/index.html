@@ -8,8 +8,12 @@ head_extra: <script>(function(){if(!/(invite_token|recovery_token|confirmation_t
 <!-- Opening: the one mountain-blue field. Ridge: three large peaks drawn from the logo's mountain skyline, in three flat layers (decorative). -->
 <section class="opening">
   <div class="container opening-grid">
-    <!-- Logo is raster art (1176px master). Never display it larger than 300px. -->
-    <img class="hero-logo" src="/images/sbc-logo-560.webp" srcset="/images/sbc-logo-280.webp 280w, /images/sbc-logo-560.webp 560w, /images/sbc-logo-840.webp 840w, /images/sbc-logo-1120.webp 1120w" sizes="(max-width: 600px) 64vw, 280px" fetchpriority="high" alt="Strong. Brave. Courageous. Blog — a woman sits on a rock looking out over mountains and a winding river at sunrise, beside a wooden cross and wildflowers" width="280" height="280">
+    <!-- Logo is raster art (1176px master). Never display it larger than 300px.
+         AVIF first (smaller at the same quality), WebP for browsers without AVIF. Sizes follow .hero-logo in styles.css. -->
+    <picture>
+      <source type="image/avif" srcset="/images/sbc-logo-300.avif 300w, /images/sbc-logo-480.avif 480w, /images/sbc-logo-600.avif 600w, /images/sbc-logo-720.avif 720w, /images/sbc-logo-900.avif 900w" sizes="(min-width: 860px) 300px, min(280px, 64vw)">
+      <img class="hero-logo" src="/images/sbc-logo-600.webp" srcset="/images/sbc-logo-300.webp 300w, /images/sbc-logo-480.webp 480w, /images/sbc-logo-600.webp 600w, /images/sbc-logo-720.webp 720w, /images/sbc-logo-900.webp 900w" sizes="(min-width: 860px) 300px, min(280px, 64vw)" fetchpriority="high" alt="Strong. Brave. Courageous. Blog — a woman sits on a rock looking out over mountains and a winding river at sunrise, beside a wooden cross and wildflowers" width="280" height="280">
+    </picture>
     <div class="opening-text">
     <!-- Tagline: set in Literata until Becky's handwriting arrives. No script or handwriting-style font as a stand-in. -->
     <p class="tagline">One foot in front of the other.</p>
@@ -35,7 +39,7 @@ head_extra: <script>(function(){if(!/(invite_token|recovery_token|confirmation_t
 </section>
 
 <!-- Flower from the logo: leaf-and-heart sprig as a divider. One flower per screen; never behind text. -->
-<div class="flower-rule"><img class="flower flower-sprig" src="/images/flower-sprig.webp" alt="" width="480" height="120" loading="lazy" decoding="async"></div>
+<div class="flower-rule"><img class="flower flower-sprig" src="/images/flower-sprig.webp" srcset="/images/flower-sprig-240.webp 240w, /images/flower-sprig-320.webp 320w, /images/flower-sprig.webp 480w" sizes="(max-width: 600px) 150px, 190px" alt="" width="480" height="120" loading="lazy" decoding="async"></div>
 
 <!-- Stories on the homepage: every reader is one click from a story.
      "Start here" lists the stories Becky marks "Start here" in the editor; it is hidden when none are marked. -->

@@ -355,7 +355,7 @@ function storyCard(s, level = 'h3') {
 /* Year view: newest year first; the current year (from today's date at build time) is open, earlier years collapse.
    Nothing is hidden from search — this is only how the unfiltered feed is presented. */
 function storyYearView() {
-  if (!stories.length) return '<div class="flower-rule tight"><img class="flower flower-sprig small" src="/images/flower-sprig.webp" alt="" width="480" height="120" loading="lazy" decoding="async"></div>\n      <p class="muted text-center">No stories published yet.</p>';
+  if (!stories.length) return '<div class="flower-rule tight"><img class="flower flower-sprig small" src="/images/flower-sprig.webp" srcset="/images/flower-sprig-240.webp 240w, /images/flower-sprig-320.webp 320w, /images/flower-sprig.webp 480w" sizes="120px" alt="" width="480" height="120" loading="lazy" decoding="async"></div>\n      <p class="muted text-center">No stories published yet.</p>';
   const years = [...new Set(stories.map((s) => s.year))].sort((a, b) => b - a);
   const openYear = years.includes(CURRENT_YEAR) ? CURRENT_YEAR : years[0];
   return years.map((y) => {
