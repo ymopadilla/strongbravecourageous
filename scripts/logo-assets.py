@@ -2,7 +2,7 @@
 """Regenerates every logo file from the 4000px master (kept in the SBC Drive folder, 01_Brand and logo).
 Usage: python3 scripts/logo-assets.py /path/to/Strong_Brave_Courageous_4000px.png
 Needs Pillow 11.3 or newer (for AVIF). Writes: full logo (homepage opening, feed, share image), the simplified mark
-(header, footer, favicons), and src/images/og-image.jpg.
+(header, footer), and src/images/og-image.jpg. Favicons: scripts/favicon-assets.py.
 """
 import sys, os, re
 from PIL import Image, ImageDraw, ImageFilter
@@ -58,11 +58,8 @@ save(mark, 512, f'{IMG}/sbc-mark-512.png', optimize=True)
 
 def on_paper(im, size):
     bg = Image.new('RGBA', (size, size), PAPER + (255,)); m = im.resize((size, size), Image.LANCZOS); bg.alpha_composite(m); return bg.convert('RGB')
-save(mark, 16, f'{SRC}/sbc-logo-16.png'); save(mark, 32, f'{SRC}/sbc-logo-32.png'); save(mark, 48, f'{SRC}/favicon-48.png')
-save(mark, 32, f'{SRC}/favicon.png')
-mark.resize((256, 256), Image.LANCZOS).save(f'{SRC}/favicon.ico', sizes=[(16, 16), (32, 32), (48, 48)])
-on_paper(mark, 180).save(f'{SRC}/apple-touch-icon.png')
-save(mark, 192, f'{SRC}/icon-192.png'); save(mark, 512, f'{SRC}/icon-512.png')
+# Favicons are no longer written here. Since Oct 6, 2026 they come from the blossom: run scripts/favicon-assets.py
+# after this script (it reads src/images/flower-blossom.webp).
 
 # Share image 1200x630: blue field, framed full logo, the homepage ridge.
 W, H, S = 1200, 630, 2
