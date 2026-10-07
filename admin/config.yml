@@ -88,7 +88,7 @@ collections:
 
   - name: "pages"
     label: "Site Pages"
-    description: "The words on the About, Newsletter, and Contact pages. (Resources has its own section above.)"
+    description: "The words on the About, Contact, Fingerprints, and Newsletter pages. (Resources has its own section above.)"
     files:
       - name: "about"
         label: "About page"
@@ -118,3 +118,8 @@ collections:
           - { label: "Instagram URL", name: "instagram", widget: "string", required: false }
           - { label: "Facebook URL", name: "facebook", widget: "string", required: false }
           - { label: "Note to visitors", name: "body", widget: "markdown", hint: "What people can expect when they reach out, and resource suggestions are welcome. The contact form is the only channel — no email address is shown." }
+      - name: "fingerprints"
+        label: "Fingerprints page"
+        file: "content/pages/fingerprints.md"
+        fields:
+          - { label: "What a fingerprint is", name: "body", widget: "markdown", hint: "The short explanation under the heading on the Fingerprints page. One short paragraph reads best." }

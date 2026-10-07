@@ -9,7 +9,7 @@
     content/resources/*.md      – one file per resource (book, song, podcast episode, article, service)
     content/fingerprints/*.md   – approved Fingerprints submissions
     content/comments/*.md       – approved story comments
-    content/pages/*.md          – About / Newsletter / Contact text
+    content/pages/*.md          – About / Contact / Fingerprints / Newsletter text
   Writes everything to dist/ (the folder Netlify publishes).
 
   Run:  npm run build      (Netlify runs this automatically on every publish)
@@ -306,7 +306,7 @@ const resources = loadCollection('resources')
   .filter((r) => r.type);
 
 const pageContent = {};
-['about', 'obituary', 'newsletter', 'contact'].forEach((n) => {
+['about', 'obituary', 'newsletter', 'contact', 'fingerprints'].forEach((n) => {
   const p = path.join(CONTENT, 'pages', `${n}.md`);
   pageContent[n] = exists(p) ? parseFrontMatter(read(p)) : { data: {}, body: '' };
 });
@@ -585,7 +585,15 @@ buildSimple('newsletter', { newsletter_body: renderBody(pageContent.newsletter.b
 }
 
 // Fingerprints
+/* The definition under the heading is Becky's to edit (content/pages/fingerprints.md, editor: Site Pages > Fingerprints page).
+   Each paragraph keeps the page's intro styling. Left empty, the page shows the heading and the form with no definition. */
+const fingerprintsDefinition = (() => {
+  const body = (pageContent.fingerprints.body || '').trim();
+  if (!body || isPlaceholder(body)) return '';
+  return marked.parse(body).trim().replace(/<p>/g, '<p class="lead page-intro">');
+})();
 buildSimple('fingerprints', {
+  fingerprints_definition: fingerprintsDefinition,
   fingerprint_cards: fingerprints.length
     ? fingerprints.map((f) => `
       <article class="card fingerprint">
