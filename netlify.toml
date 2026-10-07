@@ -39,6 +39,11 @@
   for = "/images/*"
   [headers.values]
     Cache-Control = "public, max-age=31536000, immutable"
+# Self-hosted fonts: build.js stamps each font address with ?v=<hash of the font files>
+[[headers]]
+  for = "/fonts/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
 
 # Friendly URLs
 [[redirects]]

@@ -175,14 +175,19 @@ function fill(template, vars) {
 }
 
 /* ---------- layout ---------- */
-/* Cache-busting: netlify.toml caches /css and /js for a year, so every build stamps a short
-   content hash onto the stylesheet and script URLs. Returning visitors always get the current files. */
+/* Cache-busting: netlify.toml caches /css, /js, and /fonts for a year, so every build stamps a short
+   content hash onto the stylesheet, script, and font URLs. Returning visitors always get the current files.
+   Fonts carry their own stamp (FONT_V), so a CSS or script change does not make readers download the fonts again. */
+const md5 = (parts) => require('crypto').createHash('md5').update(parts.join('\n')).digest('hex').slice(0, 8);
+const FONT_DIR = path.join(SRC, 'fonts');
+const FONT_V = md5(fs.readdirSync(FONT_DIR).filter((f) => f.endsWith('.woff2')).sort().map((f) => f + fs.readFileSync(path.join(FONT_DIR, f)).toString('base64')));
 const ASSET_V = require('crypto').createHash('md5')
-  .update(['css/styles.css', 'js/main.js', 'js/search.js', 'js/wall.js', 'js/wall-admin.js'].map((f) => (exists(path.join(SRC, f)) ? read(path.join(SRC, f)) : '')).join('\n'))
+  .update([FONT_V, 'css/styles.css', 'js/main.js', 'js/search.js', 'js/wall.js', 'js/wall-admin.js'].map((f) => (exists(path.join(SRC, f)) ? read(path.join(SRC, f)) : '')).join('\n'))
   .digest('hex').slice(0, 8);
 const stampAssets = (html) => html
   .replace(/(\/css\/styles\.css)(?=["'])/g, `$1?v=${ASSET_V}`)
-  .replace(/(\/js\/(?:main|search|wall|wall-admin)\.js)(?=["'])/g, `$1?v=${ASSET_V}`);
+  .replace(/(\/js\/(?:main|search|wall|wall-admin)\.js)(?=["'])/g, `$1?v=${ASSET_V}`)
+  .replace(/(\/fonts\/[\w.-]+\.woff2)(?=["'])/g, `$1?v=${FONT_V}`);
 
 const layout = stampAssets(read(path.join(SRC, 'templates', 'layout.html')));
 
@@ -321,7 +326,9 @@ function copyDir(from, to) {
     e.isDirectory() ? copyDir(s, d) : fs.copyFileSync(s, d);
   });
 }
-['css', 'js', 'images'].forEach((d) => copyDir(path.join(SRC, d), path.join(DIST, d)));
+['css', 'js', 'images', 'fonts'].forEach((d) => copyDir(path.join(SRC, d), path.join(DIST, d)));
+// The stylesheet names the font files; stamp those addresses the same way the preload links in the layout are stamped.
+fs.writeFileSync(path.join(DIST, 'css', 'styles.css'), stampAssets(read(path.join(SRC, 'css', 'styles.css'))));
 fs.readdirSync(SRC).filter((f) => /\.(ico|png|txt|xml|webmanifest)$/.test(f)).forEach((f) => fs.copyFileSync(path.join(SRC, f), path.join(DIST, f)));
 copyDir(path.join(ROOT, 'admin'), path.join(DIST, 'admin'));
 if (exists(path.join(ROOT, 'uploads'))) copyDir(path.join(ROOT, 'uploads'), path.join(DIST, 'uploads'));

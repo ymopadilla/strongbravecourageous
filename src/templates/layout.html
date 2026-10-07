@@ -30,10 +30,10 @@
   <link rel="manifest" href="/site.webmanifest">
   <meta name="theme-color" content="#5A3D2B">
 
-  <!-- Fonts: Literata (headings and reading text, designed for long reading on screens) + Atkinson Hyperlegible Next (nav, buttons, forms, small text) -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:ital,wght@0,400;0,500;0,700;1,400&family=Literata:ital,opsz,wght@0,7..72,400..700;1,7..72,400..700&display=swap" rel="stylesheet">
+  <!-- Fonts: Literata (headings and reading text, designed for long reading on screens) + Atkinson Hyperlegible Next (nav, buttons, forms, small text).
+       Self-hosted from /fonts/ (src/fonts/); the @font-face rules are at the top of styles.css. Only the two files used at the top of every page are preloaded. -->
+  <link rel="preload" href="/fonts/literata-latin-opsz-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/fonts/atkinson-hyperlegible-next-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="/css/styles.css">
   <link rel="alternate" type="application/rss+xml" title="Strong. Brave. Courageous. — Stories" href="{{site_url}}/feed.xml">
 
