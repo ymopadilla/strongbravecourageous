@@ -478,7 +478,9 @@ buildSimple('stories', {
 
 // About
 /* Slots on the About page. The photo shows a calm "Photo coming soon." frame until Becky uploads one.
-   The handwritten note, the obituary, and the two videos render nothing until their content exists. */
+   The handwritten note and each video render nothing until their content exists. "The facts" links to the story
+   Becky picks in the editor (facts_story) and is hidden while none is picked or the story is not published.
+   "Obituary" links to /obituary.html. The six family photos sit in a plain grid with their captions. */
 function videoEmbed(url, title) {
   const u = String(url || '').trim();
   if (!u) return '';
@@ -488,16 +490,21 @@ function videoEmbed(url, title) {
   if (vm) return `<div class="video"><iframe src="https://player.vimeo.com/video/${vm[1]}" title="${escapeHtml(title)}" allow="fullscreen; picture-in-picture" allowfullscreen loading="lazy"></iframe></div>`;
   return /^https?:\/\//.test(u) ? `<p><a href="${escapeHtml(u)}" target="_blank" rel="noopener">Watch the video</a></p>` : '';
 }
+const COLLAGE = ['family-fenway-2018', 'family-2018', 'steve-and-becky', 'huntington-beach-2019', 'mason-21st-birthday-2020', 'josh-16th-birthday-2020'];
 {
   const { data, body } = pageContent.about;
-  const obit = pageContent.obituary;
-  const obitText = (obit.body || '').trim() && !isPlaceholder(obit.body) ? marked.parse(obit.body) : '';
-  const obitLink = /^https?:\/\//.test(String(data.obituary_link || '').trim())
-    ? `<p><a href="${escapeHtml(String(data.obituary_link).trim())}" target="_blank" rel="noopener">Read the obituary</a></p>` : '';
+  const factsSlug = String(data.facts_story || '').trim();
+  const facts = factsSlug ? stories.find((s) => s.slug === factsSlug) : null;
+  const buttons = [
+    facts ? `<a class="btn btn-primary" href="/stories/${facts.slug}.html">The facts</a>` : '',
+    '<a class="btn btn-outline" href="/obituary.html">Obituary</a>',
+  ].filter(Boolean).join('\n      ');
+  const caption = String(data.driveby_caption || '').trim();
   const slots = [
-    ['obituary', 'Obituary', obitText + obitLink],
     ['celebration', 'Celebration of life', videoEmbed(data.celebration_video, 'Celebration of life')],
-    ['drive-by', 'The post office drive-by', videoEmbed(data.driveby_video, 'The post office drive-by')],
+    // DNS-written placeholder caption (Becky may edit: Site pages > About page > Caption under the postal tribute).
+    ['postal-tribute', 'Postal tribute to Steve', (() => { const v = videoEmbed(data.driveby_video, 'Postal tribute to Steve'); return v && caption ? v + `<p class="video-caption">${escapeHtml(caption)}</p>` : v; })()],
+    ['tribute-josh', 'Tribute to Josh', videoEmbed(data.josh_video, 'Tribute to Josh')],
   ].filter(([, , html]) => html);
   const note = data.photo_note
     ? `<img class="about-note" src="${escapeHtml(data.photo_note)}" alt="${escapeHtml(data.photo_note_text || 'A handwritten note from Becky')}" loading="lazy">` : '';
@@ -506,6 +513,8 @@ function videoEmbed(url, title) {
     about_photo: `<figure class="about-figure">${data.photo
       ? `<img class="about-photo" src="${escapeHtml(data.photo)}" alt="Becky">${note}`
       : '<div class="soon"><span>Photo coming soon.</span></div>'}</figure>`,
+    about_buttons: buttons,
+    about_collage: COLLAGE.map((n) => photoTag(n, { sizes: '(min-width: 768px) 240px, calc(50vw - 30px)' })).join('\n      '),
     about_more: slots.map(([id, heading, html]) => `
     <section class="about-slot" id="${id}">
       <h2>${heading}</h2>

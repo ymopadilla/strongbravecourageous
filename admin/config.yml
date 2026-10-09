@@ -97,9 +97,11 @@ collections:
           - { label: "Your photo", name: "photo", widget: "image", required: false, hint: "A photo of you. Until one is here, the page shows a quiet 'Photo coming soon.' frame." }
           - { label: "Handwritten note for the photo", name: "photo_note", widget: "image", required: false, hint: "A picture of your handwriting, such as \"that's me\". It sits beside your photo. Leave empty to show nothing." }
           - { label: "What the handwritten note says", name: "photo_note_text", widget: "string", required: false, hint: "Type the same words, for readers who use a screen reader." }
-          - { label: "Obituary link (optional)", name: "obituary_link", widget: "string", required: false, hint: "Web address of the obituary. To put the full text on the page instead, use Site Pages > Obituary." }
+          - { label: "Story for the \"The facts\" button", name: "facts_story", widget: "relation", collection: "stories", search_fields: ["title"], value_field: "{{slug}}", display_fields: ["title"], required: false, hint: "Pick the story the button opens. The button stays hidden until a published story is picked." }
           - { label: "Celebration of life video", name: "celebration_video", widget: "string", required: false, hint: "Paste the YouTube or Vimeo link. Leave empty to show nothing." }
-          - { label: "Post office drive-by video", name: "driveby_video", widget: "string", required: false, hint: "Paste the YouTube or Vimeo link. Leave empty to show nothing." }
+          - { label: "Postal tribute to Steve video", name: "driveby_video", widget: "string", required: false, hint: "Paste the YouTube or Vimeo link. Leave empty to show nothing." }
+          - { label: "Caption under the postal tribute", name: "driveby_caption", widget: "string", required: false, hint: "One line under the video. Leave empty to show none." }
+          - { label: "Tribute to Josh video", name: "josh_video", widget: "string", required: false, hint: "Paste the YouTube or Vimeo link. The section stays hidden until a link is here." }
           - { label: "Your story", name: "body", widget: "markdown" }
       - name: "obituary"
         label: "Obituary page"

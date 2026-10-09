@@ -583,6 +583,13 @@ section { padding: 48px 0; }
   border-radius: 4px 28px 4px 28px; box-shadow: 0 0 0 6px var(--paper), 0 0 0 7px var(--rule); margin: 7px;
 }
 .soon span { font-family: var(--font-read); font-style: italic; font-size: 17px; color: var(--muted); }
+.about-links { margin-top: 32px; justify-content: flex-start; }
+.collage { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px 18px; align-items: start; margin: 44px 0 0; }
+@media (min-width: 768px) { .collage { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 28px 22px; } }
+.photo { margin: 0; }
+.photo img { display: block; width: 100%; height: auto; border-radius: 4px 18px 4px 18px; background: var(--blush); }
+.photo figcaption { margin: 8px 0 0; font-family: var(--font-ui); font-size: 14px; line-height: 1.45; color: var(--muted); overflow-wrap: anywhere; }
+.video-caption { margin: 10px 0 0; font-size: 15px; color: var(--muted); }
 .about-slot { padding: 0; margin: 48px 0 0; }
 .about-slot h2 { margin: 0 0 14px; }
 .about-slot .video { position: relative; aspect-ratio: 16 / 9; border-radius: 2px; overflow: hidden; background: var(--wood); }
