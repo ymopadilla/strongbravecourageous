@@ -7,20 +7,22 @@ path: /fingerprints.html
 <section>
   <div class="container narrow text-center">
     <h1>Share a moment you saw God move.</h1>
+    <!-- Jump to the form (DNS-written button label from Yvonne, Oct 8). Her text stays in full below. -->
+    <p class="fp-jump"><a class="btn btn-primary" href="#share">Share your fingerprint</a></p>
     <!-- Becky's words (Edits.docx, Oct 2026): content/pages/fingerprints.md (editor: Site Pages > Fingerprints page). Bible references link to BibleGateway. -->
     {{fingerprints_definition}}
     {{fingerprints_photo}}
   </div>
 </section>
 
-<section class="section-tight">
+<section class="section-tight" id="share">
   <div class="container narrow">
     <div class="form-box blue">
       <p class="form-first"><strong>I read every submission before it appears here.</strong></p>
       <h2>Share your moment</h2>
       <form name="fingerprint" method="POST" action="/thanks-fingerprint.html" data-netlify="true" netlify-honeypot="bot-field" enctype="multipart/form-data">
         <input type="hidden" name="form-name" value="fingerprint">
-        <p class="hp"><label>Don’t fill this out if you’re human: <input name="bot-field"></label></p>
+        <p class="hp"><label>Don’t fill this out if you’re human: <input name="bot-field" tabindex="-1" autocomplete="off"></label></p>
         <div class="field">
           <label for="fp-name">Name <span class="req">(required)</span></label>
           <input type="text" id="fp-name" name="name" required autocomplete="name">

@@ -21,7 +21,7 @@ head_extra: <meta name="robots" content="noindex,follow">
       <h2>Sign up</h2>
       <form name="newsletter" method="POST" action="/thanks-signup.html" data-netlify="true" netlify-honeypot="bot-field" class="inline-form">
         <input type="hidden" name="form-name" value="newsletter">
-        <p class="hp"><label>Don’t fill this out if you’re human: <input name="bot-field"></label></p>
+        <p class="hp"><label>Don’t fill this out if you’re human: <input name="bot-field" tabindex="-1" autocomplete="off"></label></p>
         <div class="field">
           <label for="nl-email" class="visually-hidden">Email address</label>
           <input type="email" id="nl-email" name="email" placeholder="Your email" required autocomplete="email">

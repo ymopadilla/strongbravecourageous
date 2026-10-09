@@ -47,7 +47,7 @@ og_type: article
         <form name="comment" method="POST" action="/thanks-comment.html" data-netlify="true" netlify-honeypot="bot-field">
           <input type="hidden" name="form-name" value="comment">
           <input type="hidden" name="story" value="{{story_slug}}">
-          <p class="hp"><label>Don’t fill this out if you’re human: <input name="bot-field"></label></p>
+          <p class="hp"><label>Don’t fill this out if you’re human: <input name="bot-field" tabindex="-1" autocomplete="off"></label></p>
           <div class="field">
             <label for="cm-name">Name <span class="req">(required)</span></label>
             <input type="text" id="cm-name" name="name" required autocomplete="name">

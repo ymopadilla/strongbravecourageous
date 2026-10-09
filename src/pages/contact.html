@@ -21,7 +21,7 @@ path: /contact.html
     <div class="form-box" style="margin-top:24px;">
       <form name="contact" method="POST" action="/thanks-message.html" data-netlify="true" netlify-honeypot="bot-field">
         <input type="hidden" name="form-name" value="contact">
-        <p class="hp"><label>Don’t fill this out if you’re human: <input name="bot-field"></label></p>
+        <p class="hp"><label>Don’t fill this out if you’re human: <input name="bot-field" tabindex="-1" autocomplete="off"></label></p>
         <div class="field">
           <label for="c-name">Name <span class="req">(required)</span></label>
           <input type="text" id="c-name" name="name" required autocomplete="name">
