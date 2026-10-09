@@ -212,6 +212,8 @@ A page where people share a photo, a memory, or a story celebrating Steve, Mason
 
 **Switch.** `const MEMORIAL_WALL = true;` in `build.js` controls the page, the menu link (header, mobile menu, footer), and the sitemap entry. It is an off switch for emergencies: set it to `false`, commit, push, and all three disappear on the next build. The database and the approval screen are untouched.
 
+**Rework for everyone's losses (Oct 8, 2026; `supabase/migrations/006_memorial_wall_loved_one.sql`, applied Oct 8).** Each memory now carries `loved_one` (the loved one's name, 1 to 80 characters; NULL only on rows sent by the older page), and `memory` (the words) may be empty. The new page writes through `submit_wall_memory(p_first_name, p_loved_one, p_memory, p_photo_path, p_photo_permission, p_email)` (refuses a missing loved one's name with `WB006`) and reads through `wall_list(p_query, p_limit, p_offset)`, which searches the loved one's name, the first name, and the words. Approvers may correct `loved_one` (column grant plus the existing row rule). Nothing was dropped: `wall_page`, both forms of `submit_memory`, and the `tags` column stay, so the page built from `abe3d26` keeps working until the new code is live; the new page no longer uses them.
+
 **Database** (`supabase/migrations/001_memorial_wall.sql`, row-level security on every table):
 
 | Table | Holds | Public (site key) | Approvers |
