@@ -14,7 +14,6 @@
   var DAY = 86400000, KEEP_REJECTED_DAYS = 30, ORPHAN_DAYS = 7;
   var PHOTO_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\.jpg$/;
   var VIDEO_RE = /^[A-Za-z0-9_-]{11}$/;
-  var TAGS = [['steve', 'Steve'], ['mason', 'Mason'], ['josh', 'Josh'], ['family', 'The whole family']];
   var $ = function (id) { return document.getElementById(id); };
   var msg = $('wa-msg');
   var session = null;
@@ -129,35 +128,34 @@
     });
     return img;
   }
-  /* Who the memory is about. An approver can tick or untick at any time, before or after approving.
-     Each change is saved at once; the database accepts only the four names. */
-  function tagEditor(m) {
-    var box = el('fieldset', 'choice wa-tags');
-    box.appendChild(el('legend', null, 'Who is this memory about?'));
+  /* The loved one's name. An approver can correct it at any time, before or after approving.
+     The database accepts 1 to 80 characters and refuses an empty name. */
+  function nameEditor(m) {
+    var f = el('form', 'wa-name-edit'); f.noValidate = true;
+    var id = 'wa-loved-' + m.id;
+    var label = el('label', null, 'Loved one\u2019s name'); label.htmlFor = id;
+    var input = el('input'); input.type = 'text'; input.id = id; input.maxLength = 80; input.value = m.loved_one || ''; input.autocomplete = 'off';
+    var save = el('button', 'btn btn-outline', 'Save name'); save.type = 'submit';
     var note = el('span', 'hint wa-saved'); note.setAttribute('role', 'status');
-    var inputs = TAGS.map(function (t) {
-      var label = el('label', 'radio'); var c = el('input'); c.type = 'checkbox'; c.value = t[0];
-      c.checked = (m.tags || []).indexOf(t[0]) !== -1;
-      label.appendChild(c); label.appendChild(document.createTextNode(' ' + t[1]));
-      box.appendChild(label);
-      return c;
+    f.appendChild(label); f.appendChild(input); f.appendChild(save); f.appendChild(note);
+    f.addEventListener('submit', function (ev) {
+      ev.preventDefault();
+      var v = input.value.trim(); note.textContent = '';
+      if (!v) { note.textContent = 'Please add a name.'; input.focus(); return; }
+      if (v === (m.loved_one || '')) { note.textContent = 'Saved.'; return; }
+      save.disabled = true;
+      patch('memories', m.id, { loved_one: v }).then(function () {
+        m.loved_one = v; input.value = v; note.textContent = 'Saved.';
+        var head = f.parentNode && f.parentNode.querySelector('.wa-name'); if (head) head.textContent = v;
+      }, function () { say('The name could not be saved. Please try again.'); }).then(function () { save.disabled = false; });
     });
-    inputs.forEach(function (c) {
-      c.addEventListener('change', function () {
-        var tags = inputs.filter(function (x) { return x.checked; }).map(function (x) { return x.value; });
-        inputs.forEach(function (x) { x.disabled = true; }); note.textContent = '';
-        patch('memories', m.id, { tags: tags }).then(function () { m.tags = tags; note.textContent = 'Saved.'; }, function () {
-          c.checked = !c.checked; say('The tags could not be saved. Please try again.');
-        }).then(function () { inputs.forEach(function (x) { x.disabled = false; }); c.focus(); });
-      });
-    });
-    box.appendChild(note);
-    return box;
+    return f;
   }
   function memoryCard(m, email, comments) {
     var art = el('article', 'wall-card');
+    art.appendChild(el('p', 'wa-name', m.loved_one || 'No loved one\u2019s name (sent from the form used before Oct 8)'));
     if (m.photo_path && PHOTO_RE.test(m.photo_path)) art.appendChild(photoPreview(m));
-    art.appendChild(el('p', 'wall-text', m.memory));
+    if (m.memory) art.appendChild(el('p', 'wall-text', m.memory));
     if (m.youtube_id && VIDEO_RE.test(m.youtube_id)) {
       var p = el('p', 'hint', 'Video: ');
       var a = el('a', null, 'youtube.com/watch?v=' + m.youtube_id);
@@ -168,7 +166,7 @@
     by.appendChild(el('span', 'from', '— ' + m.first_name));
     by.appendChild(el('time', null, formatDate(m.created_at)));
     art.appendChild(by);
-    art.appendChild(tagEditor(m));
+    art.appendChild(nameEditor(m));
     var facts = [];
     if (email) facts.push('Email (private): ' + email);
     if (m.photo_path) facts.push(m.photo_permission ? 'Photo permission box: ticked' : 'Photo permission box: not ticked');
@@ -195,7 +193,10 @@
     by.appendChild(el('span', 'from', '— ' + c.first_name));
     by.appendChild(el('time', null, formatDate(c.created_at)));
     art.appendChild(by);
-    if (memory) art.appendChild(el('p', 'hint wa-fact', 'On the memory from ' + memory.first_name + ': ' + memory.memory.slice(0, 120) + (memory.memory.length > 120 ? '…' : '')));
+    if (memory) {
+      var words = memory.memory || '';
+      art.appendChild(el('p', 'hint wa-fact', 'On the memory ' + (memory.loved_one ? 'of ' + memory.loved_one + ', ' : '') + 'shared by ' + memory.first_name + (words ? ': ' + words.slice(0, 120) + (words.length > 120 ? '…' : '') : '')));
+    }
     var row = el('div', 'btn-row wa-actions');
     row.appendChild(button('Approve', 'btn-primary', function () { return patch('comments', c.id, stamp('approved')); }));
     row.appendChild(button('Reject', 'btn-outline', function () { return patch('comments', c.id, stamp('rejected')); }));

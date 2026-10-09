@@ -506,7 +506,11 @@ section { padding: 48px 0; }
 .wall-search .btn { padding: 10px 22px; }
 .wall-name { font-family: var(--font-heading); font-size: 24px; line-height: 1.25; color: var(--brown); margin: 0 0 4px; overflow-wrap: anywhere; }
 .wall-shared { font-family: var(--font-ui); font-size: 15px; color: var(--muted); margin: 0 0 16px; overflow-wrap: anywhere; }
-.wa-tags { margin: 14px 0 0; }
+.wa-name { font-family: var(--font-heading); font-size: 22px; font-weight: 700; line-height: 1.3; color: var(--brown); margin: 0 0 12px; overflow-wrap: anywhere; }
+.wa-name-edit { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; margin: 14px 0 0; }
+.wa-name-edit label { width: 100%; font-family: var(--font-ui); font-weight: 700; font-size: 15px; color: var(--brown); }
+.wa-name-edit input { flex: 1 1 200px; min-height: 44px; padding: 8px 12px; font: inherit; color: var(--ink); background: var(--white); border: 1px solid var(--line); border-radius: var(--radius-sm); }
+.wa-name-edit input:focus-visible { outline: 3px solid var(--brown); outline-offset: 2px; }
 .wa-saved { margin-left: 4px; }
 .wall-result { margin: 0 0 16px; overflow-wrap: anywhere; }
 .wall-more { margin: 28px 0 0; text-align: center; }
