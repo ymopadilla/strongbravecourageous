@@ -1,5 +1,5 @@
 ---
-photo: ""
+photo: "/images/photos/family-2018-768.webp"
 photo_note: ""
 photo_note_text: ""
 facts_story: ""

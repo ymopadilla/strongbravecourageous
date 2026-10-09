@@ -94,7 +94,7 @@ collections:
         label: "About page"
         file: "content/pages/about.md"
         fields:
-          - { label: "Your photo", name: "photo", widget: "image", required: false, hint: "A photo of you. Until one is here, the page shows a quiet 'Photo coming soon.' frame." }
+          - { label: "Your photo", name: "photo", widget: "image", required: false, hint: "The photo at the top of the page. Until one is here, the page shows a quiet 'Photo coming soon.' frame." }
           - { label: "Handwritten note for the photo", name: "photo_note", widget: "image", required: false, hint: "A picture of your handwriting, such as \"that's me\". It sits beside your photo. Leave empty to show nothing." }
           - { label: "What the handwritten note says", name: "photo_note_text", widget: "string", required: false, hint: "Type the same words, for readers who use a screen reader." }
           - { label: "Story for the \"The facts\" button", name: "facts_story", widget: "relation", collection: "stories", search_fields: ["title"], value_field: "{{slug}}", display_fields: ["title"], required: false, hint: "Pick the story the button opens. The button stays hidden until a published story is picked." }

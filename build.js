@@ -528,15 +528,21 @@ function aboutCollage(skip) {
     ['postal-tribute', 'Postal tribute to Steve', (() => { const v = videoEmbed(data.driveby_video, 'Postal tribute to Steve'); return v && caption ? v + `<p class="video-caption">${escapeHtml(caption)}</p>` : v; })()],
     ['tribute-josh', 'Tribute to Josh', videoEmbed(data.josh_video, 'Tribute to Josh')],
   ].filter(([, , html]) => html);
+  /* The top photo is either one Becky uploads in the editor, or one of the family photos (its path under /images/photos/).
+     A family photo shows with its caption and alt text from content/photos.json and is left out of the collage. */
+  const libMatch = String(data.photo || '').trim().match(/^\/images\/photos\/([a-z0-9-]+?)-\d+\.(?:webp|avif)$/);
+  const topLib = libMatch && PHOTO_SIZES[libMatch[1]] ? libMatch[1] : '';
   const note = data.photo_note
     ? `<img class="about-note" src="${escapeHtml(data.photo_note)}" alt="${escapeHtml(data.photo_note_text || 'A handwritten note from Becky')}" loading="lazy">` : '';
   buildSimple('about', {
     about_body: renderBody(body),
-    about_photo: `<figure class="about-figure">${data.photo
-      ? `<img class="about-photo" src="${escapeHtml(data.photo)}" alt="Becky">${note}`
-      : '<div class="soon"><span>Photo coming soon.</span></div>'}</figure>`,
+    about_photo: topLib
+      ? `<div class="about-figure">${photoTag(topLib, { sizes: '(min-width: 768px) 350px, calc(100vw - 40px)', cls: 'about-top' })}${note}</div>`
+      : `<figure class="about-figure">${data.photo
+        ? `<img class="about-photo" src="${escapeHtml(data.photo)}" alt="Becky">${note}`
+        : '<div class="soon"><span>Photo coming soon.</span></div>'}</figure>`,
     about_buttons: buttons,
-    about_collage: aboutCollage(''),
+    about_collage: aboutCollage(topLib),
     about_more: slots.map(([id, heading, html]) => `
     <section class="about-slot" id="${id}">
       <h2>${heading}</h2>
