@@ -1,0 +1,48 @@
+{
+  "_note": "Captions are Becky's words, copied from Edits.docx (Oct 8, 2026) by script, one line per caption line. Alt text is DNS-written from the captions; Becky may edit.",
+  "photos": {
+    "becky": {
+      "caption": [],
+      "alt": "Becky, smiling"
+    },
+    "family-fenway-2018": {
+      "caption": [
+        "2018, Fenway Park, Boston, MA",
+        "Back: Mason, Steve",
+        "Front: Becky, Josh, Emily"
+      ],
+      "alt": "The family at Fenway Park in Boston in 2018: Mason and Steve in back, Becky, Josh, and Emily in front"
+    },
+    "family-2018": {
+      "caption": [
+        "2018: Steve, Becky, Josh, Emily, Mason"
+      ],
+      "alt": "Steve, Becky, Josh, Emily, and Mason standing together in 2018"
+    },
+    "steve-and-becky": {
+      "caption": [
+        "Steve and Becky"
+      ],
+      "alt": "Steve and Becky smiling together"
+    },
+    "huntington-beach-2019": {
+      "caption": [
+        "December, 2019 Huntington Beach, CA",
+        "Josh, Steve, Mason"
+      ],
+      "alt": "Josh, Steve, and Mason at Huntington Beach, California, in December 2019"
+    },
+    "mason-21st-birthday-2020": {
+      "caption": [
+        "September, 2020, Mason’s 21st birthday"
+      ],
+      "alt": "Mason smiling on his 21st birthday, September 2020"
+    },
+    "josh-16th-birthday-2020": {
+      "caption": [
+        "March, 2020, Josh’s 16th birthday"
+      ],
+      "alt": "Josh on his 16th birthday, March 2020"
+    }
+  }
+}

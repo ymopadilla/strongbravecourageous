@@ -174,6 +174,25 @@ function fill(template, vars) {
   return template.replace(/\{\{(\w+)\}\}/g, (_, k) => (k in vars ? vars[k] : ''));
 }
 
+/* ---------- family photos ----------
+   Files: src/images/photos/<name>-<width>.avif|.webp and photos.json (sizes), written by scripts/photo-sizes.py from
+   originals/photos/ (not published). Captions (Becky's words) and alt text: content/photos.json.
+   photoTag() writes a <figure> with AVIF first and WebP for browsers without AVIF; the caption is visible text. */
+const PHOTO_SIZES_FILE = path.join(SRC, 'images', 'photos', 'photos.json');
+const PHOTO_SIZES = exists(PHOTO_SIZES_FILE) ? JSON.parse(read(PHOTO_SIZES_FILE)) : {};
+const PHOTO_TEXT = exists(path.join(CONTENT, 'photos.json')) ? JSON.parse(read(path.join(CONTENT, 'photos.json'))).photos : {};
+function photoTag(name, { sizes, cls = '', lazy = true, caption = true, priority = false } = {}) {
+  const s = PHOTO_SIZES[name], t = PHOTO_TEXT[name] || {};
+  if (!s) throw new Error(`Photo "${name}" is missing: run python3 scripts/photo-sizes.py`);
+  const set = (ext) => s.widths.map((w) => `/images/photos/${name}-${w}.${ext} ${w}w`).join(', ');
+  const fallback = s.widths.find((w) => w >= 640) || s.widths[s.widths.length - 1];
+  const img = `<picture><source type="image/avif" srcset="${set('avif')}" sizes="${sizes}">`
+    + `<img src="/images/photos/${name}-${fallback}.webp" srcset="${set('webp')}" sizes="${sizes}" alt="${escapeHtml(t.alt || '')}" width="${s.width}" height="${s.height}"`
+    + `${lazy ? ' loading="lazy"' : ''} decoding="async"${priority ? ' fetchpriority="high"' : ''}></picture>`;
+  const lines = caption ? (t.caption || []) : [];
+  return `<figure class="photo${cls ? ' ' + cls : ''}">${img}${lines.length ? `<figcaption>${lines.map((l) => escapeHtml(l)).join('<br>')}</figcaption>` : ''}</figure>`;
+}
+
 /* ---------- layout ---------- */
 /* Cache-busting: netlify.toml caches /css, /js, and /fonts for a year, so every build stamps a short
    content hash onto the stylesheet, script, and font URLs. Returning visitors always get the current files.

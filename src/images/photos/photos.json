@@ -1,0 +1,82 @@
+{
+  "becky": {
+    "width": 810,
+    "height": 969,
+    "widths": [
+      240,
+      320,
+      480,
+      640,
+      800,
+      810
+    ]
+  },
+  "family-2018": {
+    "width": 768,
+    "height": 1024,
+    "widths": [
+      240,
+      320,
+      480,
+      640,
+      768
+    ]
+  },
+  "family-fenway-2018": {
+    "width": 861,
+    "height": 913,
+    "widths": [
+      240,
+      320,
+      480,
+      640,
+      800,
+      861
+    ]
+  },
+  "huntington-beach-2019": {
+    "width": 815,
+    "height": 963,
+    "widths": [
+      240,
+      320,
+      480,
+      640,
+      800,
+      815
+    ]
+  },
+  "josh-16th-birthday-2020": {
+    "width": 768,
+    "height": 1024,
+    "widths": [
+      240,
+      320,
+      480,
+      640,
+      768
+    ]
+  },
+  "mason-21st-birthday-2020": {
+    "width": 620,
+    "height": 656,
+    "widths": [
+      240,
+      320,
+      480,
+      620
+    ]
+  },
+  "steve-and-becky": {
+    "width": 1024,
+    "height": 768,
+    "widths": [
+      240,
+      320,
+      480,
+      640,
+      800,
+      1024
+    ]
+  }
+}
