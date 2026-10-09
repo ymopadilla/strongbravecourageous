@@ -181,7 +181,7 @@ function fill(template, vars) {
 const PHOTO_SIZES_FILE = path.join(SRC, 'images', 'photos', 'photos.json');
 const PHOTO_SIZES = exists(PHOTO_SIZES_FILE) ? JSON.parse(read(PHOTO_SIZES_FILE)) : {};
 const PHOTO_TEXT = exists(path.join(CONTENT, 'photos.json')) ? JSON.parse(read(path.join(CONTENT, 'photos.json'))).photos : {};
-function photoTag(name, { sizes, cls = '', lazy = true, caption = true, priority = false } = {}) {
+function photoTag(name, { sizes, cls = '', lazy = true, caption = true, priority = false, style = '' } = {}) {
   const s = PHOTO_SIZES[name], t = PHOTO_TEXT[name] || {};
   if (!s) throw new Error(`Photo "${name}" is missing: run python3 scripts/photo-sizes.py`);
   const set = (ext) => s.widths.map((w) => `/images/photos/${name}-${w}.${ext} ${w}w`).join(', ');
@@ -190,7 +190,7 @@ function photoTag(name, { sizes, cls = '', lazy = true, caption = true, priority
     + `<img src="/images/photos/${name}-${fallback}.webp" srcset="${set('webp')}" sizes="${sizes}" alt="${escapeHtml(t.alt || '')}" width="${s.width}" height="${s.height}"`
     + `${lazy ? ' loading="lazy"' : ''} decoding="async"${priority ? ' fetchpriority="high"' : ''}></picture>`;
   const lines = caption ? (t.caption || []) : [];
-  return `<figure class="photo${cls ? ' ' + cls : ''}">${img}${lines.length ? `<figcaption>${lines.map((l) => escapeHtml(l)).join('<br>')}</figcaption>` : ''}</figure>`;
+  return `<figure class="photo${cls ? ' ' + cls : ''}"${style ? ` style="${style}"` : ''}>${img}${lines.length ? `<figcaption>${lines.map((l) => escapeHtml(l)).join('<br>')}</figcaption>` : ''}</figure>`;
 }
 
 /* ---------- layout ---------- */
@@ -480,7 +480,7 @@ buildSimple('stories', {
 /* Slots on the About page. The photo shows a calm "Photo coming soon." frame until Becky uploads one.
    The handwritten note and each video render nothing until their content exists. "The facts" links to the story
    Becky picks in the editor (facts_story) and is hidden while none is picked or the story is not published.
-   "Obituary" links to /obituary.html. The six family photos sit in a plain grid with their captions. */
+   "Obituary" links to /obituary.html. The family photos form a collage (see aboutCollage). */
 function videoEmbed(url, title) {
   const u = String(url || '').trim();
   if (!u) return '';
@@ -490,7 +490,29 @@ function videoEmbed(url, title) {
   if (vm) return `<div class="video"><iframe src="https://player.vimeo.com/video/${vm[1]}" title="${escapeHtml(title)}" allow="fullscreen; picture-in-picture" allowfullscreen loading="lazy"></iframe></div>`;
   return /^https?:\/\//.test(u) ? `<p><a href="${escapeHtml(u)}" target="_blank" rel="noopener">Watch the video</a></p>` : '';
 }
-const COLLAGE = ['family-fenway-2018', 'family-2018', 'steve-and-becky', 'huntington-beach-2019', 'mason-21st-birthday-2020', 'josh-16th-birthday-2020'];
+const COLLAGE = ['family-fenway-2018', 'steve-and-becky', 'family-2018', 'huntington-beach-2019', 'mason-21st-birthday-2020', 'josh-16th-birthday-2020'];
+/* Collage, no script and no cropping: the first two photos form a large row, the rest a smaller row. Inside a row each photo's
+   flex-grow is its width/height ratio, so every photo in the row has the same height and shows in full. On phones the large
+   row stacks one photo per line and the smaller row splits into pairs (a leftover photo gets its own line). The photo used as
+   the About page's top photo is left out, so no photo appears twice. */
+function aboutCollage(skip) {
+  const names = COLLAGE.filter((n) => n !== skip);
+  const ratio = (n) => PHOTO_SIZES[n].width / PHOTO_SIZES[n].height;
+  const big = names.slice(0, 2), rest = names.slice(2);
+  const pairs = []; for (let i = 0; i < rest.length; i += 2) pairs.push(rest.slice(i, i + 2));
+  const DESK = 1040, GAP = 12;
+  const tile = (n, deskShare, phone) => photoTag(n, {
+    sizes: `(min-width: 768px) ${Math.round(deskShare)}px, ${phone}`,
+    style: `--r:${ratio(n).toFixed(3)}`,
+  });
+  const share = (row, n) => (DESK - GAP * (row.length - 1)) * ratio(n) / row.reduce((t, m) => t + ratio(m), 0);
+  const bigRow = `<div class="collage-row collage-big">${big.map((n) => tile(n, share(big, n), 'calc(100vw - 40px)')).join('')}</div>`;
+  const restRow = rest.length ? `<div class="collage-row">${pairs.map((p) => `<div class="collage-pair">${p.map((n) => {
+    const f = p.length === 1 ? 1 : ratio(n) / p.reduce((t, m) => t + ratio(m), 0);
+    return tile(n, share(rest, n), p.length === 1 ? 'calc(100vw - 40px)' : `calc(${(f * 100).toFixed(1)}vw - ${Math.round(f * 50)}px)`);
+  }).join('')}</div>`).join('')}</div>` : '';
+  return bigRow + restRow;
+}
 {
   const { data, body } = pageContent.about;
   const factsSlug = String(data.facts_story || '').trim();
@@ -514,7 +536,7 @@ const COLLAGE = ['family-fenway-2018', 'family-2018', 'steve-and-becky', 'huntin
       ? `<img class="about-photo" src="${escapeHtml(data.photo)}" alt="Becky">${note}`
       : '<div class="soon"><span>Photo coming soon.</span></div>'}</figure>`,
     about_buttons: buttons,
-    about_collage: COLLAGE.map((n) => photoTag(n, { sizes: '(min-width: 768px) 240px, calc(50vw - 30px)' })).join('\n      '),
+    about_collage: aboutCollage(''),
     about_more: slots.map(([id, heading, html]) => `
     <section class="about-slot" id="${id}">
       <h2>${heading}</h2>
