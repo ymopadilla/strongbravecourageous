@@ -120,7 +120,7 @@ collections:
         fields:
           - { label: "Instagram URL", name: "instagram", widget: "string", required: false }
           - { label: "Facebook URL", name: "facebook", widget: "string", required: false }
-          - { label: "Note to visitors", name: "body", widget: "markdown", hint: "What people can expect when they reach out, and resource suggestions are welcome. The contact form is the only channel — no email address is shown." }
+          - { label: "Note to visitors", name: "body", widget: "markdown", hint: "What people can expect when they reach out, and resource suggestions are welcome. The page also shows connect@strongbravecourageous.com above the form." }
       - name: "fingerprints"
         label: "Fingerprints page"
         file: "content/pages/fingerprints.md"

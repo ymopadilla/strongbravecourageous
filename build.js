@@ -606,7 +606,7 @@ buildSimple('newsletter', { newsletter_body: renderBody(pageContent.newsletter.b
   });
 }
 
-// Contact — the form is the only channel (no email address on the page)
+// Contact — the email address connect@strongbravecourageous.com (a mail link, in src/pages/contact.html) and the form
 {
   const { data, body } = pageContent.contact;
   const socials = [];
