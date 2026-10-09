@@ -148,3 +148,82 @@ begin
   perform set_config('role', 'postgres', true);
   raise exception 'RESULTS (everything above was rolled back):%', r;
 end $$;
+
+-- ---------------------------------------------------------------------------------------------------
+-- Wall rework (Oct 8): the loved one's name, memories with no words, wall_list and its search, approvers
+-- correcting the name, and the older page's calls (six and seven values, wall_page) against the changed database.
+-- Run this block separately. Same pattern: the error text is the results, and everything is rolled back.
+do $$
+declare r text := ''; v int; t text; a uuid; b uuid; o uuid; adm uuid;
+begin
+  perform set_config('role', 'anon', true);
+  perform public.submit_wall_memory('Ann', 'Grandma Rose', 'She taught me to BAKE bread', null, false, 'Ann@Example.com');
+  perform public.submit_wall_memory('Ben', 'Uncle Joe');                 -- a name and nothing else
+  perform public.submit_wall_memory('Cy', 'Pat', '   ', null, false, null);  -- only spaces: stored with no words
+  r := r || E'\nnew form (with words, without words, only spaces): accepted';
+  begin perform public.submit_wall_memory('Dee', '   ', 'x'); r := r || E'\nno loved one: ALLOWED (BAD)';
+  exception when others then r := r || E'\nno loved one refused: ' || sqlstate; end;
+  begin perform public.submit_wall_memory('Dee', repeat('x', 81), 'x'); r := r || E'\nloved one over 80 characters: ALLOWED (BAD)';
+  exception when others then r := r || E'\nloved one over 80 characters refused: ' || sqlstate; end;
+  begin perform public.submit_wall_memory('', 'Rose', 'x'); r := r || E'\nno first name: ALLOWED (BAD)';
+  exception when others then r := r || E'\nno first name refused: ' || sqlstate; end;
+  begin perform public.submit_wall_memory('a', 'b', 'c', '../evil.jpg', true, null); r := r || E'\nbad photo path: ALLOWED (BAD)';
+  exception when others then r := r || E'\nbad photo path refused: ' || sqlstate; end;
+  begin perform public.submit_wall_memory('a', 'b', 'c', '11111111-1111-4111-8111-111111111111.jpg', true, null); r := r || E'\nphoto path with no uploaded file: ALLOWED (BAD)';
+  exception when others then r := r || E'\nphoto path with no uploaded file refused: ' || sqlstate; end;
+  begin perform public.submit_wall_memory('a', 'b', 'c', null, false, 'not-an-email'); r := r || E'\nbad email: ALLOWED (BAD)';
+  exception when others then r := r || E'\nbad email refused: ' || sqlstate; end;
+  begin insert into public.memories (first_name, loved_one, memory, status) values ('x', 'y', 'z', 'approved'); r := r || E'\npublic direct insert: ALLOWED (BAD)';
+  exception when others then r := r || E'\npublic direct insert refused: ' || sqlstate; end;
+  -- the page live today (abe3d26): both forms of submit_memory still work
+  perform public.submit_memory(p_first_name := 'Old six', p_memory := 'six values', p_photo_path := null, p_youtube_id := null, p_photo_permission := false, p_email := null);
+  perform public.submit_memory('Old seven', 'seven values', null, null, false, null, array['josh']);
+  r := r || E'\nolder page calls (six and seven values): accepted';
+  select count(*) into v from public.wall_list(); r := r || E'\npublic sees pending rows through wall_list, want 0: ' || v;
+  begin update public.memories set loved_one = 'x'; r := r || E'\npublic edits a name: ALLOWED (BAD)';
+  exception when others then r := r || E'\npublic edits a name refused: ' || sqlstate; end;
+
+  perform set_config('role', 'postgres', true);
+  select string_agg(first_name || '=' || coalesce(loved_one, '(none)') || '/' || coalesce(memory, '(no words)'), ', ' order by first_name) into t from public.memories;
+  r := r || E'\nstored: ' || t;
+  select string_agg(email, ',') into t from public.memory_contacts; r := r || E'\nprivate email stored apart, lower case: ' || coalesce(t, '(none)');
+  select array_to_string(tags, '+') into t from public.memories where first_name = 'Old seven'; r := r || E'\ntags column still in use by the older page, want josh: ' || t;
+  select id into a from public.memories where first_name = 'Ann';
+  select id into b from public.memories where first_name = 'Ben';
+  select id into o from public.memories where first_name = 'Old six';
+  update public.memories set status = 'approved' where id = a; perform pg_sleep(0.02);
+  update public.memories set status = 'approved' where id = o; perform pg_sleep(0.02);
+  update public.memories set status = 'approved' where id = b;
+
+  -- a signed-in user who is NOT on the approval list cannot correct a name
+  perform set_config('role', 'authenticated', true);
+  perform set_config('request.jwt.claims', json_build_object('sub', gen_random_uuid(), 'role', 'authenticated')::text, true);
+  update public.memories set loved_one = 'Stranger' where id = a; get diagnostics v = row_count;
+  r := r || E'\nsigned-in stranger corrects a name, want 0 rows: ' || v;
+  -- an approver can (the first account on the approval list stands in)
+  perform set_config('role', 'postgres', true);
+  select user_id into adm from public.wall_admins limit 1;
+  perform set_config('role', 'authenticated', true);
+  perform set_config('request.jwt.claims', json_build_object('sub', adm, 'role', 'authenticated')::text, true);
+  update public.memories set loved_one = 'Grandma Rosie' where id = a; get diagnostics v = row_count;
+  r := r || E'\napprover corrects a name, want 1 row: ' || v;
+  begin update public.memories set loved_one = '  ' where id = a; r := r || E'\napprover blanks a name: ALLOWED (BAD)';
+  exception when others then r := r || E'\napprover blanks a name refused: ' || sqlstate; end;
+
+  perform set_config('role', 'anon', true);
+  perform set_config('request.jwt.claims', '', true);
+  select string_agg(coalesce(loved_one, first_name), ' > ' order by ord) into t
+    from public.wall_list() with ordinality as w(id, created_at, approved_at, first_name, loved_one, memory, photo_path, heart_count, ord);
+  r := r || E'\norder, want Uncle Joe > Old six > Grandma Rosie (newest approved first): ' || t;
+  select count(*) into v from public.wall_list() where loved_one = 'Uncle Joe' and memory is null; r := r || E'\na memory with no words is listed, want 1: ' || v;
+  select string_agg(loved_one, ',') into t from public.wall_list('rosie'); r := r || E'\nsearch the loved one''s name, want Grandma Rosie: ' || t;
+  select string_agg(first_name, ',') into t from public.wall_list('BEN'); r := r || E'\nsearch the first name, any case, want Ben: ' || t;
+  select string_agg(first_name, ',') into t from public.wall_list('bake'); r := r || E'\nsearch the words, want Ann: ' || t;
+  select count(*) into v from public.wall_list('%'); r := r || E'\nsearch for a percent sign is literal, want 0: ' || v;
+  select count(*) into v from public.wall_list('zzzz'); r := r || E'\nsearch with no match, want 0: ' || v;
+  select count(*) into v from public.wall_list(null, 2, 0); r := r || E'\nfirst page of 2, want 2: ' || v;
+  select count(*) into v from public.wall_list(null, 2, 2); r := r || E'\nnext page, want 1: ' || v;
+  select count(*) into v from public.wall_page(); r := r || E'\nolder page''s list (wall_page) still answers, want 3: ' || v;
+  perform set_config('role', 'postgres', true);
+  raise exception 'RESULTS (everything above was rolled back):%', r;
+end $$;
