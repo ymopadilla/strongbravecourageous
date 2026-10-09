@@ -494,28 +494,28 @@ function videoEmbed(url, title) {
   if (vm) return `<div class="video"><iframe src="https://player.vimeo.com/video/${vm[1]}" title="${escapeHtml(title)}" allow="fullscreen; picture-in-picture" allowfullscreen loading="lazy"></iframe></div>`;
   return /^https?:\/\//.test(u) ? `<p><a href="${escapeHtml(u)}" target="_blank" rel="noopener">Watch the video</a></p>` : '';
 }
-const COLLAGE = ['family-fenway-2018', 'steve-and-becky', 'family-2018', 'huntington-beach-2019', 'mason-21st-birthday-2020', 'josh-16th-birthday-2020'];
-/* Collage, no script and no cropping: the first two photos form a large row, the rest a smaller row. Inside a row each photo's
-   flex-grow is its width/height ratio, so every photo in the row has the same height and shows in full. On phones the large
-   row stacks one photo per line and the smaller row splits into pairs (a leftover photo gets its own line). The photo used as
-   the About page's top photo is left out, so no photo appears twice. */
+const COLLAGE = ['family-fenway-2018', 'family-2018', 'steve-and-becky', 'huntington-beach-2019', 'josh-16th-birthday-2020', 'mason-21st-birthday-2020'];
+/* Scrapbook collage, no script: printed snapshots with a white border, Becky's caption written on the border under the
+   photo, a soft shadow, and a small tilt. Two rows (the first gets the extra print when the count is odd), prints
+   overlapping their neighbours only at the side borders. Width per photo (share of the collage width) suits its shape and
+   caption; tilt and vertical offset go by position, so five prints (top photo set) and six both alternate left and right.
+   Under 600px: two columns, lighter tilt, no overlap. The About top photo is left out, so no photo appears twice. */
+const PRINT_WIDTH = { 'family-fenway-2018': 30, 'family-2018': 25, 'steve-and-becky': 31, 'huntington-beach-2019': 28, 'josh-16th-birthday-2020': 23, 'mason-21st-birthday-2020': 25 };
+const PRINT_TILT = [-1.6, 1.2, -0.8, 1.4, -1.2, 1];
+const PRINT_DROP = [8, 0, 18, 0, 20, 6];
 function aboutCollage(skip) {
   const names = COLLAGE.filter((n) => n !== skip);
-  const ratio = (n) => PHOTO_SIZES[n].width / PHOTO_SIZES[n].height;
-  const big = names.slice(0, 2), rest = names.slice(2);
-  const pairs = []; for (let i = 0; i < rest.length; i += 2) pairs.push(rest.slice(i, i + 2));
-  const DESK = 1040, GAP = 12;
-  const tile = (n, deskShare, phone) => photoTag(n, {
-    sizes: `(min-width: 768px) ${Math.round(deskShare)}px, ${phone}`,
-    style: `--r:${ratio(n).toFixed(3)}`,
-  });
-  const share = (row, n) => (DESK - GAP * (row.length - 1)) * ratio(n) / row.reduce((t, m) => t + ratio(m), 0);
-  const bigRow = `<div class="collage-row collage-big">${big.map((n) => tile(n, share(big, n), 'calc(100vw - 40px)')).join('')}</div>`;
-  const restRow = rest.length ? `<div class="collage-row">${pairs.map((p) => `<div class="collage-pair">${p.map((n) => {
-    const f = p.length === 1 ? 1 : ratio(n) / p.reduce((t, m) => t + ratio(m), 0);
-    return tile(n, share(rest, n), p.length === 1 ? 'calc(100vw - 40px)' : `calc(${(f * 100).toFixed(1)}vw - ${Math.round(f * 50)}px)`);
-  }).join('')}</div>`).join('')}</div>` : '';
-  return bigRow + restRow;
+  const cut = Math.ceil(names.length / 2);
+  const print = (n, i) => {
+    const w = PRINT_WIDTH[n] || 25;
+    return photoTag(n, {
+      sizes: `(min-width: 1040px) ${Math.round(w * 10 - 24)}px, (min-width: 600px) ${w}vw, calc(50vw - 40px)`,
+      cls: 'print',
+      style: `--w:${w}%;--tilt:${PRINT_TILT[i % PRINT_TILT.length]}deg;--drop:${PRINT_DROP[i % PRINT_DROP.length]}px`,
+    });
+  };
+  const row = (list, start) => `<div class="sb-row">${list.map((n, k) => print(n, start + k)).join('')}</div>`;
+  return row(names.slice(0, cut), 0) + row(names.slice(cut), cut);
 }
 {
   const { data, body } = pageContent.about;
