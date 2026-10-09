@@ -217,7 +217,7 @@ const BECKY = {
   '@id': `${SITE_URL}/#becky`,
   name: 'Becky',
   url: `${SITE_URL}/about.html`,
-  description: "I'm Becky. I write about loss, love, and where I see God in it.",
+  description: "Hi there! My name is Becky. I write about loss, life, and where I see God in them.",
 };
 const ROBOTS_META = /<meta name="robots"[^>]*>/g;
 
@@ -418,6 +418,7 @@ function buildSimple(name, vars = {}) {
   const featured = pool.filter((s) => s.data.featured === true).slice(0, 3);
   const recent = pool.filter((s) => !featured.includes(s)).slice(0, 3);
   buildSimple('index', {
+    home_photo: photoTag('becky', { sizes: '(min-width: 860px) 150px, 104px', cls: 'home-photo', caption: false }),
     home_start_here: featured.length
       ? `<div class="list-head"><h2>Start here</h2></div>\n    <div class="story-list">${featured.map((s) => storyCard(s)).join('\n')}</div>`
       : '',

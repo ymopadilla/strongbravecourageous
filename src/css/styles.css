@@ -268,8 +268,6 @@ section { padding: 48px 0; }
 .btn-field { background: var(--paper); color: var(--rose-deep); border-color: var(--paper); }
 .btn-field:hover { background: var(--blush); border-color: var(--blush); }
 /* The button on the cross-brown band. */
-.btn-band { background: var(--paper); color: var(--brown); border-color: var(--paper); }
-.btn-band:hover { background: var(--blush); border-color: var(--blush); }
 .btn-row { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; }
 
 /* ---------- Opening section (Home) ----------
@@ -301,6 +299,10 @@ section { padding: 48px 0; }
 /* ---------- Intro (Home): Becky's sentence beside "My why" ---------- */
 .intro-section { padding: 56px 0 48px; }
 .intro-grid { display: grid; gap: 32px; align-items: start; }
+.intro-greeting { display: grid; grid-template-columns: 104px 1fr; gap: 20px; align-items: center; }
+.intro-greeting .home-photo { margin: 0; }
+.intro-greeting .home-photo img { display: block; width: 100%; height: auto; border-radius: 4px 22px 4px 22px; }
+@media (min-width: 860px) { .intro-greeting { grid-template-columns: 150px 1fr; gap: 28px; } }
 .intro-section h1 { font-size: clamp(26px, 3.2vw, 36px); font-weight: 600; line-height: 1.25; letter-spacing: -0.005em; color: var(--brown); max-width: 22ch; margin: 0; }
 .why-panel { background: var(--blush); padding: 28px 30px; border-radius: 4px 28px 4px 28px; }
 .why-panel h2 { font-size: 22px; line-height: 1.3; margin: 0 0 10px; }
