@@ -651,7 +651,10 @@ const fingerprintsDefinition = (() => {
   const body = (pageContent.fingerprints.body || '').trim();
   if (!body || isPlaceholder(body)) return '';
   // Bible references are linked to BibleGateway the same way as in stories (lib/scripture.js).
-  return scripture.linkReferences(marked.parse(body).trim().replace(/<p>/g, '<p class="lead page-intro">'));
+  /* The NIV prints the divine name LORD in small capitals (Isaiah 64:8: "Yet you, LORD, are our Father"). Her text keeps the
+     plain word "Lord"; styling alone shows it as BibleGateway does, so screen readers and copy-paste still get "Lord". */
+  return scripture.linkReferences(marked.parse(body).trim().replace(/<p>/g, '<p class="lead page-intro">'))
+    .replace(/(Yet you, )Lord(, are our Father)/g, '$1<span class="divine-name">Lord</span>$2');
 })();
 buildSimple('fingerprints', {
   fingerprints_definition: fingerprintsDefinition,
