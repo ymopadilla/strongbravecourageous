@@ -9,7 +9,11 @@ from PIL import Image, ImageDraw, ImageFilter
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 IMG = os.path.join(ROOT, 'src', 'images'); SRC = os.path.join(ROOT, 'src')
 master = Image.open(sys.argv[1]).convert('RGBA')
-assert master.size == (4000, 4000)
+assert master.width == master.height, 'the master must be square'
+# Every position below is measured on a 4000px master. A square master of another size (since Oct 8, 2026: the
+# 2048px AI upscale in originals/logo/) is first resized to 4000px, so the same positions apply.
+if master.size != (4000, 4000):
+    master = master.resize((4000, 4000), Image.LANCZOS)
 CX, CY, R = 1982, 1959, 1946          # centre and radius of the outer rose ring in the master
 WHITE = (254, 254, 255, 255)
 PAPER = (255, 253, 250)
@@ -52,14 +56,14 @@ save(full, 1200, f'{IMG}/sbc-logo-1200.png', optimize=True)
 for s in (512, 256, 128): save(full, s, f'{IMG}/sbc-logo-{s}.png', optimize=True)
 # Homepage opening: AVIF first, WebP as the fallback (the <picture> in src/pages/index.html lists both).
 for s in (300, 480, 600, 720, 900):
-    save(full, s, f'{IMG}/sbc-logo-{s}.avif', quality=64, speed=0); save(full, s, f'{IMG}/sbc-logo-{s}.webp', quality=80, method=6)
+    save(full, s, f'{IMG}/sbc-logo-{s}.avif', quality=64, speed=4); save(full, s, f'{IMG}/sbc-logo-{s}.webp', quality=80, method=6)
 for s in (64, 96, 128, 256): save(mark, s, f'{IMG}/sbc-mark-{s}.webp', quality=88, method=6)
 save(mark, 512, f'{IMG}/sbc-mark-512.png', optimize=True)
 
 def on_paper(im, size):
     bg = Image.new('RGBA', (size, size), PAPER + (255,)); m = im.resize((size, size), Image.LANCZOS); bg.alpha_composite(m); return bg.convert('RGB')
 # Favicons are no longer written here. Since Oct 6, 2026 they come from the blossom: run scripts/favicon-assets.py
-# after this script (it reads src/images/flower-blossom.webp).
+# after this script (it reads originals/logo/flower-blossom-cut.png, written at the end of this script).
 
 # Share image 1200x630: blue field, framed full logo, the homepage ridge.
 W, H, S = 1200, 630, 2
@@ -131,4 +135,7 @@ al = filled.point(lambda v: 0 if v == 128 else 255).filter(ImageFilter.MinFilter
 b = b.convert('RGBA'); b.putalpha(al); b = b.crop(b.getbbox())
 fit(b, 120).save(f'{IMG}/flower-blossom.webp', quality=90, method=6)
 fit(b, 72).save(f'{IMG}/flower-blossom-72.webp', quality=84, method=6)
+# The blossom at full size, lossless, for scripts/favicon-assets.py (not published).
+os.makedirs(os.path.join(ROOT, 'originals', 'logo'), exist_ok=True)
+b.save(os.path.join(ROOT, 'originals', 'logo', 'flower-blossom-cut.png'))
 print('flowers', sprig.size, cluster.size, b.size)

@@ -12,7 +12,9 @@ from PIL import Image
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SRC = os.path.join(ROOT, 'src')
 PAPER = (255, 253, 250, 255)   # --paper in styles.css
-blossom = Image.open(os.path.join(SRC, 'images', 'flower-blossom.webp')).convert('RGBA')
+# Prefer the lossless full-size cut written by scripts/logo-assets.py; fall back to the published 120px blossom.
+CUT = os.path.join(ROOT, 'originals', 'logo', 'flower-blossom-cut.png')
+blossom = Image.open(CUT if os.path.exists(CUT) else os.path.join(SRC, 'images', 'flower-blossom.webp')).convert('RGBA')
 # Keep only the flower itself: drop any stray specks left around it by the cut from the logo.
 px = blossom.load(); W, H = blossom.size; seen = set(); best = []
 for y0 in range(H):
