@@ -628,10 +628,12 @@ buildSimple('newsletter', { newsletter_body: renderBody(pageContent.newsletter.b
 const fingerprintsDefinition = (() => {
   const body = (pageContent.fingerprints.body || '').trim();
   if (!body || isPlaceholder(body)) return '';
-  return marked.parse(body).trim().replace(/<p>/g, '<p class="lead page-intro">');
+  // Bible references are linked to BibleGateway the same way as in stories (lib/scripture.js).
+  return scripture.linkReferences(marked.parse(body).trim().replace(/<p>/g, '<p class="lead page-intro">'));
 })();
 buildSimple('fingerprints', {
   fingerprints_definition: fingerprintsDefinition,
+  fingerprints_photo: photoTag('family-2018', { sizes: '(min-width: 520px) 420px, calc(100vw - 48px)', cls: 'fingerprints-photo' }),
   fingerprint_cards: fingerprints.length
     ? fingerprints.map((f) => `
       <article class="card fingerprint">

@@ -125,4 +125,4 @@ collections:
         label: "Fingerprints page"
         file: "content/pages/fingerprints.md"
         fields:
-          - { label: "What a fingerprint is", name: "body", widget: "markdown", hint: "The short explanation under the heading on the Fingerprints page. One short paragraph reads best." }
+          - { label: "What a fingerprint is", name: "body", widget: "markdown", hint: "The words under the heading on the Fingerprints page. Leave an empty line between paragraphs. Bible references you type (like Psalm 139:5) are linked automatically." }
