@@ -514,6 +514,15 @@ function videoEmbed(url, title) {
   });
 }
 
+// Obituary page (/obituary.html): Becky's text from content/pages/obituary.md. Not in the menu; About links here.
+{
+  const { data, body } = pageContent.obituary;
+  buildSimple('obituary', {
+    obituary_title: escapeHtml(String(data.title || 'Obituary').trim()),
+    obituary_body: (body || '').trim() && !isPlaceholder(body) ? marked.parse(body) : '<p class="ph">Coming soon.</p>',
+  });
+}
+
 // Newsletter (hidden from nav until Jan 1, 2027 — page still builds)
 buildSimple('newsletter', { newsletter_body: renderBody(pageContent.newsletter.body) });
 
@@ -713,7 +722,7 @@ function storyNav(s) {
   const pages = [
     ['/', 'weekly', '1.0', today], ['/stories.html', 'weekly', '0.9', real[0] ? isoDate(real[0].data.date) : today],
     ['/scripture.html', 'weekly', '0.7', real[0] ? isoDate(real[0].data.date) : today],
-    ['/about.html', 'monthly', '0.7', today], ['/fingerprints.html', 'weekly', '0.6', today],
+    ['/about.html', 'monthly', '0.7', today], ['/obituary.html', 'yearly', '0.5', today], ['/fingerprints.html', 'weekly', '0.6', today],
     ...(MEMORIAL_WALL ? [['/memorial-wall.html', 'weekly', '0.6', today]] : []),
     ['/resources.html', 'monthly', '0.6', today], ['/contact.html', 'yearly', '0.4', today],
     ...real.map((s) => [`/stories/${s.slug}.html`, 'yearly', '0.8', isoDate(s.data.date)]),

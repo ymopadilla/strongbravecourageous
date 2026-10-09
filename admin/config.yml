@@ -102,10 +102,11 @@ collections:
           - { label: "Post office drive-by video", name: "driveby_video", widget: "string", required: false, hint: "Paste the YouTube or Vimeo link. Leave empty to show nothing." }
           - { label: "Your story", name: "body", widget: "markdown" }
       - name: "obituary"
-        label: "Obituary (shown on About)"
+        label: "Obituary page"
         file: "content/pages/obituary.md"
         fields:
-          - { label: "Obituary text", name: "body", widget: "markdown", required: false, hint: "Paste the obituary here to show it on the About page. Leave empty to show nothing." }
+          - { label: "Title", name: "title", widget: "string", hint: "The names at the top of the Obituary page." }
+          - { label: "Obituary text", name: "body", widget: "markdown", hint: "The full obituary. It appears on its own page (strongbravecourageous.com/obituary), linked from the About page." }
       - name: "newsletter"
         label: "Newsletter page"
         file: "content/pages/newsletter.md"

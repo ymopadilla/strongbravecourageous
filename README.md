@@ -105,6 +105,8 @@ Netlify Forms is the inbox; Decap CMS is the publisher. Nothing appears on the s
 
 **Flowers.** Three pieces cut from the logo: `flower-sprig.webp` (leaf-and-heart sprig: divider on Home, small on thank-you pages and the empty Stories line), `flower-blossom.webp` (end mark after each story), `flower-cluster.webp` (beside the heading on About and the Memorial wall). Rules: one flower per screen, never behind text, none inside a story body. All are decorative (`alt=""`). Each has smaller copies for `srcset` (`flower-sprig-240/320`, `flower-cluster-96/192/288`, `flower-blossom-72`), so a phone downloads a file near the size it shows.
 
+**Obituary page (Oct 8, 2026).** `/obituary.html` (also `/obituary`): Becky's obituary of Steve, Mason, and Joshua, word for word from her Obituary.docx, in `content/pages/obituary.md` (editor: Site Pages → Obituary page; fields Title and Obituary text). Under the title: "Originally published October 2020." (in `src/pages/obituary.html`). Not in the main menu; the About page links to it. In the last paragraph the old streaming link was removed (the words stay) and "available for viewing" links to the celebration-of-life video. Becky's double spaces after periods became single spaces; no word changed.
+
 **About page slots.** `content/pages/about.md` front matter: `photo`, `photo_note` + `photo_note_text` (handwritten note image and its words), `obituary_link`, `celebration_video`, `driveby_video`; full obituary text in `content/pages/obituary.md`. The photo shows a "Photo coming soon." frame when empty; every other slot renders nothing until filled.
 
 **Crisis line.** The footer on every page carries the 988 line (`.footer-crisis` in `layout.html`).

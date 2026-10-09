@@ -67,6 +67,10 @@
   to = "/about.html"
   status = 200
 [[redirects]]
+  from = "/obituary"
+  to = "/obituary.html"
+  status = 200
+[[redirects]]
   from = "/fingerprints"
   to = "/fingerprints.html"
   status = 200
