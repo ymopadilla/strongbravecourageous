@@ -149,7 +149,7 @@ const XSS_TEXT = 'Remember this <img src=x onerror="window.__xss = 2"> <b>day</b
       /^Your first name/.test(labels[0]) && /^Your loved one’s name \(required\)/.test(labels[1]) && /^Photo/.test(labels[2]) && /^I have permission/.test(labels[3]) && /^A few words \(optional\)/.test(labels[4]) && /^Email/.test(labels[5]), labels.join(' | '));
     check('form: no "Who is this memory about?" and no YouTube field', (await page.locator('#wall-form fieldset, #wall-video, input[name="tags"]').count()) === 0);
     check('wall: no Steve, Mason, Josh, or family filters', (await page.locator('#wall-filters, .wall-filters, [data-tag]').count()) === 0);
-    check('wall: the intro no longer names only Steve, Mason, and Josh', (await page.locator('.wall-intro').innerText()).startsWith('Share a photo of someone you love and have lost.'));
+    check('wall: the intro no longer names only Steve, Mason, and Josh', await (async () => { const t = await page.locator('.wall-intro').innerText(); return t.includes('someone you love and have lost') && !/Steve|Mason|Josh/.test(t); })());
 
     // 2. required fields
     await share('Sam', ''); await page.click('#wall-submit'); await page.waitForSelector('#wall-msg:not([hidden])');
