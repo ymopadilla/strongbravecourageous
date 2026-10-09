@@ -504,9 +504,8 @@ section { padding: 48px 0; }
 .wall-search input[type="search"]::placeholder { color: var(--muted); opacity: 1; }
 .wall-search input[type="search"]:focus-visible { outline: 3px solid var(--brown); outline-offset: 2px; }
 .wall-search .btn { padding: 10px 22px; }
-.wall-filters { justify-content: flex-start; margin: 0 0 20px; }
-.wall-tags { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 14px; }
-.wall-about { margin-bottom: 18px; }
+.wall-name { font-family: var(--font-heading); font-size: 24px; line-height: 1.25; color: var(--brown); margin: 0 0 4px; overflow-wrap: anywhere; }
+.wall-shared { font-family: var(--font-ui); font-size: 15px; color: var(--muted); margin: 0 0 16px; overflow-wrap: anywhere; }
 .wa-tags { margin: 14px 0 0; }
 .wa-saved { margin-left: 4px; }
 .wall-result { margin: 0 0 16px; overflow-wrap: anywhere; }

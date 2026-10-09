@@ -57,7 +57,6 @@
   }
   var UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
   var PHOTO_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\.jpg$/;
-  var VIDEO_RE = /^[A-Za-z0-9_-]{11}$/;
   function deviceId() {
     var id = store('sbc_wall_device');
     if (!id || !UUID_RE.test(id)) { id = uuid(); store('sbc_wall_device', id); }
@@ -142,33 +141,22 @@
     return wrap;
   }
 
+  /* One card: the loved one's name as the heading, "Shared by [first name]", the photo, the words, the date,
+     then hearts and comments. Rows sent by the older page (before Oct 8) have no loved one's name: no heading. */
   function memoryCard(m, comments) {
     var art = el('article', 'wall-card');
+    if (m.loved_one) art.appendChild(el('h3', 'wall-name', m.loved_one));
+    art.appendChild(el('p', 'wall-shared', 'Shared by ' + m.first_name));
     if (m.photo_path && PHOTO_RE.test(m.photo_path)) {
       var img = el('img', 'wall-photo');
       img.src = URL_BASE + '/storage/v1/object/public/memorial-photos/' + m.photo_path;
-      img.alt = 'Photo shared by ' + m.first_name;
+      img.alt = m.loved_one ? 'Photo of ' + m.loved_one + ', shared by ' + m.first_name : 'Photo shared by ' + m.first_name;
       img.loading = 'lazy'; img.decoding = 'async';
       art.appendChild(img);
     }
-    art.appendChild(el('p', 'wall-text', m.memory));
-    var chips = TAGS.filter(function (t) { return (m.tags || []).indexOf(t[0]) !== -1; });
-    if (chips.length) {
-      var row = el('div', 'wall-tags');
-      chips.forEach(function (t) { row.appendChild(el('span', 'tag', t[1])); }); // labels come from the fixed list above
-      art.appendChild(row);
-    }
-    if (m.youtube_id && VIDEO_RE.test(m.youtube_id)) {
-      var v = el('div', 'video'); var fr = el('iframe');
-      fr.src = 'https://www.youtube-nocookie.com/embed/' + m.youtube_id;
-      fr.title = 'Video shared by ' + m.first_name;
-      fr.loading = 'lazy'; fr.allowFullscreen = true;
-      fr.setAttribute('allow', 'accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture');
-      v.appendChild(fr); art.appendChild(v);
-    }
+    if (m.memory) art.appendChild(el('p', 'wall-text', m.memory));
     var foot = el('div', 'wall-foot');
     var by = el('p', 'wall-by');
-    by.appendChild(el('span', 'from', '— ' + m.first_name));
     var when = el('time', null, formatDate(m.created_at)); when.dateTime = String(m.created_at).slice(0, 10);
     by.appendChild(when);
     foot.appendChild(by); foot.appendChild(heartButton(m));
@@ -196,16 +184,15 @@
   function get(path) {
     return fetch(URL_BASE + '/rest/v1/' + path, { headers: headers() }).then(function (r) { if (!r.ok) throw new Error('load'); return r.json(); });
   }
-  /* The list comes from the database function wall_page: approved memories only, newest APPROVED first
+  /* The list comes from the database function wall_list: approved memories only, newest APPROVED first
      (each card still shows the day the memory was submitted). A search runs in the database across the
-     whole wall, by first name and memory text; it is not a filter on the cards already loaded.
-     The "who is it about" buttons narrow the same database query, so search, filter, and "Show more" work together. */
-  var query = '', tag = '';
-  var TAGS = [['steve', 'Steve'], ['mason', 'Mason'], ['josh', 'Josh'], ['family', 'The whole family']];
+     whole wall, by the loved one's name, the sharer's first name, and the words; it is not a filter on the
+     cards already loaded, so search and "Show more" work together. */
+  var query = '';
   function fetchMemories(offset) {
-    return fetch(URL_BASE + '/rest/v1/rpc/wall_page', {
+    return fetch(URL_BASE + '/rest/v1/rpc/wall_list', {
       method: 'POST', headers: headers({ 'Content-Type': 'application/json' }),
-      body: JSON.stringify({ p_query: query || null, p_tag: tag || null, p_limit: PAGE + 1, p_offset: offset })
+      body: JSON.stringify({ p_query: query || null, p_limit: PAGE + 1, p_offset: offset })
     }).then(function (r) { if (!r.ok) throw new Error('load'); return r.json(); });
   }
   function load(reset) {
@@ -224,8 +211,7 @@
         statusLine.hidden = true;
         if (reset) list.textContent = '';
         var none = reset && !rows.length;
-        emptyLine.hidden = !(none && !query && !tag);
-        noneHere.hidden = !(none && !query && tag);
+        emptyLine.hidden = !(none && !query);
         noMatch.hidden = !(none && query);
         // The words searched for are shown as plain text, like everything else a visitor types.
         resultLine.textContent = query && !none ? 'Memories matching \u201c' + query + '\u201d' : '';
@@ -242,17 +228,6 @@
     }).catch(function () { statusLine.textContent = MSG.loadFail; statusLine.hidden = false; more.disabled = false; });
   }
   more.addEventListener('click', function () { load(false); });
-
-  /* ---------- filter: who the memory is about (one active at a time; "All" is the default) ---------- */
-  var noneHere = document.getElementById('wall-nonehere');
-  var filterButtons = document.querySelectorAll('#wall-filters .filter-btn');
-  Array.prototype.forEach.call(filterButtons, function (b) {
-    b.addEventListener('click', function () {
-      tag = b.getAttribute('data-tag') || '';
-      Array.prototype.forEach.call(filterButtons, function (x) { x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); });
-      load(true);
-    });
-  });
 
   /* ---------- search ---------- */
   var searchForm = document.getElementById('wall-search');
