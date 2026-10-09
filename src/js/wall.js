@@ -1,6 +1,6 @@
 /* Strong. Brave. Courageous. — Memorial wall (public page)
    Talks to Supabase with the public key only. The database rules decide what this key may do:
-   read approved memories and comments, and call three functions (submit_memory, submit_comment, add_heart).
+   read approved memories and comments, and call three functions (submit_wall_memory, submit_comment, add_heart).
 
    SAFETY RULE: everything a visitor wrote (names, memories, comments) is put on the page with
    textContent. Never innerHTML, never insertAdjacentHTML. Markup typed by a visitor shows as text. */
@@ -21,10 +21,9 @@
     busy: 'The wall has a lot waiting to be read right now. Please try again later.',
     fail: 'Something went wrong and this was not sent. Please try again.',
     needName: 'Please add your first name.',
-    needMemory: 'Please write your memory.',
+    needLoved: 'Please add your loved one\u2019s name.',
     needPermission: 'Please tick the permission box to share this photo.',
     badPhoto: 'That photo could not be read. Please try a JPEG or PNG picture.',
-    badVideo: 'That does not look like a YouTube link. Please check it, or leave it empty.',
     badEmail: 'That email address does not look right. Please check it, or leave it empty.',
     commentThanks: 'Thank you. I read every comment before it appears.',
     needComment: 'Please add your first name and a comment.'
@@ -83,12 +82,6 @@
         var e = new Error((err && err.message) || 'request failed'); e.code = err && err.code; throw e;
       });
     });
-  }
-  function youtubeId(text) {
-    var t = String(text || '').trim();
-    if (!t) return '';
-    var m = t.match(/(?:youtube\.com\/(?:watch\?(?:.*&)?v=|embed\/|shorts\/|live\/)|youtu\.be\/)([A-Za-z0-9_-]{11})(?![A-Za-z0-9_-])/);
-    return m ? m[1] : null; // null = something was typed, and it is not a YouTube link
   }
 
   /* ---------- the wall ---------- */
@@ -327,15 +320,13 @@
   form.addEventListener('submit', function (ev) {
     ev.preventDefault();
     msg.hidden = true;
-    var nameEl = document.getElementById('wall-name'), memEl = document.getElementById('wall-memory');
-    var videoEl = document.getElementById('wall-video'), emailEl = document.getElementById('wall-email');
-    var name = nameEl.value.trim(), memory = memEl.value.trim(), email = emailEl.value.trim();
+    var nameEl = document.getElementById('wall-name'), lovedEl = document.getElementById('wall-loved');
+    var memEl = document.getElementById('wall-memory'), emailEl = document.getElementById('wall-email');
+    var name = nameEl.value.trim(), loved = lovedEl.value.trim(), memory = memEl.value.trim(), email = emailEl.value.trim();
     var file = photo.files && photo.files[0];
-    var video = youtubeId(videoEl.value);
     if (!name) return say(MSG.needName, nameEl);
-    if (!memory) return say(MSG.needMemory, memEl);
+    if (!loved) return say(MSG.needLoved, lovedEl);
     if (file && !permission.checked) return say(MSG.needPermission, permission);
-    if (video === null) return say(MSG.badVideo, videoEl);
     if (email && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return say(MSG.badEmail, emailEl);
     if (document.getElementById('wall-hp').value) return showThanks(); // a robot filled the hidden box
 
@@ -349,10 +340,10 @@
     }, function () { var e = new Error('decode'); e.code = 'DECODE'; throw e; });
 
     upload.then(function () {
-      return rpc('submit_memory', {
-        p_first_name: name, p_memory: memory, p_photo_path: photoName, p_youtube_id: video || null,
-        p_photo_permission: !!(file && permission.checked), p_email: email || null,
-        p_tags: Array.prototype.map.call(form.querySelectorAll('input[name="tags"]:checked'), function (c) { return c.value; })
+      // The words are optional: an empty box is sent as null and stored as "no words".
+      return rpc('submit_wall_memory', {
+        p_first_name: name, p_loved_one: loved, p_memory: memory || null, p_photo_path: photoName,
+        p_photo_permission: !!(file && permission.checked), p_email: email || null
       });
     }).then(showThanks).catch(function (e) {
       submit.disabled = false; submit.textContent = 'Share your memory';

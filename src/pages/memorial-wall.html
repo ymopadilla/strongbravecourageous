@@ -61,31 +61,24 @@ body_extra: <script src="/js/wall.js" defer data-url="{{supabase_url}}" data-key
            The email label was supplied by Yvonne, Oct 3. -->
       <form id="wall-form" novalidate>
         <p class="hp"><label>Don&rsquo;t fill this out if you&rsquo;re human: <input name="website" id="wall-hp" tabindex="-1" autocomplete="off"></label></p>
+        <!-- Field order and labels supplied by Yvonne, Oct 8. -->
         <div class="field">
-          <label for="wall-name">First name <span class="req">(required)</span></label>
+          <label for="wall-name">Your first name <span class="req">(required)</span></label>
           <input type="text" id="wall-name" name="first_name" required maxlength="40" autocomplete="given-name">
         </div>
         <div class="field">
-          <label for="wall-memory">Your memory <span class="req">(required)</span></label>
-          <textarea id="wall-memory" name="memory" required maxlength="4000"></textarea>
+          <label for="wall-loved">Your loved one&rsquo;s name <span class="req">(required)</span></label>
+          <input type="text" id="wall-loved" name="loved_one" required maxlength="80" autocomplete="off">
         </div>
-        <!-- DNS-written, Becky may edit: the question and its four choices. -->
-        <fieldset class="choice wall-about">
-          <legend>Who is this memory about? <span class="req">(optional)</span></legend>
-          <label class="radio"><input type="checkbox" name="tags" value="steve"> Steve</label>
-          <label class="radio"><input type="checkbox" name="tags" value="mason"> Mason</label>
-          <label class="radio"><input type="checkbox" name="tags" value="josh"> Josh</label>
-          <label class="radio"><input type="checkbox" name="tags" value="family"> The whole family</label>
-        </fieldset>
         <div class="field">
           <label for="wall-photo">Photo (optional)</label>
           <p class="hint" id="wall-photo-hint">One photo. It is made smaller on your device before it is sent.</p>
           <input type="file" id="wall-photo" name="photo" accept="image/*" aria-describedby="wall-photo-hint">
         </div>
         <label class="radio" for="wall-permission"><input type="checkbox" id="wall-permission" name="photo_permission"> I have permission to share this photo, including from anyone else pictured in it.</label>
-        <div class="field">
-          <label for="wall-video">YouTube link (optional)</label>
-          <input type="text" id="wall-video" name="youtube" inputmode="url" autocomplete="off">
+        <div class="field wall-words">
+          <label for="wall-memory">A few words <span class="req">(optional)</span></label>
+          <textarea id="wall-memory" name="memory" maxlength="4000"></textarea>
         </div>
         <div class="field">
           <label for="wall-email">Email (optional, never shown)</label>
