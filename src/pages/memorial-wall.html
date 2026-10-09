@@ -7,14 +7,19 @@ body_extra: <script src="/js/wall.js" defer data-url="{{supabase_url}}" data-key
 ---
 <!-- Memorial wall. Memories, comments, and hearts live in Supabase (see README, "Memorial wall").
      Everything a visitor writes is shown as plain text, never as HTML (src/js/wall.js). -->
-<section class="wall-top">
+<!-- Title band: mountain-blue-deep with a thin clay-rose ridge (item 8, Oct 8; preview until Becky approves). -->
+<section class="title-band">
   <div class="container narrow">
     <!-- Flower from the logo: blossom cluster beside the page heading. -->
     <div class="flower-head">
       <h1>Memorial wall</h1>
       <img class="flower flower-cluster" src="/images/flower-cluster.webp" srcset="/images/flower-cluster-96.webp 96w, /images/flower-cluster-192.webp 192w, /images/flower-cluster-288.webp 288w, /images/flower-cluster.webp 420w" sizes="(max-width: 600px) 64px, 92px" alt="" width="420" height="558" decoding="async">
     </div>
-    <hr class="divider">
+  </div>
+  {{band_ridge}}
+</section>
+<section class="wall-top after-band">
+  <div class="container narrow">
     <!-- PLACEHOLDER for Becky to edit (supplied by Yvonne, Oct 8, evening): the wall is for everyone's losses. -->
     <p class="lead wall-intro">The Memorial wall is a place to share a picture of someone you love and have lost. We gather them here to remember we are not in this alone, to honor every loss, and to pray for those who have passed and those left behind. I read everything before it appears here.</p>
     <p><a class="btn btn-primary" href="#share">Share a memory</a></p>

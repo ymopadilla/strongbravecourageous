@@ -87,6 +87,8 @@ Netlify Forms is the inbox; Decap CMS is the publisher. Nothing appears on the s
 
 **Placeholder stories.** A story whose title or body is still `[bracketed instructions]` is a placeholder (`isPlaceholderStory` in `build.js`). Placeholders are built only on the preview site and in QA builds (with `noindex`, out of `sitemap.xml` and `feed.xml`). The live site never builds them; with no real story yet, the Stories page shows "No stories published yet." under a small sprig.
 
+**Title band (inner pages, Oct 8, 2026).** Stories, About, Scripture, Fingerprints, Memorial wall, Resources, Contact, Obituary, and the five thank-you pages open with a short band of `--field` (the home page's mountain-blue-deep) behind the `<h1>`, title in `--paper`, ending in a thin clay-rose ridge (`{{band_ridge}}` in `build.js`; `.title-band` in `styles.css`; `.on-blush` when the page below is blush). Intro text stays below the band on paper. The blossom cluster beside the About and wall titles dips over the ridge. Story pages, Home, 404, and Newsletter have no band.
+
 **Placeholders on public pages.** Nothing public shows brackets, instructions, or dashed boxes. An empty slot is either a calm framed line (`.ph`, `.soon`: "Photo coming soon.") or nothing at all.
 
 **Structured data.** Homepage: `WebSite` + `Person` (Becky). Stories: `BlogPosting` with Becky as author and publisher. Other pages: `WebPage`. Keep the Person description identical to the homepage greeting (Becky's own words since Oct 8, 2026).

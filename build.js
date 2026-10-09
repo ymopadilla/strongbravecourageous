@@ -398,6 +398,10 @@ const GLOBAL_VARS = {
   joshua_url: scripture.gatewayUrl('Joshua 1:9'),
   supabase_url: SUPABASE.url,
   supabase_key: SUPABASE.publicKey,
+  /* Bottom edge of the inner pages' blue title band: the home ridge's clay-rose line and paper layer, flattened (decorative). */
+  band_ridge: '<svg class="band-ridge" viewBox="0 0 1440 44" preserveAspectRatio="none" aria-hidden="true" focusable="false">'
+    + '<path class="band-rose" d="M0 44 L0 31 L173 40 L432 4 L605 29 L720 36 L835 27 L1008 8 L1224 36 L1440 22 L1440 44 Z"/>'
+    + '<path class="band-ground" d="M0 44 L0 32 L288 24 L648 33 L893 27 L1152 34 L1440 29 L1440 44 Z"/></svg>',
 };
 
 function buildSimple(name, vars = {}) {

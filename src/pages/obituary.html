@@ -6,12 +6,18 @@ path: /obituary.html
 ---
 <!-- The obituary page. Becky's text lives in content/pages/obituary.md (editor: Site Pages > Obituary page).
      Not in the main menu; the About page links here. -->
-<section class="reading">
+<!-- Title band: mountain-blue-deep with a thin clay-rose ridge (item 8, Oct 8; preview until Becky approves). -->
+<section class="title-band on-blush">
+  <div class="container band-letter">
+    <p class="back"><a href="/about.html">&larr; About</a></p>
+    <h1>{{obituary_title}}</h1>
+  </div>
+  {{band_ridge}}
+</section>
+<section class="reading after-band">
   <div class="container">
     <article class="letter obituary">
       <header class="story-header">
-        <p class="back"><a href="/about.html">&larr; About</a></p>
-        <h1>{{obituary_title}}</h1>
         <p class="dateline">Originally published October 2020.</p>
       </header>
       <div class="story-body obituary-body">

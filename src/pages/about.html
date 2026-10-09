@@ -4,15 +4,20 @@ description: I'm Becky. I share my stories of loss, love, and faith to help othe
 nav: about
 path: /about.html
 ---
-<section>
+<!-- Title band: mountain-blue-deep with a thin clay-rose ridge (item 8, Oct 8; preview until Becky approves). -->
+<section class="title-band">
   <div class="container narrow">
     <!-- Flower from the logo: blossom cluster beside the page heading. -->
     <div class="flower-head">
       <h1>Still here. Still healing.</h1>
       <img class="flower flower-cluster" src="/images/flower-cluster.webp" srcset="/images/flower-cluster-96.webp 96w, /images/flower-cluster-192.webp 192w, /images/flower-cluster-288.webp 288w, /images/flower-cluster.webp 420w" sizes="(max-width: 600px) 64px, 92px" alt="" width="420" height="558" loading="lazy" decoding="async">
     </div>
-    <hr class="divider">
-    <div class="grid-2" style="margin-top:32px; align-items:start;">
+  </div>
+  {{band_ridge}}
+</section>
+<section class="after-band">
+  <div class="container narrow">
+    <div class="grid-2" style="align-items:start;">
       <div>
         <!-- Becky's words (Edits.docx, Oct 2026). The text lives in content/pages/about.md; Site pages > About page in the editor. -->
         {{about_body}}
