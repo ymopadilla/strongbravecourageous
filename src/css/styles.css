@@ -309,14 +309,12 @@ section { padding: 48px 0; }
 .band-rose { fill: var(--rose); }
 .band-ground { fill: var(--paper); }
 .title-band.on-blush .band-ground { fill: var(--blush); }
-/* The blossom cluster beside a title (About, Memorial wall) grows over the ridge: its stem end dips onto the paper below,
-   so the band stays short and the flowers read as growing from the edge rather than floating on the blue. */
-.title-band .flower-cluster { position: relative; z-index: 1; margin-bottom: -50px; }
+/* The single blossom (the favicon flower) beside the About and Memorial wall titles: about the height of the capitals. */
+.title-blossom { display: inline-block; height: 0.74em; width: auto; vertical-align: -0.04em; margin-left: 0.12em; }
 .after-band { padding-top: 36px; }
 @media (min-width: 860px) {
   .title-band { padding: 48px 0 64px; }
   .band-ridge { height: 28px; }
-  .title-band .flower-cluster { margin-bottom: -76px; }
 }
 
 /* ---------- Intro (Home): Becky's sentence beside "My why" ---------- */
