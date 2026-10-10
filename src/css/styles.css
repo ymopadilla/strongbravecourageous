@@ -774,7 +774,7 @@ section { padding: 48px 0; }
 .res-older summary .count { font-weight: 500; font-size: 13px; color: var(--muted); }
 .res-empty { text-align: center; }
 .res-nomatch { text-align: center; padding: 12px 0 0; }
-.help-988 { padding: 22px 24px; text-align: center; }
+.help-988 { padding: 22px 24px; text-align: center; scroll-margin-top: 90px; }
 .help-988 p { font-size: 15px; max-width: 600px; margin: 0 auto 16px; }
 .help-row { display: flex; justify-content: center; }
 .res-suggest { text-align: center; font-size: 15px; margin-top: 18px; }
