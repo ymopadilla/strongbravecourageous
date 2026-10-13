@@ -216,10 +216,15 @@ const BECKY = {
   '@type': 'Person',
   '@id': `${SITE_URL}/#becky`,
   name: 'Becky',
-  url: `${SITE_URL}/about.html`,
+  url: `${SITE_URL}/about`,
   description: "Hi there! My name is Becky. I write about loss, life, and where I see God in them.",
 };
 const ROBOTS_META = /<meta name="robots"[^>]*>/g;
+
+/* One official address per page, without ".html" (/about, /stories/my-story). Netlify serves both forms,
+   so this only changes what the site tells search engines: canonical, share (og:url), structured data,
+   sitemap, and feed. */
+const cleanPath = (p) => (p === '/404.html' ? p : String(p || '/').replace(/\.html$/, ''));
 
 function renderPage({ title, description, nav, pathname, content, og_type = 'website', og_image = OG_IMAGE, og_image_alt = OG_IMAGE_ALT, head_extra = '', body_extra = '', structured_data, noindex = false }) {
   if (PREVIEW) head_extra = `${head_extra.replace(ROBOTS_META, '')}<meta name="robots" content="noindex, nofollow">`;
@@ -242,7 +247,7 @@ function renderPage({ title, description, nav, pathname, content, og_type = 'web
             description,
             inLanguage: 'en',
             publisher: { '@id': `${SITE_URL}/#becky` },
-            potentialAction: { '@type': 'SearchAction', target: { '@type': 'EntryPoint', urlTemplate: `${SITE_URL}/stories.html?q={search_term_string}` }, 'query-input': 'required name=search_term_string' },
+            potentialAction: { '@type': 'SearchAction', target: { '@type': 'EntryPoint', urlTemplate: `${SITE_URL}/stories?q={search_term_string}` }, 'query-input': 'required name=search_term_string' },
           },
         ],
       }
@@ -250,7 +255,7 @@ function renderPage({ title, description, nav, pathname, content, og_type = 'web
         '@context': 'https://schema.org',
         '@type': 'WebPage',
         name: title,
-        url: `${SITE_URL}${pathname}`,
+        url: `${SITE_URL}${cleanPath(pathname)}`,
         description,
         isPartOf: { '@id': `${SITE_URL}/#website` },
       });
@@ -258,7 +263,7 @@ function renderPage({ title, description, nav, pathname, content, og_type = 'web
     title: escapeHtml(title),
     description: escapeHtml(description),
     site_url: SITE_URL,
-    path: pathname,
+    path: cleanPath(pathname),
     og_type,
     og_image,
     og_image_alt: escapeHtml(og_image_alt),
@@ -742,16 +747,16 @@ function storyNav(s) {
       structured_data: {
         '@context': 'https://schema.org',
         '@type': 'BlogPosting',
-        '@id': `${SITE_URL}${vars.story_path}`,
+        '@id': `${SITE_URL}${cleanPath(vars.story_path)}`,
         headline: s.data.title,
         datePublished: isoDate(s.data.date),
         dateModified: isoDate(s.data.date),
-        author: { '@type': 'Person', '@id': `${SITE_URL}/#becky`, name: 'Becky', url: `${SITE_URL}/about.html` },
+        author: { '@type': 'Person', '@id': `${SITE_URL}/#becky`, name: 'Becky', url: `${SITE_URL}/about` },
         publisher: { '@id': `${SITE_URL}/#becky` },
         description: s.data.excerpt || '',
         image: `${SITE_URL}${s.data.share_image || OG_IMAGE}`,
-        mainEntityOfPage: { '@type': 'WebPage', '@id': `${SITE_URL}${vars.story_path}` },
-        url: `${SITE_URL}${vars.story_path}`,
+        mainEntityOfPage: { '@type': 'WebPage', '@id': `${SITE_URL}${cleanPath(vars.story_path)}` },
+        url: `${SITE_URL}${cleanPath(vars.story_path)}`,
         articleSection: s.cats.join(', '),
         keywords: [...s.cats, ...s.refs, 'grief', 'faith', 'healing', 'hope'].filter((k, i, a) => a.indexOf(k) === i).join(', '),
         isPartOf: { '@id': `${SITE_URL}/#website` },
@@ -774,7 +779,7 @@ function storyNav(s) {
     ...real.map((s) => [`/stories/${s.slug}.html`, 'yearly', '0.8', isoDate(s.data.date)]),
   ];
   // /newsletter.html is intentionally left out until it returns to the menu (Jan 1, 2027).
-  write('sitemap.xml', `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${pages.map(([u, f, p, d]) => `  <url><loc>${SITE_URL}${u}</loc><lastmod>${d}</lastmod><changefreq>${f}</changefreq><priority>${p}</priority></url>`).join('\n')}\n</urlset>\n`);
+  write('sitemap.xml', `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${pages.map(([u, f, p, d]) => `  <url><loc>${SITE_URL}${cleanPath(u)}</loc><lastmod>${d}</lastmod><changefreq>${f}</changefreq><priority>${p}</priority></url>`).join('\n')}\n</urlset>\n`);
   write('robots.txt', `User-agent: *\nAllow: /\nDisallow: /admin/\nDisallow: /wall-admin.html\nDisallow: /thanks.html\nSitemap: ${SITE_URL}/sitemap.xml\n`);
   // Preview site only: a header telling search engines to ignore every file (pages, images, feed).
   // Crawling stays allowed so they can read the noindex instruction.
@@ -786,7 +791,7 @@ function storyNav(s) {
   const cdata = (s) => `<![CDATA[${String(s || '').replace(/]]>/g, ']]]]><![CDATA[>')}]]>`;
   const rfc822 = (d) => new Date(String(d).length === 10 ? `${d}T12:00:00Z` : d).toUTCString();
   const items = stories.filter((s) => !isPlaceholderStory(s)).slice(0, 20).map((s) => {
-    const url = `${SITE_URL}/stories/${s.slug}.html`;
+    const url = `${SITE_URL}/stories/${s.slug}`;
     return `    <item>
       <title>${cdata(s.data.title)}</title>
       <link>${url}</link>
@@ -802,7 +807,7 @@ ${s.cats.map((c) => `      <category>${cdata(c)}</category>`).join('\n')}
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:dc="http://purl.org/dc/elements/1.1/">
   <channel>
     <title>${SITE_NAME} — Stories</title>
-    <link>${SITE_URL}/stories.html</link>
+    <link>${SITE_URL}/stories</link>
     <atom:link href="${SITE_URL}/feed.xml" rel="self" type="application/rss+xml"/>
     <description>My stories of loss, love, and faith. ${TAGLINE}</description>
     <language>en-us</language>
